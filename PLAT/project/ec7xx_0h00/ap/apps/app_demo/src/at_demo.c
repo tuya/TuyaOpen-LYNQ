@@ -32,6 +32,12 @@ void at_demo(void)
     sprintf(command, "AT+CFUN?\r\n");
     ret = ol_at_send_wait_resp(command, 60, respbuff, 1024);
     OL_LOG_INFO("send AT+CFUN? return %d, resp=%s",ret, respbuff);
+
+    memset(command, 0x0, sizeof(command));
+    memset(respbuff, 0x0, sizeof(respbuff));
+    sprintf(command, "AT+ECVERSION?\r\n");
+    ret = ol_at_send_wait_resp(command, 60, respbuff, 1024);
+    OL_LOG_INFO("send AT+ECVERSION? return %d, resp=%s",ret, respbuff);
 }
 
 

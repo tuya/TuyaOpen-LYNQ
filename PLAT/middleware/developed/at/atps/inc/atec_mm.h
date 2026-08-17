@@ -249,6 +249,18 @@ typedef enum AtcECPTWEDRXSValue_Enum
 #define ATC_ECEHPLMNLIST_PLMNLIST_STR_DEFAULT   NULL
 #define ATC_ECEHPLMNLIST_PLMNLIST_STR_MAX_LEN   100
 
+/*AT+ECCONNREL*/
+#define ATC_ECCONNREL_0_VAL_MIN                0
+#define ATC_ECCONNREL_0_VAL_MAX                1
+#define ATC_ECCONNREL_0_VAL_DEFAULT            1
+
+#define ATC_ECCONNREL_1_VAL_MIN                0
+#define ATC_ECCONNREL_1_VAL_MAX                65535
+#define ATC_ECCONNREL_1_VAL_DEFAULT            30
+
+
+
+
 CmsRetId  mmCREG(const AtCmdInputContext *pAtCmdReq);
 CmsRetId  mmCOPS(const AtCmdInputContext *pAtCmdReq);
 CmsRetId  mmCSQ(const AtCmdInputContext *pAtCmdReq);

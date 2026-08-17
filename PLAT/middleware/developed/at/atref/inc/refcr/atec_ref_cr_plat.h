@@ -29,7 +29,7 @@
 
 
 CmsRetId crMSWVER(const AtCmdInputContext *pAtCmdReq);
-CmsRetId crMBSWVER(const AtCmdInputContext *pAtCmdReq);
+CmsRetId crMBSVER(const AtCmdInputContext *pAtCmdReq);
 CmsRetId crMHWVER(const AtCmdInputContext *pAtCmdReq);
 CmsRetId crMWHWVER(const AtCmdInputContext *pAtCmdReq);
 CmsRetId crMCGSNW(const AtCmdInputContext *pAtCmdReq);

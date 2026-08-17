@@ -2340,9 +2340,12 @@ typedef struct CmiDevGetBasicCellListInfoReq_Tag
 {
     UINT8       mode;               //CmiDevGetBasicCellInfoMode
     BOOL        needSave;           /* whether need to save neighber cell info into tiny context */
-    UINT16      maxTimeoutS;        /* MAX measurement/search timeout in second, QCELL (8s)*/
+    UINT16      maxTimeoutS;        /* MAX measurement/search timeout in second*/
 
-    UINT8       reqMaxCellNum;      /* MAX Cell number request, ECBCINFO (1-21), QCELL (7) */
+    UINT8       reqMaxCellNum;      /* MAX Cell number request, range (1-21), 1 servingCell + 20 neighbour cells
+                                     * Due to the shared network, the number of reported cells may be larger than the reqMaxCellNum,
+                                     * the reported cell is based on each PLMN of cell
+                                     */
     UINT8       rptMode;            /* Syn mode, or Asyn mode */
     BOOL        bSearchBand;        /* whether need search band,
                                      * FALSE - not search band, only search the intra/inter FREQ stored in RRC layer
@@ -2355,7 +2358,7 @@ typedef struct CmiDevGetBasicCellListInfoReq_Tag
                                      * FALSE - return all found cell no matter it's PLMN
                                      * Note: if UE not registed, UE will ignore this setting to return all found cells.
                                     */
-    BOOL        bSearchPreferred;    /* whether support interrupt Tx/Rx to do cell search (neighbour cell) while UE in Connection state
+    BOOL        bSearchPreferred;   /* whether support interrupt Tx/Rx to do cell search (neighbour cell) while UE in Connection state
                                      * FALSE - not support
                                      * TRUE  - support interrupt Tx/Rx to do cell search (neighbour cell)
                                      * Note: if set as TRUE, UE may be miss connection Tx/Rx data during cell search (neighour cell) procedure
@@ -3063,6 +3066,7 @@ typedef enum CmiDevRrcEventTypeEnum_Tag
     CMI_DEV_RRC_CELL_CHANGED = 1,           /* UE reselect/handover/reestablish to another cell and success */
     CMI_DEV_RRC_ESTABLISH_FAIL_CAUSE = 2,   /* report rrc establish fail reason */
     CMI_DEV_RRC_BAND_NOT_SUPPORTED = 3,     /* report the un-supported band indicated in SIB5(corresponding to dl-CarrierFreq) */
+    CIM_DEV_PHY_SCANNING_BAND = 4,          /* indicate the band which is currently being scanned during cell search */
 }CmiDevRrcEventTypeEnum;
 
 typedef struct CmiDevErrcCellChangedInd_Tag
@@ -3113,6 +3117,13 @@ typedef struct CmiDevErrcUnSupportedBandList_Tag
     UINT8                           band[16];
 }CmiDevErrcUnSupportedBandList;
 
+typedef struct CmiDevErrcScanningBandIndTag
+{
+    //indicate the band which is currently being scanned during cell search
+    UINT16                          scanningBand;
+    UINT16                          rsvd;
+}CmiDevErrcScanningBandInd;
+
 typedef struct CmiDevErrcEventInd_Tag
 {
     UINT8   eventType; // CmiDevRrcEventTypeEnum
@@ -3121,6 +3132,7 @@ typedef struct CmiDevErrcEventInd_Tag
     CmiDevErrcEstablishFailCause    establishFailCause;
     CmiDevErrcCellChangedInd        cellChangedInd;
     CmiDevErrcUnSupportedBandList   bandList;
+    CmiDevErrcScanningBandInd       scanBandInd;
 }CmiDevErrcEventInd;
 
 /******************************************************************************
@@ -3136,12 +3148,13 @@ typedef enum CmiDevNasEventTypeEnum_Tag
     CMI_DEV_NAS_NO_RSP_DURING_DETACH,       /* No response for DETACH REQUEST */
     CMI_DEV_NAS_ATTACH_REJECT,              /* ATTACH REJECT */
     CMI_DEV_NAS_TAU_REJECT,                 /* TAU REJECT */
-    CMI_DEV_NAS_SERVICE_REJECT              /* SERVICE REJECT */
+    CMI_DEV_NAS_SERVICE_REJECT,             /* SERVICE REJECT */
+    CMI_DEV_NAS_FAKE_CELL_DETECT            /* Detect fake cell */
 }CmiDevNasEventTypeEnum;
 
 typedef struct CmiDevNasEventInd_Tag
 {
-    UINT8   eventType;      // CmiDevEmmEventTypeEnum
+    UINT8   eventType;      // CmiDevNasEventTypeEnum
     UINT8   rsvd[3];
 
     UINT16  rejectCause;    // EMM CAUSE

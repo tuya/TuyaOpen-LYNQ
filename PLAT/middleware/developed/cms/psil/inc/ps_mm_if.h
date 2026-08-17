@@ -38,7 +38,7 @@ CmsRetId mmGetPtwEdrx(UINT32 atHandle);
 CmsRetId mmGetECEMMTIME(UINT32 atHandle);
 CmsRetId mmSetECPLMNRESELECT(UINT32 atHandle);
 CmsRetId mmGetCurrOperatorName(UINT32 atHandle);
-CmsRetId mmSetTriggerRrcRelease(UINT32 atHandle);
+CmsRetId mmSetTriggerRrcRelease(UINT32 atHandle, BOOL tauUserSetting, UINT16 allowRelTimeGap);
 CmsRetId mmSetTriggerTau(UINT32 atHandle, UINT8 epsUpdateType);
 BOOL OperatorStringToNumericPlmn(const UINT8 *pPlmnStr, CmiNumericPlmn *pOutPlmn);
 CmsRetId mmSetOosPlmnInterval(UINT32 atHandle, CmiMmSetOosPlmnIntervalReq *pSetOosPlmnIntervalReq);

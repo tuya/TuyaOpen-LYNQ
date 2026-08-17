@@ -12,12 +12,12 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_timer.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
+#include "vlog.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_timer][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_timer][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+#undef LOGD
+#define LOGD(fmt, ...) 
 
 typedef struct {
 	osTimerId_t id;

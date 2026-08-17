@@ -116,4 +116,3 @@ OPERATE_RET tkl_flash_get_one_type_info(TUYA_FLASH_TYPE_E type, TUYA_FLASH_BASE_
     return OPRT_NOT_SUPPORTED;
     // --- END: user implements ---
 }
-

@@ -32,11 +32,11 @@
 #include "win32_config.h"
 #endif
 
-#if (defined CHIP_EC618) || (defined TYPE_EC718H) || (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM)
+#if (defined CHIP_EC618) || (defined TYPE_EC718H) || (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM) || (defined TYPE_EC718PM && defined FEATURE_GLO_CALI_ENABLE)
 // the size of rf calibration table is 100K bytes.
 #define RF_CALI_TABLE_SIZE_100K
 #define RF_CALI_NV_SECTOR_BANK_NUM_MAX     25
-#elif (defined CHIP_EC716) || (defined TYPE_EC718S) || (defined TYPE_EC718P) || (defined TYPE_EC718PM) || (defined TYPE_EC718SM)// EC716, EC718S, EC718P || (defined TYPE_EC718U)
+#elif (defined CHIP_EC716) || (defined TYPE_EC718S) || (defined TYPE_EC718P) || (defined TYPE_EC718PM && !defined FEATURE_GLO_CALI_ENABLE) || (defined TYPE_EC718SM)// EC716, EC718S, EC718P || (defined TYPE_EC718U)
 // the size of rf calibration table is 48K bytes.
 #define RF_CALI_TABLE_SIZE_48K
 #define RF_CALI_NV_SECTOR_BANK_NUM_MAX     12
@@ -51,7 +51,7 @@
 
 #define NVRAM_FAC_RESTORE_ERR	0xFFFFFFFE
 
-#if (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM)
+#if (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM) || (defined TYPE_EC718PM && defined FEATURE_GLO_CALI_ENABLE)
 #define NVRAM_COMPRESS_FAC_MAX_SIZE   (0x9000)//36k
 #define NVRAM_DECOMPRESS_FAC_MAX_SIZE (0x19000)//100k
 #else
@@ -124,8 +124,7 @@ typedef enum
     CPNV6,
     NV_MAX,
 } NvType_t;
-#elif (defined TYPE_EC716S) ||(defined TYPE_EC718S)|| (defined TYPE_EC718P) || (defined TYPE_EC716E) || (defined TYPE_EC718PM) || (defined TYPE_EC718SM)// EC716S, EC718S, EC718P, EC716E
-
+#elif (defined TYPE_EC716S) ||(defined TYPE_EC718S)|| (defined TYPE_EC718P) || (defined TYPE_EC716E) || (defined TYPE_EC718PM && !defined FEATURE_GLO_CALI_ENABLE) || (defined TYPE_EC718SM)// EC716S, EC718S, EC718P, EC716E
 typedef enum
 {
     APNV1 = 0x0,
@@ -136,7 +135,7 @@ typedef enum
     NV_MAX,
 } NvType_t;
 
-#elif (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM)
+#elif (defined TYPE_EC718U) || (defined TYPE_EC718UM) || (defined TYPE_EC718HM) || (defined TYPE_EC718PM && defined FEATURE_GLO_CALI_ENABLE)
 typedef enum 
 {
     APNV1 = 0x0,
@@ -160,6 +159,22 @@ typedef enum
     APNV_PART_MAX,
 } ApNvPart_t;
 #endif
+
+typedef enum
+{
+    CaliTable_100K = 0,
+    CaliTable_48K,
+} CaliTableType_t;
+
+typedef enum 
+{
+    CaliNvType_Offline = 0,
+    CaliNvType_Tpc_1,
+    CaliNvType_Tpc_2,
+    CaliNvType_SelfCali,
+    CaliNvType_FacCali,
+    CaliNvType_ExternFacCali
+} CaliNvType_t;
 
 typedef struct
 {
@@ -195,6 +210,10 @@ uint32_t nvramSave2Fac(void);
 uint32_t nvramSave2FacAp();
 uint32_t nvramGetnvAddr(NvType_t nvt);
 void *nvramGetDCXOBufAddr( void );
+
+uint32_t getCaliTableType(void);
+uint32_t getFcCaliNvType(CaliNvType_t nvt);
+
 
 
 #ifdef CORE_IS_AP

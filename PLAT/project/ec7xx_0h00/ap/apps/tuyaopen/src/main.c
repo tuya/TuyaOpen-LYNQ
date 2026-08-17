@@ -16,12 +16,10 @@
 #include "slpman.h"
 #include "reset.h"
 #include "ol_sys_api.h"
-#include "ol_log.h"
 #include "plat_config.h"
 #include "ol_fs_api.h"
 #include "uart_device.h"
-
-#define LOGD(fmt, ...)  MBTK_LOG_PRINTF("[entry][DBG/%d]: " fmt, __LINE__, ##__VA_ARGS__)
+#include "vlog.h"
 
 /*
   App init entry function. Customer do init or create tasks based on their needs
@@ -122,6 +120,8 @@ static void test_sleep_after_cb(void *pdata, slpManLpState state)
 {
     LOGD("after sleep state:%d", state);
     mbtkInitENGpio();
+    extern void keep_pin_output_in_lowpower(void);
+    keep_pin_output_in_lowpower();
 }
 
 /**

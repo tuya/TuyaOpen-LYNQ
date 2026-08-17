@@ -312,6 +312,14 @@
 
 #define TCP_WINDOWS_UPDATE_ALIGN_MSS 0
 
+/*UE local port range:
+* 1.Total 0~65535
+* 2.0~1024 is reserved
+* 3.Max used port num is 6100 !!!
+*/
+#define TCPIP_UE_PORT_ASSIGN_MIN 10000
+#define TCPIP_UE_PORT_ASSIGN_MAX 10015
+
  /*
    ------------------------------------
    -------------- NO SYS --------------

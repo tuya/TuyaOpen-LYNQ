@@ -37,7 +37,17 @@ $(BUILDDIR)/lib/libstartup.a: $(STARTUP_OBJS)
 	$(Q)$(AR) -cr $@ $^
 
 
+ifeq ($(SOC_DEBUG), y)
+LD_FILE ?= $(TOP)/PLAT/device/target/board/$(TARGET)/$(CORE)/gcc/ec718xm/$(TARGET)_soc.ld
+else
+
+ifeq ($(EC718XM_LD_AND_PREC), y)
+LD_FILE ?= $(TOP)/PLAT/device/target/board/$(TARGET)/$(CORE)/gcc/ec718xm/$(TARGET)_flash.ld
+else
 LD_FILE ?= $(TOP)/PLAT/device/target/board/$(TARGET)/$(CORE)/gcc/$(TARGET)_flash.ld
+endif
+
+endif
 
 endif
 

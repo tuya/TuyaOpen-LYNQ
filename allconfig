@@ -22,5 +22,5 @@ menu "configure project"
         default "arduino" if PROJECT_FRAMEWORK_ARDUINO
 endmenu
 
-source "/home/freedom/share/tuyaopen/TuyaOpen/platform/L511C/Kconfig"
-source "/home/freedom/share/tuyaopen/TuyaOpen/src/Kconfig"
+source "/home/yangjie/Desktop/code/github/TuyaOpen-L511C/platform/L511C/Kconfig"
+source "/home/yangjie/Desktop/code/github/TuyaOpen-L511C/src/Kconfig"

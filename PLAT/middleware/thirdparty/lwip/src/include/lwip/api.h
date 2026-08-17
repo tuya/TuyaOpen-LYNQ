@@ -64,10 +64,10 @@ typedef enum {
  * the data flag with the socket data
 */
 typedef struct sockdataflag{
-    u32_t  imsflag:2; //indicate the ul data flag with ims related attribute. then UE will do some special process with the ul socket data. please reference the define "sockimsdatatype_t"
+    u32_t imsflag:3; //indicate the ul data flag with ims related attribute. then UE will do some special process with the ul socket data. please reference the define "sockimsdatatype_t"
     u32_t dataRai:2;
     u32_t bExceptData:1;
-    u32_t rsvd:27;
+    u32_t rsvd:26;
 }sockdataflag_t;
 #endif
 

@@ -817,7 +817,7 @@ static int32_t CAN_SetMode(ARM_CAN_MODE mode, CAN_RESOURCES *can)
     {
         return ret;
     }
-    can->reg->MODER |= CAN_MODER_FILTER_MODE_Msk; // Use single fitlter in default
+
     can->reg->EMR = CAN_EMR_EXT_MODE_Msk;
     can->reg->MODER &= ~(CAN_MODER_SELF_TEST_Msk | CAN_MODER_LISTEN_ONLY_Msk);
 

@@ -64,6 +64,8 @@
 #else
 #define  CMS_SOCK_TOTAL_MGR_DL_LENGTH_MAX  (20*1024)   //max 20K DL PDU buffer
 #endif
+#define  CMS_SOCK_TOTAL_MGR_DL_PKG_MAX      120        //max 120 DL PDU PKG SAVE NUM
+
 
 #define CMS_SOCK_MGR_SELECT_WAIT_TIME_MISECONDS     (500)   //Microseconds
 
@@ -251,6 +253,7 @@ typedef enum {
      * 0, 550 - 582 are reserved for CM ref socket error
     */
     CME_REF_CR_SOCK_SUCC                       = 0,   //Operation success
+    CME_REF_CR_INVALID_PARAM                   = 50, //invalid parameter
     CME_REF_CR_SOCK_OPERATION_NOT_ALLOWED      = 302, //Operation not allowed
     CME_REF_CR_SOCK_OPERATION_NOT_SUPPORT      = 303, //Operation not supported
     CME_REF_CR_SOCK_MEM_FULL                   = 322, //Memory full
@@ -280,7 +283,6 @@ typedef enum {
     CME_REF_CR_SOCK_DNS_BUSY                   = 581, //DNS busy
     CME_REF_CR_SOCK_PING_BUSY                  = 582, //Ping busy
     CME_REF_CR_SOCK_MEMORY_ALLOC_FAIL          = 583, //memory not enough
-    CME_REF_CR_INVALID_PARAM                   = 584, //invalid parameter
     CME_REF_CR_READ_CFG_ERROR                  = 585, //read cfg error
     CME_REF_CR_OPER_NOT_ALLOWED                = 586, //operation not allowed
     CME_REF_CR_GET_INFO_ERROR                  = 587, //get state error
@@ -360,7 +362,7 @@ typedef struct CmsSockMgrContext_Tag{
 
     UINT8   domain;
     UINT8   errorThenCloseFlag:1;
-    UINT8   resv0: 7 ;
+    UINT8   dlCachePkgNum: 7 ;/*Cal the DL buff save in cache num£¬limited in CMS_SOCK_TOTAL_MGR_DL_PKG_MAX*/
     UINT16  dlCacheCalLen;  /*Cal the DL buffer has Malloc but Not send out buffer size*/
 
 
@@ -371,6 +373,7 @@ typedef struct CmsSockMgrContext_Tag{
 
     void      *eventCallback; //error/dl/ul status event callback
     CmsSockDlBufContext    *pDlBufContext;
+    CmsSockDlBufContext    *pDlBufContextTail;
     CmsSockUlPendingList   *pUlPendingList;
     struct CmsSockMgrContext_Tag *next;
     UINT8  priContext[]; //the sock mgr private context
@@ -684,6 +687,7 @@ void cmsSockMgrUnregisterHandleDefine(UINT8 source);
 
 
 void  cmsSockMgrSockDlCacheContext(void);
+void  cmsSockMgrProcRemoveCacheNode(CmsSockMgrContext *pMgrContext,CmsSockDlBufContext *pRemoveNode);
 void  cmsSockMgrCallErrorEventCallback(CmsSockMgrContext* gMgrContext, UINT8 eventType,INT32 errorCode);
 void  cmsSockMgrProcessWriteEvent(CmsSockMgrContext  *pMgrContext);
 

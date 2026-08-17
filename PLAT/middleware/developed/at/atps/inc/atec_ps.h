@@ -309,6 +309,12 @@
 #define ATC_ECSCLKEX_2_VAL_MIN                   1
 #define ATC_ECSCLKEX_2_VAL_MAX                   600
 #define ATC_ECSCLKEX_2_VAL_DEFAULT               30
+#define ATC_ECSCLKEX_3_VAL_MIN                   0
+#define ATC_ECSCLKEX_3_VAL_MAX                   1
+#define ATC_ECSCLKEX_3_VAL_DEFAULT               1
+#define ATC_ECSCLKEX_4_VAL_MIN                   0
+#define ATC_ECSCLKEX_4_VAL_MAX                   65535
+#define ATC_ECSCLKEX_4_VAL_DEFAULT               30
 
 /* AT+CNEC */
 #define ATC_CNEC_0_STATE_VAL_MIN                       0

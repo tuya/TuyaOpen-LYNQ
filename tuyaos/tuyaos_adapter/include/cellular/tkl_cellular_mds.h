@@ -1,7 +1,7 @@
 /**
  * @file tkl_cellular_mds.h
  * @author www.tuya.com
- * @brief 蜂窝模组数据API实现接口。
+ * @brief Cellular module data API implementation interface.
  *
  * @copyright Copyright (c) tuya.inc 2021
  */
@@ -16,19 +16,19 @@ extern "C" {
 #endif
 
 /**
- * @brief 蜂窝移动数据鉴权状态
+ * @brief Cellular mobile data authentication status
  */
 typedef enum
 {
     TUYA_CELLULAR_MDS_STATUS_UNKNOWN = 0,
-    TUYA_CELLULAR_MDS_STATUS_IDLE = 1,  /*< 空闲状态 */
-    TUYA_CELLULAR_MDS_STATUS_REG,       /*< PS域注册 */
-    TUYA_CELLULAR_MDS_STATUS_ACTIVE,    /*< PDP激活 */
-    TUYA_CELLULAR_MDS_STATUS_CAMPED,    /*< 拒绝注册 */
+    TUYA_CELLULAR_MDS_STATUS_IDLE = 1,  /*< Idle status */
+    TUYA_CELLULAR_MDS_STATUS_REG,       /*< PS domain registration */
+    TUYA_CELLULAR_MDS_STATUS_ACTIVE,    /*< PDP activation */
+    TUYA_CELLULAR_MDS_STATUS_CAMPED,    /*< Registration rejected */
 }TUYA_CELLULAR_MDS_STATUS_E;
 
 /**
- * @brief 蜂窝网络状态
+ * @brief Cellular network status
  */
 typedef enum
 {
@@ -37,7 +37,7 @@ typedef enum
 }TUYA_CELLULAR_MDS_NET_STATUS_E;
 
 /**
- * @brief 蜂窝网络IP类型
+ * @brief Cellular network IP type
  */
 typedef enum{
     TUYA_MDS_PDP_IPV4 = 0,
@@ -46,84 +46,84 @@ typedef enum{
 }TUYA_MDS_PDP_TYPE_E;
 
 /**
- * @brief 蜂窝网络状态变化通知函数原型，该接口是为了svc_netmgr适配
- * @param simId sim卡ID
- * @param state 蜂窝网络状态，查看 @TUYA_CELLULAR_MDS_NET_STATUS_E 定义
+ * @brief Cellular network status change notification function prototype, this interface is for svc_netmgr adaptation
+ * @param simId SIM card ID
+ * @param state Cellular network status, see @TUYA_CELLULAR_MDS_NET_STATUS_E definition
  */
 typedef void (*TKL_MDS_NOTIFY)(uint8_t sim_id, TUYA_CELLULAR_MDS_NET_STATUS_E st);
 
 /**
- * @brief 初始化蜂窝移动数据服务
- * @param simId sim卡ID
- * @return 0 成功 其它 失败
+ * @brief Initialize cellular mobile data service
+ * @param simId SIM card ID
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_init(uint8_t sim_id);
 
 /**
- * @brief 获取蜂窝移动数据服务的鉴权状态
- * @param simId sim卡ID
- * @return 蜂窝移动数据鉴权状态，查看 @TUYA_CELLULAR_MDS_STATUS_E 定义
+ * @brief Get the authentication status of cellular mobile data service
+ * @param simId SIM card ID
+ * @return Cellular mobile data authentication status, see @TUYA_CELLULAR_MDS_STATUS_E definition
  */
 TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_get_status(uint8_t sim_id);
 
 /**
- * @brief 获取蜂窝移动数据服务的鉴权状态
- * @param simId sim卡ID
- * @return 蜂窝移动数据鉴权状态，查看 @TUYA_CELLULAR_MDS_STATUS_E 定义
+ * @brief Get the authentication status of cellular mobile data service
+ * @param simId SIM card ID
+ * @return Cellular mobile data authentication status, see @TUYA_CELLULAR_MDS_STATUS_E definition
  */
 TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_adv_get_status(uint8_t sim_id,uint8_t cid);
 
 /**
- * @brief 蜂窝移动数据PDP激活，默认使用CID为1
- * @param simId sim卡ID
- * @param apn 运营商APN设置
- * @param username 用户名
- * @param password 密码
+ * @brief Cellular mobile data PDP activation, default using CID 1
+ * @param simId SIM card ID
+ * @param apn Carrier APN setting
+ * @param username Username
+ * @param password Password
  *
- * @return 0 成功 其它 失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_pdp_active(uint8_t sim_id,char * apn, char * username, char * password);
 
 /**
- * @brief 蜂窝移动数据指定CID PDP激活
- * @param simId sim卡ID
+ * @brief Cellular mobile data specified CID PDP activation
+ * @param simId SIM card ID
  * @param cid Specify the PDP Context Identifier
- * @param apn 运营商APN设置
- * @param username 用户名
- * @param password 密码
+ * @param apn Carrier APN setting
+ * @param username Username
+ * @param password Password
  *
- * @return 0 成功 其它 失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_adv_pdp_active(uint8_t sim_id,uint8_t cid,TUYA_MDS_PDP_TYPE_E pdp_type,char * apn, char * username, char * password);
 
 /**
- * @brief 蜂窝移动数据PDP去激活，默认使用CID为1
- * @param simId sim卡ID
- * @return 0 成功 其它 失败
+ * @brief Cellular mobile data PDP deactivation, default using CID 1
+ * @param simId SIM card ID
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_pdp_deactive(uint8_t sim_id);
 
 /**
- * @brief 蜂窝移动数据指定CID PDP去激活
- * @param simId sim卡ID
+ * @brief Cellular mobile data specified CID PDP deactivation
+ * @param simId SIM card ID
  * @param cid Specify the PDP Context Identifier
- * @return 0 成功 其它 失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_adv_pdp_deactive(uint8_t sim_id,uint8_t cid);
 
 /**
- * @brief 蜂窝移动数据PDP自动重激活设置
- * @param simId sim卡ID
- * @param enable TRUE 开启自动重新激活 FALSE 关闭自动重新激活
+ * @brief Cellular mobile data PDP automatic reactivation setting
+ * @param simId SIM card ID
+ * @param enable TRUE enable automatic reactivation, FALSE disable automatic reactivation
  *
- * @return 0 成功 其它 失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_pdp_auto_reactive(uint8_t sim_id,bool enable);
 
 /**
- * @brief 注册蜂窝数据服务状态变化通知函数
- * @param fun 状态变化通知函数
- * @return 0 成功  其它 失败
+ * @brief Register cellular data service status change notification function
+ * @param fun Status change notification function
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_mds_register_state_notify(uint8_t sim_id, TKL_MDS_NOTIFY fun);
 

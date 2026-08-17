@@ -207,7 +207,7 @@ if any other common part as OS add below
 
 #endif
 
-#if defined(FEATURE_BOOTLOADER_PROJECT_ENABLE) && defined(TYPE_EC718M)
+#if defined(FEATURE_BOOTLOADER_PROJECT_ENABLE) && (defined(CHIP_EC718)||defined(CHIP_EC716))
 #define PLAT_UNCOMP_FLASH_TEXT   PLAT_BL_UNCOMP_FLASH_TEXT
 #define PLAT_UNCOMP_FLASH_RODATA PLAT_BL_UNCOMP_FLASH_RODATA
 #else
@@ -223,11 +223,13 @@ if any other common part as OS add below
 #define EXCEP_DUMP_BSS  SECTION_DEF_IMPL(.sect_excep_dump_bss)
 #endif
 
+#define RAM_BOOT_NOINIT SECTION_DEF_IMPL(.sect_boot_noInit)
+
 #ifdef TYPE_EC718M
 // ap section define for boot
 //#define RAM_BOOT_DATA SECTION_DEF_IMPL(.sect_boot_data)
 //#define RAM_BOOT_BSS  SECTION_DEF_IMPL(.sect_boot_bss)
-#define RAM_BOOT_NOINIT SECTION_DEF_IMPL(.sect_boot_noInit)
+//#define RAM_BOOT_NOINIT SECTION_DEF_IMPL(.sect_boot_noInit)
 
 #define PLAT_MSMB_DATA_NOINIT SECTION_DEF_IMPL(.sect_platMsmbNoInit)
 
@@ -263,7 +265,7 @@ if any other common part as OS add below
 // ap section define for boot
 //#define RAM_BOOT_DATA
 //#define RAM_BOOT_BSS
-#define RAM_BOOT_NOINIT
+//#define RAM_BOOT_NOINIT
 
 #define PLAT_MSMB_DATA_NOINIT
 

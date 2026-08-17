@@ -88,9 +88,10 @@ typedef struct PsDialContext_Tag
     UINT32      actingCid       : 8;    /* current activating CID */
     UINT32      actingCidCgevReason : 4;/* CmiPsPdnTypeReason, 1> psdail need it decide whether need to init another PDP, 2> netif also need it */
     UINT32      psConnStatus    : 1;    /* 0 - RRC IDLE, 1- RRC connected */
-    UINT32      bTriggerConnRel : 1;    /* whether trigger rrc conn rel */
+    UINT32      bPendRel        : 1;    /* whether pending RRC rel */
+    UINT32      bTrigTauAfterRel: 1;    /* whether trigger TAU after conn rel */
     UINT32      bRemap          : 1;    /* Whether this bearer is remapped */
-    UINT32      rsvd1 : 9;
+    UINT32      rsvd1           : 8;
 
     CmiSimImsiStr   ueImsi;             //20 bytes
     NmIpv6Prefix    *pIp6Prefix;        // used for remap case
@@ -117,7 +118,7 @@ typedef struct PsDialAonInfo_Tag
     UINT32      bSmsReady   : 1;            /* Whether SMS init ready or not */
     UINT32      rsvd0       : 1;
 
-    UINT32      rsvd1 : 16;
+    UINT32      rsvd1       : 16;
 }PsDialAonInfo;
 
 
@@ -144,7 +145,6 @@ typedef enum {
     PS_DIAL_NET_TYPE_IPV4V6   = 2,
     PS_DIAL_NET_TYPE_INVALID  = 3,
 }PsDialNetType;
-
 
 /******************************************************************************
  ******************************************************************************
@@ -189,17 +189,29 @@ BOOL psDialBeActNetifDoneDuringWakeup(void);
 ******************************************************************************/
 BOOL psDialSetAdptDnsServerInfo(UINT8 cid, UINT8 type, PsDialDnsCfg *pPcoDns, PsDialDnsCfg *pAdptDns, BOOL bWakeUp);
 
+
+/******************************************************************************
+ * psDialTriggerRrcRelese
+ * Description: Trigger RRC release
+ * input:
+ * output:  CmsRetId
+ * Comment:
+******************************************************************************/
+CmsRetId psDialTriggerRrcRelese(UINT32 atHandle, BOOL tauUserSetting, UINT16 allowRelTimeGap);
+
+/******************************************************************************
+ * psDialIsNeedTriggerRrcRelese
+ * Description: whether need to trigger RRC release
+ * input:
+ * output:  BOOL
+ * Comment:
+******************************************************************************/
+BOOL psDialIsNeedTriggerRrcRelese(void);
+
 /*
  * return current CFUN state: CMI_DEV_MIN_FUNC/CMI_DEV_FULL_FUNC/CMI_DEV_TURN_OFF_RF_FUNC
 */
 UINT8 psDialGetCfunState(void);
-
-/*
- * return current RRC connection state: 0 - IDLE state, 1 - connected state
-*/
-UINT8 psDialGetPsConnStatus(void);
-
-UINT8 psDialGetTriggerConnRelFlag(void);
 
 /*
  * return CEREG state: CmiCeregStateEnum

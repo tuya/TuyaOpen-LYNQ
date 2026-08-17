@@ -12,14 +12,14 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_network.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
+
 
 #include "osasys.h"
 #include "cmsis_os2.h"
+#include "vlog.h"
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_network][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 #define CANONNAME_MAX 128
 #define UNW_TO_SYS_FD_SET(fds)  ((fd_set*)fds)
 
@@ -27,6 +27,8 @@ typedef struct NETWORK_ERRNO_TRANS {
     int sys_err;
     int priv_err;
 } NETWORK_ERRNO_TRANS_S;
+
+extern OPERATE_RET rrc_release_timer_reset(void);
 
 const NETWORK_ERRNO_TRANS_S unw_errno_trans[]= {
     {EINTR,UNW_EINTR},
@@ -439,6 +441,7 @@ TUYA_ERRNO tkl_net_send(const int fd, const void *buf, const uint32_t nbytes)
         return OPRT_INVALID_PARM;
     }
 
+    rrc_release_timer_reset();
     return send(fd,buf,nbytes,0);
     // --- END: user implements ---
 }
@@ -473,6 +476,7 @@ TUYA_ERRNO tkl_net_send_to(const int fd, const void *buf, const uint32_t nbytes,
     sock_addr.sin_port = htons(tmp_port);
     sock_addr.sin_addr.s_addr = htonl(tmp_addr);
 
+    rrc_release_timer_reset();
     return sendto(fd, buf, nbytes, 0, (struct sockaddr *)&sock_addr, sizeof(sock_addr));
     // --- END: user implements ---
 }
@@ -526,6 +530,7 @@ int tkl_net_recv_nd_size(const int fd, void *buf, const uint32_t buf_size, const
     int ret = 0;
 
     while(rd_size < nd_size) {
+		rrc_release_timer_reset();
         ret = recv(fd,((uint8_t *)buf + rd_size),nd_size-rd_size,0);
         if(ret <= 0) {
             if(EWOULDBLOCK == errno || EINTR == errno || EAGAIN == errno) {
@@ -570,6 +575,7 @@ TUYA_ERRNO tkl_net_recvfrom(const int fd, void *buf, const uint32_t nbytes, TUYA
         return OPRT_INVALID_PARM;
     }
 
+    rrc_release_timer_reset();
     ret = recvfrom(fd, buf, nbytes, 0, (struct sockaddr *)&sock_addr, &addr_len);
     if (ret <= 0) {
         return ret;

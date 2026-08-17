@@ -12,13 +12,11 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_sleep.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
 #include "slpman.h"
+#include "vlog.h"
 #include "ec716.h"
-
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_sleep][INFO/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 
 static TUYA_SLEEP_CB_T  *ty_sleep_fun = NULL;
 static bool is_lp_enable = false;

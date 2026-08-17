@@ -12,7 +12,7 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_uart.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
+#include "vlog.h"
 #include "tuya_ringbuf.h"
 #include "tkl_thread.h"
 #include "tkl_queue.h"
@@ -21,14 +21,14 @@
 #include "ol_uart_api.h"
 #include "cmsis_os2.h"
 #include "ol_uart_api.h"
+#undef LOGD
+#define LOGD(fmt, ...) 
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_uart][DBG%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_uart][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-
-#define UART_DEV_NUM    3
-#define USB_PORT_NUM    2
-#define UART_RECV_BUFFER_LEN    (2 * 1024)
-#define OL_UART_RECV_BUFF_LEN   (2 * 1024)
+#define UART_DEV_NUM    4
+#define USB_DEV_INDEX  2
+#define DEBUG_UART_INDEX  3
+#define UART_RECV_BUFFER_LEN    (3 * 1024)
+#define OL_UART_RECV_BUFF_LEN   (3 * 1024)
 
 static TKL_THREAD_HANDLE uart_recv_handle = NULL;
 static TKL_QUEUE_HANDLE uart_queue_handle = NULL;
@@ -54,6 +54,10 @@ static uart_dev_t uart_dev[UART_DEV_NUM] = {
 	{
 		.init_flag = false,
         .port = OL_USB_SERL,
+	},
+	{
+		.init_flag = false,
+		.port = OL_UART_0,
 	}
 };
 
@@ -67,16 +71,25 @@ static void uart_callback(uint8_t port, uint32_t event)
     }
 }
 
-static void uart0_callback(uint32_t event) {uart_callback(0, event);}
-
-static void uart1_callback(uint32_t event) {uart_callback(1, event);}
+static void uart0_callback(uint32_t event)
+{
+	uart_callback(0, event);
+}
+static void uart1_callback(uint32_t event)
+{
+	uart_callback(1, event);
+}
+static void uart3_callback(uint32_t event)
+{
+	uart_callback(DEBUG_UART_INDEX, event);
+}
 
 static void usb_recv_callback(uint8_t *data, uint32_t len)
 {
-	uint8_t port = USB_PORT_NUM;
-	osMutexAcquire(uart_dev[USB_PORT_NUM].rb_lock, osWaitForever);
-	tuya_ring_buff_write(uart_dev[USB_PORT_NUM].ringbuffer, data, len);
-	osMutexRelease (uart_dev[USB_PORT_NUM].rb_lock);
+	uint8_t port = USB_DEV_INDEX;
+	osMutexAcquire(uart_dev[USB_DEV_INDEX].rb_lock, osWaitForever);
+	tuya_ring_buff_write(uart_dev[USB_DEV_INDEX].ringbuffer, data, len);
+	osMutexRelease (uart_dev[USB_DEV_INDEX].rb_lock);
 	if(uart_queue_handle)
 		tkl_queue_post(uart_queue_handle, &port, 0);
 }
@@ -91,7 +104,7 @@ static void uart_recv_thread(void *arg)
         if(ret)
             continue;
 
-        if(port == USB_PORT_NUM) {
+			if(port == USB_DEV_INDEX) {
             if(uart_dev[port].ty_cb) {
                 uart_dev[port].ty_cb(port);
             }
@@ -126,7 +139,6 @@ static OPERATE_RET tkl_uart_init_pre(void)
 static OPERATE_RET __uart_init(TUYA_UART_NUM_E port_id, TUYA_UART_BASE_CFG_T* cfg)
 {
 	ol_uart_config_t config = {0};
-	osThreadAttr_t task_attr;
 
 	config.baudRate = cfg->baudrate;
 	config.control = ARM_USART_MODE_ASYNCHRONOUS;
@@ -159,14 +171,19 @@ static OPERATE_RET __uart_init(TUYA_UART_NUM_E port_id, TUYA_UART_BASE_CFG_T* cf
 		case TUYA_UART_FLOWCTRL_XONXOFF: 	config.control |= ARM_USART_FLOW_CONTROL_RTS; 	break;
 		case TUYA_UART_FLOWCTRL_DTRDSR: 	config.control |= ARM_USART_FLOW_CONTROL_CTS; 	break;
 	}
+	if(port_id == 0)
+		config.cb_event = uart0_callback;
+	else if(port_id == 1)
+		config.cb_event = uart1_callback;
+	else if(port_id == DEBUG_UART_INDEX)
+		config.cb_event = uart3_callback;
+	else
+		config.cb_event = uart1_callback;
+
 	int ret;
 	if (OL_USB_SERL == uart_dev[port_id].port) {
 		ret = ol_uart_init(uart_dev[port_id].port, NULL);
 	} else {
-        if(port_id == 0)
-            config.cb_event = uart0_callback;
-        else
-            config.cb_event = uart1_callback;
 		ret = ol_uart_init(uart_dev[port_id].port, &config);
 	}
 	if (OL_UART_OK != ret) {
@@ -175,12 +192,12 @@ static OPERATE_RET __uart_init(TUYA_UART_NUM_E port_id, TUYA_UART_BASE_CFG_T* cf
 	}
 
 	if (OL_USB_SERL != uart_dev[port_id].port) {
-		uart_dev[port_id].buffer = (uint8_t*)malloc(OL_UART_RECV_BUFF_LEN);
+		uart_dev[port_id].buffer = (uint8_t*)malloc(OL_UART_RECV_BUFF_LEN + 1);
 		if (NULL == uart_dev[port_id].buffer) {
 			LOGE("malloc ol uart buffer failed");
 			return OPRT_COM_ERROR;
 		}
-		memset(uart_dev[port_id].buffer , 0, OL_UART_RECV_BUFF_LEN);
+		memset(uart_dev[port_id].buffer , 0, OL_UART_RECV_BUFF_LEN + 1);
 		ol_uart_recv_async(uart_dev[port_id].port, uart_dev[port_id].buffer , OL_UART_RECV_BUFF_LEN);
 	} else {
 		ol_uart_register_input_cb(uart_dev[port_id].port, usb_recv_callback);
@@ -243,7 +260,7 @@ OPERATE_RET tkl_uart_init(TUYA_UART_NUM_E port_id, TUYA_UART_BASE_CFG_T *cfg)
 	if(__uart_init(port_id, cfg))
 		return OPRT_COM_ERROR;
 
-	LOGD("uart %d init success, baud: %d, databit: %d, stopbit: %d, parity: %d, flowctrl: %d", port_id, cfg->baudrate, cfg->databits, cfg->stopbits, cfg->parity, cfg->flowctrl);
+	LOGI("uart %d init success, baud: %d, databit: %d, stopbit: %d, parity: %d, flowctrl: %d", port_id, cfg->baudrate, cfg->databits, cfg->stopbits, cfg->parity, cfg->flowctrl);
 	uart_dev[port_id].init_flag = true;
 	return OPRT_OK;
 	// --- END: user implements ---
@@ -290,7 +307,7 @@ OPERATE_RET tkl_uart_deinit(TUYA_UART_NUM_E port_id)
 	if(uart_dev[port_id].rb_lock)
 		osMutexDelete(uart_dev[port_id].rb_lock);
 
-	LOGD("uart %d deinit success", port_id);
+	LOGI("uart %d deinit success", port_id);
 	return OPRT_OK;
 	// --- END: user implements ---
 }

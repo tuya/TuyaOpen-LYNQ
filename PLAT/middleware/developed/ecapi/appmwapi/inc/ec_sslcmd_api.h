@@ -14,6 +14,18 @@
 #define SSL_CERTPATH_MAX_SIZE  (48)
 #define SSL_URL_MAX_LEN        (255)
 #define SSL_SESSION_MAX_LEN    (800)
+#define SSL_PSKID_MAX_SIZE     (65)
+
+#define MSSL_CERTNAME_MAX_LEN  (64)
+
+typedef enum
+{
+    SSL3_0 = 0,
+    TLS1_0,
+    TLS1_1,
+    TLS1_2,
+    SSL_VERSION_ALL,
+}sslVersion_e;
 
 typedef enum 
 {
@@ -39,11 +51,41 @@ typedef enum
     SSL_CACHE,
 }sslSessionCache_e;
 
+#ifdef FEATURE_REF_AT_CR_ENABLE
+enum
+{
+    SSL_INPUT_FORMATE_ASCII = 0,
+    SSL_INPUT_FORMATE_HEX,
+    SSL_INPUT_FORMATE_TRANS,
+};
+#endif
+
 typedef struct _sslAtTemplate
 {
-    struct _sslAtTemplate *next;    
+    struct _sslAtTemplate *next;
     uint8_t id;
-} sslAtTemplate_t;
+}sslAtTemplate_t;
+
+typedef struct _sslPTUlDataNode
+{
+    struct _sslPTUlDataNode *next;
+    uint16_t    dataLen;    /*the send raw datalength*/
+    uint8_t*    pData;
+}sslPTUlDataNode;
+
+typedef struct _ssl_list_t
+{
+    struct _ssl_list_t * next;
+} ssl_list_t;
+
+typedef struct sslPTUlPendingList_Tag
+{
+   ssl_list_t *head;
+   ssl_list_t *tail;
+   uint8_t nodeCount;
+   uint8_t maxNodeNum;
+   osMutexId_t mut;
+}sslPTUlPendingList;
 
 typedef struct _sslAtContext{
     struct _sslAtContext *next;    
@@ -55,9 +97,19 @@ typedef struct _sslAtContext{
     uint8_t seclevel;
     uint8_t cache;
     int32_t ciphersuite;
+#ifndef FEATURE_REF_AT_CR_ENABLE
     char caCertPath[SSL_CERTPATH_MAX_SIZE];
     char clientCertPath[SSL_CERTPATH_MAX_SIZE];
     char clientKeyPath[SSL_CERTPATH_MAX_SIZE];
+#else
+    char caCertPath[MSSL_CERTNAME_MAX_LEN+1];
+    char clientCertPath[MSSL_CERTNAME_MAX_LEN+1];
+    char clientKeyPath[MSSL_CERTNAME_MAX_LEN+1];
+    char pskid[SSL_PSKID_MAX_SIZE];
+    uint16_t negotime;
+    uint8_t inputFormat:2;
+    uint8_t ignoreCertVerify:1;
+#endif
 } sslAtContext_t;
 
 typedef struct sslSessionContextTag
@@ -68,6 +120,7 @@ typedef struct sslSessionContextTag
     unsigned char session[SSL_SESSION_MAX_LEN];
 }sslSessionContext;
 
+bool atParserCiphersuites(const uint8_t* hexStr, uint32_t *pOutput);
 sslAtTemplate_t* sslListFind(sslAtTemplate_t *list, uint8_t id);
 void sslListInsert(sslAtTemplate_t **list, sslAtTemplate_t *listNode);
 uint8_t sslListSize(sslAtTemplate_t *list);

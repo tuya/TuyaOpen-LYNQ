@@ -26,7 +26,6 @@
 
 typedef enum
 {
-    LWM2M_SEND_TASK,
     LWM2M_MAIN_TASK,
     LWM2M_FOTA_DOWNLOAD_TASK,
     LWM2M_INIT_TASK

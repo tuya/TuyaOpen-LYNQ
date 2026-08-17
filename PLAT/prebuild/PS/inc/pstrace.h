@@ -219,7 +219,8 @@ do                                                                              
 /**
  * Less/optional log, may not print out if need save flash
 */
-#ifndef FEATURE_LESSLOG_ENABLE
+//#ifndef FEATURE_LESSLOG_ENABLE
+#if (!defined TYPE_EC718S) && (!defined TYPE_EC716S)        /* now EC716S 718S force lesslog to save img size */
 #define ECPS_TRACE_OPT(moduleId, subId, debugLevel, argLen, format,  ...)           \
     ECPS_TRACE(moduleId, subId, debugLevel, argLen, format,  ##__VA_ARGS__)
 

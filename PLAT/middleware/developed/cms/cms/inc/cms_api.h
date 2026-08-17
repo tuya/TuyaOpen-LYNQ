@@ -106,6 +106,7 @@ typedef enum _SIG_EPAT_cmsSigId_Enum
     SIG_CMS_TX_PWR_RPT,             // C2A_COMM_TEST_REQ
     SIG_CMS_APMU_COMM_TEST_REQ,     // C2A_COMM_TEST_REQ
     SIG_CMS_CP_RAM_CODE_HASH_CHECK_REQ,     // C2A_CP_RAM_CODE_HASH_CHECK_REQ
+    SIG_CMS_RF_BANDNUM_SWITCH_IND,  // C2A_RF_BANDNUM_SWITCH_IND
     // End of CMS signal received from CP
 
     SIG_CMS_CP_PAGING_EVENT_IND_ISR,    //CmsCpPagingEventIndIsr
@@ -202,8 +203,9 @@ typedef enum CmsAppLayerId_Enum
     APPL_MHTTP   = 27,
     APPL_REF_CR_FOTA = 28,
     APPL_CR_MQTT   = 29,
-
-	APPL_CR_LBS    = 31,
+    APPL_MSSL    = 30,
+    APPL_CR_LBS    = 31,
+    APPL_CR_FILE   = 32,
 
     APPL_END    = 0xFF
 }CmsAppId;

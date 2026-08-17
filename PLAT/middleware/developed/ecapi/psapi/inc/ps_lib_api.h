@@ -707,6 +707,34 @@ typedef CmiDevSetTxPowerReq   TxPowerSettingReq;
 
 typedef CmiDevSetBarCellReq   SetBarCellParamsReq;
 
+/******************************************************************************
+ *Set jamming detect Params
+******************************************************************************/
+#define ECJDC_0_MODE_VAL_MIN                (0)         //Jamming detection mode.
+#define ECJDC_0_MODE_VAL_MAX                (1)
+#define ECJDC_0_MODE_VAL_DEF                (0)
+
+#define ECJDC_1_RSSI_THR_VAL_MIN            (-90)       //RSSI Threashold.
+#define ECJDC_1_RSSI_THR_VAL_MAX            (-30)
+#define ECJDC_1_RSSI_THR_VAL_DEF            (-40)
+
+#define ECJDC_2_RSRP_THR_VAL_MIN            (-140)      //RSRP Threashold.
+#define ECJDC_2_RSRP_THR_VAL_MAX            (-44)
+#define ECJDC_2_RSRP_THR_VAL_DEF            (-105)
+
+#define ECJDC_3_RSRQ_THR_VAL_MIN            (-20)       //RSRQ Threashold.
+#define ECJDC_3_RSRQ_THR_VAL_MAX            (0)
+#define ECJDC_3_RSRQ_THR_VAL_DEF            (-15)
+
+#define ECJDC_4_T_DETECT_VAL_MIN            (0)         //Tdetection.
+#define ECJDC_4_T_DETECT_VAL_MAX            (10)
+#define ECJDC_4_T_DETECT_VAL_DEF            (3)
+
+#define ECJDC_5_RPT_INTERVAL_VAL_MIN        (0)       //Report Interval.
+#define ECJDC_5_RPT_INTERVAL_VAL_MAX        (60)
+#define ECJDC_5_RPT_INTERVAL_VAL_DEF        (0)
+
+
 #ifdef  FEATURE_IMS_ENABLE
 /******************************************************************************
  *Set CIREG URC reporting mode
@@ -969,11 +997,30 @@ CmsRetId appTriggerTau(UINT8 epsUpdateType);
 
 /**
   \fn          CmsRetId appTriggerRel()
-  \brief       Send cmi request to trigger RRC local Release
+  \brief       cmi request to trigger RRC local Release, then trigger perioduc TAU.
   \returns     CmsRetId CMS_RET_SUCC: RRC connection local release is triggered
-               CMS_FAIL: RRC connection local release is not triggered
+                        CMS_FAIL: RRC connection local release is not triggered
+
+               Note: to be compatible with older version, this API will trigger perioduc TAU
+                     after the local RRC release is success.
+                     If the user don't want to control whether to trigger the above perioduc TAU,
+                     can call the API: appTriggerRelWithUserSetting.
 */
 CmsRetId appTriggerRel();
+
+/**
+  \fn          CmsRetId appTriggerRelWithTauSetting(BOOL tauUserSetting)
+  \brief       Send cmi request to trigger RRC local Release, then whether to trigger perioduc TAU base on tauUserSetting.
+  \returns     CmsRetId CMS_RET_SUCC: RRC connection local release is triggered
+                        CMS_FAIL: RRC connection local release is not triggered
+
+               Note: Differnet to  API: appTriggerRel
+                     i>  This API can control whether to trigger the perioduc TAU after local RRC Release is done.
+                     ii> This API can control the time gap for allow local RRC release.
+*/
+CmsRetId appTriggerRelWithUserSetting(BOOL tauUserSetting, UINT16 allowRelTimeGap);
+
+
 
 /**
   \fn          appSetECSIMCFGSync
@@ -1275,6 +1322,9 @@ CmsRetId appGetAuthParamSync(const UINT8  cid, GetPsAuthCtxParams *pGetAuthParam
 CmsRetId appSetTxPowerSetting(TxPowerSettingReq *pTxPowerSettingReq);
 
 CmsRetId appSetECBarCell(SetBarCellParamsReq *pSetBarCellReq);
+
+CmsRetId appSetECJDC(CmiDevSetJdcParaReq *pSetJdcReq);
+CmsRetId appGetECJDC(CmiDevGetJdcParaCnf *pJdcParaCnf);
 
 #ifdef  FEATURE_IMS_ENABLE
 /**

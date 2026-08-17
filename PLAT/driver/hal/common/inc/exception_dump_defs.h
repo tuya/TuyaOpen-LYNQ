@@ -433,6 +433,14 @@ typedef struct _EPAT_PS_CemmEsmSimAclConfigInd
     UINT8               *pAclRawData; /* EF_ACL, referred to TS31.102 4.2.48 */
 }PS_CemmEsmSimAclConfigInd;
 
+typedef enum _EPAT_PS_CemmSimPowerReduceTypeTag
+{
+    PS_CEMM_SIM_PR_TY_NONE = 0,
+    PS_CEMM_SIM_PR_TY_ENTER_PSM = 0x01,
+    PS_CEMM_SIM_PR_TY_ENTER_EDRX,
+    PS_CEMM_SIM_PR_TY_LEAVE_PSM_EDRX
+}PS_CemmSimPowerReduceType;
+
 typedef struct _EPAT_PS_SimInformation
 {
     BOOL                        simPresent;
@@ -449,6 +457,7 @@ typedef struct _EPAT_PS_SimInformation
     PS_NasConfig                nasConfig;
     PS_EPSFilePresentType       epsFilePresentType;
     PS_CemmEsmSimAclConfigInd   simAclConfig;       /* sim acl configuration */
+    PS_CemmSimPowerReduceType   simPowerType;
 }PS_SimInformation;
 
 typedef struct _EPAT_PS_SysInformation

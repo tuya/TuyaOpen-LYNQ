@@ -59,7 +59,7 @@ SECTIONS
     // psram part3 for customer
     .load_ap_psram_p2_ram : ALIGN(4)
     {
-        . = ALIGN(4);
+        . = ALIGN(32);
         Load$$LOAD_AP_PSRAM_P2_RAM$$Base = LOADADDR(.load_ap_psram_p2_ram);
         Image$$LOAD_AP_PSRAM_P2_RAM$$Base = .;
         *(.cust_sect_ap_psram_p2_text.*)
@@ -439,6 +439,7 @@ SECTIONS
 
         *(.USB_NOINIT_DATA_BUF)
         *(.sect_dump_unilog.*)
+        . = ALIGN(32);
     } >PSRAM_P0_AREA
 
     PROVIDE(ap_psram_p0_boundary = . );

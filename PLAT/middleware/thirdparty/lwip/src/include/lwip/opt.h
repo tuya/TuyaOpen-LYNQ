@@ -45,7 +45,7 @@
 #define LWIP_HDR_OPT_H
 
 #if !defined(LWIP_CONFIG_FILE)
-#include "lwip_config.h"
+#include "lwip_config_cat.h"
 #else
 #include LWIP_CONFIG_FILE
 #endif

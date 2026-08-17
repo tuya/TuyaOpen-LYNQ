@@ -5,52 +5,52 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .vector       00000084  00803000  00803000  00003000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  1 .unload_uncompress_flashcode 0000639c  00803084  00803084  00003084  2**2
+  1 .unload_uncompress_flashcode 00006618  00803084  00803084  00003084  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .load_airam_pre1 000000a8  00000000  00809420  00010000  2**2
+  2 .load_airam_pre1 000001a0  00000000  0080969c  00010000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  3 .load_airam_pre2 00000928  000000a8  008094c8  000100a8  2**2
+  3 .load_airam_pre2 00000900  000001a0  0080983c  000101a0  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  4 .load_airam_other 00003acc  000009d0  00809df0  000109d0  2**2
+  4 .load_airam_other 00003af8  00000aa0  0080a13c  00010aa0  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   5 .load_miram_sct_zi 00000204  00400000  00400000  00010000  2**2
                   ALLOC
-  6 .load_airam_shared_data 00000a48  0000449c  0080d8bc  0001449c  2**2
+  6 .load_airam_shared_data 00000a48  00004598  0080dc34  00014598  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .load_miram_shared_zi 00002068  00400208  00400208  00010000  2**3
+  7 .load_miram_shared_zi 0000206c  00400208  00400208  00010000  2**3
                   ALLOC
-  8 .load_ciram   0000b6ac  00204000  0080e304  00024000  2**2
+  8 .load_ciram   0000b564  00204000  0080e67c  00024000  2**2
                   CONTENTS, ALLOC, LOAD, CODE
-  9 .ARM.attributes 00000029  00000000  00000000  0002f6ac  2**0
+  9 .ARM.attributes 00000029  00000000  00000000  0002f564  2**0
                   CONTENTS, READONLY
- 10 .comment      0000004d  00000000  00000000  0002f6d5  2**0
+ 10 .comment      0000004d  00000000  00000000  0002f58d  2**0
                   CONTENTS, READONLY
- 11 .debug_info   0003757c  00000000  00000000  0002f722  2**0
+ 11 .debug_info   00037777  00000000  00000000  0002f5da  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 12 .debug_abbrev 000053dc  00000000  00000000  00066c9e  2**0
+ 12 .debug_abbrev 000053ed  00000000  00000000  00066d51  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_loc    0001cedd  00000000  00000000  0006c07a  2**0
+ 13 .debug_loc    0001cdc3  00000000  00000000  0006c13e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000bc8  00000000  00000000  00088f58  2**3
+ 14 .debug_aranges 00000be8  00000000  00000000  00088f08  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00003e70  00000000  00000000  00089b20  2**0
+ 15 .debug_ranges 00003eb8  00000000  00000000  00089af0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_line   00028e77  00000000  00000000  0008d990  2**0
+ 16 .debug_line   000296a2  00000000  00000000  0008d9a8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    0004797c  00000000  00000000  000b6807  2**0
+ 17 .debug_str    00048781  00000000  00000000  000b704a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_frame  00003174  00000000  00000000  000fe184  2**2
+ 18 .debug_frame  000031e8  00000000  00000000  000ff7cc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_macro  000308dd  00000000  00000000  001012f8  2**0
+ 19 .debug_macro  00030a4e  00000000  00000000  001029b4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
       text       data        bss      total filename
-     89828       2764       8812     101404 ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/ap_bootloader.elf
+     90388       2764       8816     101968 ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/ap_bootloader.elf
       text       data        bss      total filename
        324          0          0        324 prec_init.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libstartup.a)
        110          0          4        114 syscalls.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libstartup.a)
-       260          0          4        264 system_ec7xx.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libstartup.a)
+       324          4          0        328 system_ec7xx.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libstartup.a)
         44        132          0        176 startup_ec7xx_gcc.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libstartup.a)
-       738        132          8        878 (TOTALS)
+       802        136          4        942 (TOTALS)
       text       data        bss      total filename
       1458        483          0       1941 plat_config.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libdriver.a)
          0          0          0          0 hal_pwrkey.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libdriver.a)
@@ -72,7 +72,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
       8356       3642       6215      18213 (TOTALS)
       text       data        bss      total filename
         24          0          0         24 mw_aal_hash.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
-      2212        253          0       2465 nvram.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
+      2232        258          0       2490 nvram.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
        950        250          0       1200 fota_utils.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
       2720       1691        164       4575 fota_nvm.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
        140         64          0        204 fota_zipcodec.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
@@ -80,7 +80,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
         14          0          0         14 fota_mem.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
        360        146          0        506 fota_custom.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
        124         25          8        157 fota_chksum.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libmiddleware_ec.a)
-      6824       2573        173       9570 (TOTALS)
+      6844       2578        173       9595 (TOTALS)
       text       data        bss      total filename
        560          0          0        560 LzFindOpt.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
        240          0          0        240 Bra86.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
@@ -123,8 +123,8 @@ Idx Name          Size      VMA       LMA       File off  Algn
       1304          0          0       1304 Lzma2Dec.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
        346          0          0        346 Delta.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
        182          0          0        182 Lzma86Dec.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
-      3224        480          0       3704 LzmaEc.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
-     64202        831      27944      92977 (TOTALS)
+      3262        480          0       3742 LzmaEc.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/liblzma.a)
+     64240        831      27944      93015 (TOTALS)
       text       data        bss      total filename
       7004        396          0       7400 uECC.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libuecc.a)
        112         45          0        157 ecVerify.o (ex ../../../../../../../PLAT/gccout/ec7xx_0h00_ec716e/ap/bootloader/lib/libuecc.a)

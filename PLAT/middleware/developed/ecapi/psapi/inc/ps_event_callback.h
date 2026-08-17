@@ -30,6 +30,7 @@ typedef enum
 
     PS_URC_GROUP_DEV = (CAM_DEV << 12), //0x2000
     PS_URC_ID_DEV_DETECT_EVENT,
+    PS_URC_ID_DEV_JAMM_DETECT_EVENT,
 
     PS_URC_GROUP_MM = (CAM_MM << 12),   //0x3000
     PS_URC_ID_MM_SIGQ,

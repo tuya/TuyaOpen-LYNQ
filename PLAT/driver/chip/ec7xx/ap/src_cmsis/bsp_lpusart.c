@@ -886,11 +886,11 @@ int32_t LPUSART_SendPolling(const void *data, uint32_t num, LPUSART_RESOURCES *l
     return ARM_DRIVER_OK;
 }
 
+// tuya remove USART_IER_LPUART_RX_FRAME_ERR_Msk because the module will be dump if the rx connect to GND when it poweron
 #define LPUSART_RX_COMMON_IRQ_ENABLE_MASK   (USART_IER_RX_START_Msk   | \
                                              USART_IER_RX_BREAK_DET_Msk | \
                                              USART_IER_RX_FRAME_ERR_Msk | \
                                              USART_IER_RX_PARITY_ERR_Msk | \
-                                             USART_IER_LPUART_RX_FRAME_ERR_Msk | \
                                              USART_IER_LPUART_PARITY_ERR_Msk | \
                                              USART_IER_LPUART_RXFIFO_OF_Msk | \
                                              USART_IER_RXFIFO_OF_Msk \
@@ -1422,6 +1422,31 @@ IRQ_HANDLE:
 
     }
 
+
+    // autobaud detecting done
+    if(isr_reg & USART_ISR_AUTOBAUD_DONE_Msk)
+    {
+        if(lpusart->core_regs->DIVIR != 0)
+        {
+            info->baudrate = ((GPR_getClockFreq(FCLK_UART1) << 4) + (lpusart->core_regs->DIVIR >> 1)) / (lpusart->core_regs->DIVIR);
+
+            // Backup for sleep restore
+            lpusart->core_regs->DIVR = lpusart->core_regs->DIVIR;
+
+            // trigger rx_to timer counter in case of it hasn't started yet(lpuart autobaud detecting fails)
+            lpusart->core_regs->TCR = USART_TCR_TOCNT_SWTRG_Msk;
+
+            // threshold: 9600*(1+30%)
+            if(info->baudrate > LPUSART_MAX_BAUDRATE)
+            {
+                lpusart->core_regs->RXSR = 0;
+                lpusart->aon_regs->CR0 &= ~LPUSARTAON_CR0_CLK_ENABLE_Msk;
+            }
+
+        }
+
+    }
+
     // RX timeout, only valid during auto baud
     if(isr_reg & USART_ISR_RX_TO_Msk)
     {
@@ -1441,7 +1466,7 @@ IRQ_HANDLE:
         event = ARM_USART_EVENT_AUTO_BAUDRATE_DONE;
 
         // pattern is right and no error happens
-        if(lpusart->info->xfer.rx_dump_val & 0x1)
+        if((info->xfer.rx_dump_val & 0x1) && (info->baudrate <= LPUSART_MAX_BAUDRATE))
         {
 
             // can switch to lpuart
@@ -1526,30 +1551,6 @@ IRQ_HANDLE:
     if(isr_reg & USART_ISR_CTS_TOGGLE_Msk)
     {
         event |= ARM_USART_EVENT_CTS;
-    }
-
-    // autobaud detecting done
-    if(isr_reg & USART_ISR_AUTOBAUD_DONE_Msk)
-    {
-        if(lpusart->core_regs->DIVIR != 0)
-        {
-            info->baudrate = ((GPR_getClockFreq(FCLK_UART1) << 4) + (lpusart->core_regs->DIVIR >> 1)) / (lpusart->core_regs->DIVIR);
-
-            // Backup for sleep restore
-            lpusart->core_regs->DIVR = lpusart->core_regs->DIVIR;
-
-            // trigger rx_to timer counter in case of it hasn't started yet(lpuart autobaud detecting fails)
-            lpusart->core_regs->TCR = USART_TCR_TOCNT_SWTRG_Msk;
-
-            // threshold: 9600*(1+30%)
-            if(info->baudrate > LPUSART_MAX_BAUDRATE)
-            {
-                lpusart->core_regs->RXSR = 0;
-                lpusart->aon_regs->CR0 &= ~LPUSARTAON_CR0_CLK_ENABLE_Msk;
-            }
-
-        }
-
     }
 
     // check fifo number for case where start/end order is reversed(irq is blocked)

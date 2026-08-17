@@ -12,14 +12,12 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_system.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
 #include "reset.h"
 #include "ol_open_api.h"
+#include "vlog.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_system][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_system][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 
 extern void ol_power_reset(void);
 
@@ -77,9 +75,15 @@ SYS_TIME_T tkl_system_get_millisecond(void)
 int tkl_system_get_random(uint32_t range)
 {
     // --- BEGIN: user implements ---
-    srand(OS_Tick_GetCount());
+	static bool seed_flag = false;
+	if(seed_flag == false) {
+		seed_flag = true;
+		srand(osKernelGetTickCount());
+	}
+    
 	int data = rand();
 	return (int)((unsigned int)data % range);
+
 	// --- END: user implements ---
 }
 

@@ -26,16 +26,22 @@
 #define CR_MQTT_TCP_ID_MAX          5 
 #define CR_MQTT_TCP_ID_DEF          0
 
-/* AT+ECMTCFG */
+#define CR_MQTTCFG_CFG_QUERY_MAX_LEN      1600
+
+/* AT+MQTTCFG */
 #define CR_MQTTCFG_CFG_MAX_LEN            17
 #define CR_MQTTCFG_CFG_STR_DEF             NULL
 #define CR_MQTTCFG_TCP_ID_MIN          CR_MQTT_TCP_ID_MIN
 #define CR_MQTTCFG_TCP_ID_MAX          CR_MQTT_TCP_ID_MAX
 #define CR_MQTTCFG_TCP_ID_DEF          CR_MQTT_TCP_ID_DEF
 
-#define CR_MQTTCFG_2_ECHO_MIN              0
-#define CR_MQTTCFG_2_ECHO_MAX              1
-#define CR_MQTTCFG_2_ECHO_DEF              0
+#define CR_MQTTCFG_2_CACHE_MIN              0
+#define CR_MQTTCFG_2_CACHE_MAX              1
+#define CR_MQTTCFG_2_CACHE_DEF              0
+
+#define CR_MQTTCFG_2_PDP_MIN              1
+#define CR_MQTTCFG_2_PDP_MAX              15
+#define CR_MQTTCFG_2_PDP_DEF              1
 
 #define CR_MQTTCFG_2_TXFORMAT_MIN              0
 #define CR_MQTTCFG_2_TXFORMAT_MAX              1
@@ -44,7 +50,7 @@
 #define CR_MQTTCFG_3_RXFORMAT_MAX                1
 #define CR_MQTTCFG_3_RXFORMAT_DEF                0
 
-#define CR_MQTTCFG_2_KEEPALIVE_MIN              60
+#define CR_MQTTCFG_2_KEEPALIVE_MIN              0
 #define CR_MQTTCFG_2_KEEPALIVE_MAX              65535
 #define CR_MQTTCFG_2_KEEPALIVE_DEF              120
 
@@ -118,7 +124,7 @@
 #define CR_MQTTCFG_4_RECONN_MODE_MAX              1
 #define CR_MQTTCFG_4_RECONN_MODE_DEF              0
 
-#define CR_MQTTCFG_2_VERSION_MIN              3
+#define CR_MQTTCFG_2_VERSION_MIN              4
 #define CR_MQTTCFG_2_VERSION_MAX              4
 #define CR_MQTTCFG_2_VERSION_DEF              4
 
@@ -234,10 +240,11 @@
 #define CR_MQTTPUB_5_LEN_DEF                  0
 #define CR_MQTTPUB_6_MSG_MAX_LEN                    1028
 #define CR_MQTTPUB_6_MSG_STR_DEF                    NULL
+#define CR_MQTTPUB_6_DATA_MODE_MSG_MAX_LEN          6144  //6*1024
+#define CR_MQTTPUB_6_DATA_MODE_MSG_STR_DEF          NULL
 
-#define CR_MQTT_DATA_FORMAT_TXT                    0
-#define CR_MQTT_DATA_FORMAT_HEX                    1
-#define CR_MQTT_TLS_CA_SUB_SEQ_LEN                         64
+#define CR_MQTT_DATA_FORMAT_DEF                     0
+#define CR_MQTT_TLS_CA_SUB_SEQ_LEN                  64
 
 typedef struct
 {

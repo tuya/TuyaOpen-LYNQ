@@ -16,7 +16,7 @@
 ******************************************************************************/
 
 /*----------------------------------------------------------------------------*
- *                    INCLUDES                                                *
+ *                    NCLUDES                                                *
  *----------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -607,18 +607,7 @@ void WakeupPadInit(void)
     wakeupPadSetting.pullDownEn = false;
     wakeupPadSetting.pullUpEn = true;
 
-    //sim卡热插拔引脚
-    // slpManSetWakeupPadCfg(WAKEUP_PAD_0, true, &wakeupPadSetting);
-    // NVIC_EnableIRQ(PadWakeup0_IRQn);
-    // slpManSetWakeupPadCfg(WAKEUP_PAD_1, true, &wakeupPadSetting);
-    // NVIC_EnableIRQ(PadWakeup1_IRQn);
-    // slpManSetWakeupPadCfg(WAKEUP_PAD_2, true, &wakeupPadSetting);
-    // NVIC_EnableIRQ(PadWakeup2_IRQn);
-    // slpManSetWakeupPadCfg(WAKEUP_PAD_4, true, &wakeupPadSetting);
-    // NVIC_EnableIRQ(PadWakeup4_IRQn);
-    // slpManSetWakeupPadCfg(WAKEUP_PAD_5, true, &wakeupPadSetting);
-    // NVIC_EnableIRQ(PadWakeup5_IRQn);
-
+// tuya 
     slpManSetWakeupPadCfg(WAKEUP_PAD_0, true, &wakeupPadSetting);      //默认关闭pin19中断，低功耗下开启
     NVIC_DisableIRQ(PadWakeup0_IRQn);
     slpManSetWakeupPadCfg(WAKEUP_PAD_1, false, &wakeupPadSetting);      //sim det引脚
@@ -640,12 +629,7 @@ void WakeupPadInit(void)
     slpManSetWakeupPadCfg(WAKEUP_PAD_0, true, &wakeupPadSetting);
     NVIC_EnableIRQ(PadWakeup0_IRQn);
 #endif
-
 }
-
-
-
-
 void chargeStatusCallbackFunc(chargeStatus_e status)
 {
     ECPLAT_PRINTF_OPT(UNILOG_PMU, chargeStatusCb_1, P_VALUE, "Charge Status update = %d", status);
@@ -661,7 +645,6 @@ void powerKeyStatusUpdate(pwrKeyPressStatus status)
         pwrKeyStartPowerOff();
     }
 }
-
 
 void powerKeyFuncInit(void)
 {
@@ -896,8 +879,6 @@ void BSP_UsbInit(void)
 #endif
 
 }
-
-
 slpManSlpState_t CheckUsrdefSlpStatus(void)
 {
     slpManSlpState_t state = SLP_HIB_STATE;
@@ -916,7 +897,7 @@ slpManSlpState_t CheckUsrdefSlpStatus(void)
         }
     }
 	/*
-	 if do not sleep when ecsclk = 0
+	if do not sleep when ecsclk = 0
     else
     {
         state = SLP_IDLE_STATE;
@@ -1039,10 +1020,7 @@ void BSP_CustomInit(void)
 
     // init cfg, should before all dedicate cfg
     WakeupPadInit();
-
-
     powerKeyFuncInit();
-
 
     #if (RTE_USB_EN == 1)
     if (BSP_UsbGetVBUSMode()==0)
@@ -1139,6 +1117,7 @@ __attribute__ ((noinline)) uint8_t * getSdkMajorVerion(void)
     return (uint8_t *)SDK_MAJOR_VERSION;
 }
 
+// tuya
 extern int agpio_irq_callback(uint32_t pad_num);
 /**
   \fn        void NVIC_WakeupIntHandler(void)
@@ -1165,7 +1144,7 @@ void Pad0_WakeupIntHandler(void)
 
 }
 
-AP_PLAT_COMMON_BSS pfn_PadWakeupHook p_funcPadWakeupHook = NULL;
+pfn_PadWakeupHook p_funcPadWakeupHook = NULL;
 int RegPadWakeupIntrHook(pfn_PadWakeupHook pfunc)
 {
     if (p_funcPadWakeupHook)
@@ -1199,20 +1178,27 @@ void set_sim_insert_level(bool state)
     sim_insert_level = state;
 }
 
+extern bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id);
 void Pad1_WakeupIntHandler(void)
 {
     if(slpManExtIntPreProcess(PadWakeup1_IRQn)==false)
         return;
-    NVIC_DisableIRQ(PadWakeup1_IRQn);
-    uint8_t level = (slpManGetWakeupPinValue() >> WAKEUP_PAD_1) & 0x1;
-    if(level == sim_insert_level) {
-        //插入sim卡
-        ECPLAT_PRINTF(UNILOG_PMU, Pad1_WakeupIntHandler_2, P_VALUE, "Pad1 simcard insert");
-        simcard_plug_handle(true);
+
+    if(tkl_cellular_get_sim_hotplug_status(0) == false) {
+        ECPLAT_PRINTF_OPT(UNILOG_PMU, Pad1_WakeupIntHandler_3, P_VALUE, "Pad1 Wakeup");
+        agpio_irq_callback(79);
     } else {
-        //拔出sim卡
-        ECPLAT_PRINTF(UNILOG_PMU, Pad1_WakeupIntHandler_1, P_VALUE, "Pad1 simcard remove");
-        simcard_plug_handle(false);
+        NVIC_DisableIRQ(PadWakeup1_IRQn);
+        uint8_t level = (slpManGetWakeupPinValue() >> WAKEUP_PAD_1) & 0x1;
+        if(level == sim_insert_level) {
+            //插入sim卡
+            ECPLAT_PRINTF(UNILOG_PMU, Pad1_WakeupIntHandler_2, P_VALUE, "Pad1 simcard insert");
+            simcard_plug_handle(true);
+        } else {
+            //拔出sim卡
+            ECPLAT_PRINTF(UNILOG_PMU, Pad1_WakeupIntHandler_1, P_VALUE, "Pad1 simcard remove");
+            simcard_plug_handle(false);
+        }
     }
     uniLogFlushOut();
 }
@@ -1243,11 +1229,6 @@ void Pad3_WakeupIntHandler(void)
     // add custom code below //
     ECPLAT_PRINTF_OPT(UNILOG_PMU, Pad3_WakeupIntHandler_1, P_VALUE, "Pad3 Wakeup");
     uniLogFlushOut();
-    //716s commonly wakup pad 3 for vbus port mon
-    if (p_funcPadWakeupHook)
-    {
-        (*p_funcPadWakeupHook)(3);
-    }
 
 
 }
@@ -1277,17 +1258,16 @@ void Pad5_WakeupIntHandler(void)
 //         (*p_funcPadWakeupHook)(5);
 //     }
 
-// #if defined CHIP_EC718
-// #if (UART_DEV_DTR_WKUP_ENABLE == 1)
-//     uartDevNotifySerlDtrEvt(PORT_USART_1);
-// #endif
-// #endif
+#if defined CHIP_EC718
+#if (UART_DEV_DTR_WKUP_ENABLE == 1)
+    uartDevNotifySerlDtrEvt(PORT_USART_1);
+#endif
+#endif
 
 }
 
 void PwrKey_WakeupIntHandler(void)
 {
-
     if(slpManExtIntPreProcess(PwrkeyWakeup_IRQn)==false)
         return;
 
@@ -1296,8 +1276,6 @@ void PwrKey_WakeupIntHandler(void)
     uniLogFlushOut();
 
     pwrKeyIntHandler();
-
-
 }
 
 void ChrgPad_WakeupIntHandler(void)
@@ -1310,7 +1288,6 @@ void ChrgPad_WakeupIntHandler(void)
     uniLogFlushOut();
 
     chargeIntHandler();
-
 }
 
 /******************************************************************************

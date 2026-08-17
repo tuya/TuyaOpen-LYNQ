@@ -7,7 +7,7 @@ TKL_INC_PATH    := $(TOP)/tuyaos/tuyaos_adapter/include 	\
 				   $(TOP)/../../src/common/include	\
 				   ${TUYA_APP_KCONFIG_DIR}
 
-include $(TOP)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/GCC/Makefile.inc
+include $(TOP)/PLAT/mbtk/target/$(BUILD_PRO_TARGET)/Makefile.inc
 #---------------------------------------------------------------------------------
 ## -----------------------Tuya-----------------------------
 TKL_SRC_PATH := $(TOP)/tuyaos/tuyaos_adapter/src \

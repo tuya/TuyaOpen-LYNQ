@@ -10,25 +10,31 @@
  */
 
 // --- BEGIN: user defines and implements ---
-#include "tkl_output.h"
+
 #include "tkl_cellular_mds.h"
 #include "tkl_cellular_base.h"
 #include "tkl_system.h"
 
 #if !defined(ENABLE_CELLULAR_PLUGIN) || ENABLE_CELLULAR_PLUGIN == 0
 
+#include "osasys.h"
 #include "cmsis_os2.h"
-#include "cmips.h"
+#include "ps_lib_api.h"
+#include "ps_event_callback.h"
+#include "ol_open_api.h"
 #include "ol_nw_api.h"
+#include "ol_time_api.h"
+#include "ol_at_api.h"
+#include "vlog.h"
+#include "tkl_system.h"
+#include "slpman.h"
+
 
 #if defined(ENABLE_WIRED) && (ENABLE_WIRED == 1)
 #include "tkl_wired.h"
 extern OPERATE_RET tkl_wired_set_status(TKL_WIRED_STAT_E status);
 #endif
 
-#define LOGI(fmt, ...)  tkl_log_output("[tkl_cell_mds][INFO/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_cell_mds][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_cell_mds][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 
 #define MAX_CID     7
 #define APN_LEN_MAX       64
@@ -165,15 +171,18 @@ static OPERATE_RET pdp_active_proc(uint8_t cid, TUYA_MDS_PDP_TYPE_E pdp_type, ch
 
     char old_apn[32];
     memset(old_apn, 0, sizeof(old_apn));
+
     ret = ol_cid_get(olCid, &olType, old_apn);
     LOGD("ol_cid_get: %d ret:%d old_apn:%s olType;%d", olCid, ret, old_apn, olType);
     if(!ret) {
-        if(strncmp(olApn, old_apn, strlen(olApn)) == 0) {
-            return OPRT_OK;
-        }
-    } else {
-        if(olApn == NULL || strlen(olApn) == 0) {
-            return OPRT_OK;
+        if(strlen(olApn) == 0 ){
+            if(strlen(old_apn) == 0) {
+                return OPRT_OK;
+            }
+        } else {
+            if(strncmp(olApn, old_apn, strlen(olApn)) == 0) {
+                return OPRT_OK;
+            }
         }
     }
 

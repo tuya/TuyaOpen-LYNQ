@@ -67,7 +67,12 @@ UINT16 PortMgrNewUeTcpPort(void);
 
 UINT16 PortMgrNewUeUdpPort(void);
 
-void PortMgrInit(void);
+/*UE local port range:
+* 1.Total 0~65535
+* 2.0~1024 is reserved
+* 3.Max used port num is 6100 !!! suggest: 10000 ~ 100015
+*/
+void PortMgrInit(UINT16 ueLocalPortMin, UINT16 ueLocalPortMax);
 
 
 #endif

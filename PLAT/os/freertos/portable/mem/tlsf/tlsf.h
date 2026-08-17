@@ -56,7 +56,7 @@ extern "C" {
 /*
 ** support 32-bit wanted size or not
 */
-//#define MEM_BLK_SIZE_32BIT
+#define MEM_BLK_SIZE_32BIT
 
 
 /* tlsf_t: a TLSF structure. Can contain 1 to N pools. */

@@ -2556,6 +2556,10 @@ typedef struct CmiPsGetTrafficIdleMonitorCnf_Tag
     BOOL       bEnableTrafficIdleMonitor;
     UINT8      trafficIdleMonitorTimeS;
     UINT16     retryTrafficIdleMonitorTimeS;
+
+    UINT8      tauUserSetting;
+    UINT16     allowRelTimeGap;
+    UINT8      rsvd;
 }CmiPsGetTrafficIdleMonitorCnf;
 
 
@@ -2569,7 +2573,9 @@ typedef struct CmiPsSetTrafficIdleMonitorReq_Tag
     UINT8      trafficIdleMonitorTimeS;
     BOOL       bRetryTrafficIdleTimeSPresent;
     UINT16     retryTrafficIdleMonitorTimeS;    /*useless now*/
-    UINT16     resv;
+    UINT16     allowRelTimeGap;
+    UINT8      tauUserSetting;
+    UINT8      rsvd[3];
 }CmiPsSetTrafficIdleMonitorReq;
 
 /*
@@ -2580,7 +2586,14 @@ typedef CamCmiEmptySig CmiPsSetTrafficIdleMonitorCnf;
 /*
  * CMI_PS_TRAFFIC_IDLE_MONITOR_IND
 */
-typedef CamCmiEmptySig CmiPsTrafficIdleMonitorInd;
+typedef struct CmiPsTrafficIdleMonitorInd_Tag
+{
+    BOOL     tauUserSetting;      /* TRUE:  PS DIAL need to triggered periodic TAU after local release
+                                   * FALSE: PS DIAL don't need to triggered periodic TAU after local release
+                                   */
+    UINT16   allowRelTimeGap;
+    UINT8    rsvd;
+}CmiPsTrafficIdleMonitorInd;
 
 
 typedef enum CmiPsEstConnSrvType_enum

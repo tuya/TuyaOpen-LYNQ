@@ -162,7 +162,8 @@ typedef struct SerialEntity
     uint8_t  entFlags :4;   /* refer to 'SerialEntityFlags_e' */
     uint8_t  isBufGot :1;   /* is rbuf ready or not? */
     uint8_t  isAltOn  :1;
-    uint8_t  rsvdBits :2;
+    uint8_t  isPatnOn :1;   /* is waiting for +++ pattern? */
+    uint8_t  rsvdBits :1;
     uint8_t  refCnt;        /* the referred count of this serial entity */
     uint8_t  rsvd[2];
 

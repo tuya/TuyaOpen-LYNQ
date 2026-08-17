@@ -19,6 +19,9 @@
 
 #include "at_util.h"
 #include "HTTPClient.h"
+#ifdef FEATURE_FOTAPAR_ENABLE
+#include "ec_xota_api.h"
+#endif
 
 #define HTTP_RSP_HEAD_BUFFER_SIZE 800
 #define HTTP_RSP_CONTENT_BUFFER_SIZE  CHUNK_SIZE
@@ -154,6 +157,8 @@ typedef struct
     uint32_t reqhandle;
     char* url;
     char* local_path;
+    uint8_t sslid;
+    uint8_t timeout;
 } httpAtCmdMsg_t;
 
 typedef struct _mhttpHeadNode_t
@@ -233,8 +238,8 @@ bool mhttpCheckRequest(uint8_t clientId);
 CmsRetId mhttpChunkedRequestReq(UINT32 atHandle, uint8_t clientId);
 CmsRetId mhttpTermReq(UINT32 atHandle, uint8_t clientId);
 CmsRetId mhttpDeleteReq(UINT32 atHandle, uint8_t clientId);
-CmsRetId mhttpDlfileReq(UINT32 atHandle, char* url, char* local_path, uint16_t progind, char* range, int eof);
-int mhttpFwdlReq(uint32_t reqhandle, char* url, mhttp_fwdl_callback fw_dl_cb);
+CmsRetId mhttpDlfileReq(UINT32 atHandle, char* url, char* local_path, uint16_t progind, char* range, int eof, uint8_t sslid);
+int mhttpFwdlReq(uint32_t reqhandle, AtXotaDownloadReq_t* downloadReq, mhttp_fwdl_callback fw_dl_cb);
 mhttpHeadNode_t * mhttpHeadListAdd(mhttpHeadNode_t * head, mhttpHeadNode_t * node);
 bool mhttpAssemHeader(mhttpHeadNode_t* nodeList, char* newHeader, uint16_t* newHeaderLen);
 

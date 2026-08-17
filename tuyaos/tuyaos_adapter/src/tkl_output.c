@@ -34,12 +34,18 @@ void tkl_log_output(const char *format, ...)
 {
     // --- BEGIN: user implements ---
 	va_list ap;
+	int len;
+	if (NULL == format) {
+		return;
+	}
 	va_start(ap, format);
-	memset(buf, 0, BUFF_SIZE);
-	vsnprintf(buf, BUFF_SIZE - 1, format, ap);
+	len = vsnprintf(buf, sizeof(buf), format, ap);
 	va_end(ap);
-	buf[BUFF_SIZE - 1] = 0;
-	MBTK_LOG_PRINTF("%s", buf);
+	if (len < 0) {
+		return;
+	}
+	buf[sizeof(buf) - 1] = '\0';
+	MLOG(UNILOG_API, P_VALUE, "%s", buf);
 	// --- END: user implements ---
 }
 

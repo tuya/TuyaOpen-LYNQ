@@ -1,7 +1,7 @@
 /**
  * @file tkl_cellular_sms.h
  * @author www.tuya.com
- * @brief 蜂窝模组短信API实现接口。
+ * @brief Cellular module SMS API implementation interface.
  *
  * @copyright Copyright (c) tuya.inc 2021
  */
@@ -16,17 +16,17 @@ extern "C" {
 #endif
 
 /**
- * @brief 收发短信时，手机号码最大长度
+ * @brief Maximum length of phone number when sending and receiving SMS
  */
 #define TUYA_SMS_PHONENUM_LEN_MAX    24
 
 /**
- * @brief 短信内容最大长度
+ * @brief Maximum length of SMS content
  */
 #define TUYA_SMS_MSG_LEN_MAX    160
 
 /**
- * @brief 短信内容编码格式
+ * @brief SMS content encoding format
  */
 typedef enum{
     TUYA_SMS_ISO8859_1,
@@ -34,88 +34,88 @@ typedef enum{
     TUYA_SMS_UTF16BE,
     TUYA_SMS_UTF16LE,
     TUYA_SMS_GSM,
-    TUYA_SMS_CP936   //GBK编码
+    TUYA_SMS_CP936   //GBK encoding
 } TUYA_CELLULAR_SMS_ENCODE_E;
 
 /**
- * @brief 发送短信结构体定义
+ * @brief Send SMS structure definition
  */
 typedef struct
 {
-    char phone[TUYA_SMS_PHONENUM_LEN_MAX];  /*< 接收短信的手机号 */
-    uint16_t msg_len;                        /*< 短信长度 */
-    uint16_t msg[TUYA_SMS_MSG_LEN_MAX];     /*< 短信内容 */
+    char phone[TUYA_SMS_PHONENUM_LEN_MAX];  /*< Phone number to receive SMS */
+    uint16_t msg_len;                        /*< SMS length */
+    uint16_t msg[TUYA_SMS_MSG_LEN_MAX];     /*< SMS content */
     TUYA_CELLULAR_SMS_ENCODE_E   sms_encode;
 } TUYA_CELLULAR_SMS_SEND_T;
 
 /**
- * @brief 短信时间戳信息结构体定义
+ * @brief SMS timestamp information structure definition
  */
 typedef struct
 {
-    uint16_t year;  /*< 年 */
-    uint8_t month;  /*< 月 */
-    uint8_t day;    /*< 日 */
-    uint8_t hour;   /*< 时 */
-    uint8_t minute; /*< 分 */
-    uint8_t second; /*< 秒 */
-    uint8_t zone;   /*< 时区 */
+    uint16_t year;  /*< Year */
+    uint8_t month;  /*< Month */
+    uint8_t day;    /*< Day */
+    uint8_t hour;   /*< Hour */
+    uint8_t minute; /*< Minute */
+    uint8_t second; /*< Second */
+    uint8_t zone;   /*< Time zone */
 } TUYA_CELLULAR_SMS_TIMESTAMP_T;
 
 /**
- * @brief 接收短信结构体定义
+ * @brief Receive SMS structure definition
  */
 typedef struct
 {
-    char phone[TUYA_SMS_PHONENUM_LEN_MAX];  /*< 发送短信的手机号码 */
-    TUYA_CELLULAR_SMS_TIMESTAMP_T  date;       /*< 短信接收时间 */
-    int msg_len;                             /*< 短信内容长度 */
-    char msg[TUYA_SMS_MSG_LEN_MAX];          /*< 短信内容 */
+    char phone[TUYA_SMS_PHONENUM_LEN_MAX];  /*< Phone number that sent the SMS */
+    TUYA_CELLULAR_SMS_TIMESTAMP_T  date;       /*< SMS receive time */
+    int msg_len;                             /*< SMS content length */
+    char msg[TUYA_SMS_MSG_LEN_MAX];          /*< SMS content */
 } TUYA_CELLULAR_SMS_RECV_T;
 
 /**
- * @brief 短信接收回调函数接口原型
- * @note 回调函数中不要调用阻塞性函数，msg结构体内存由系统
- *       负责分配和释放。
- * @param simId sim卡ID
- * @param msg 短信结构体
- * @return 无
+ * @brief SMS receive callback function interface prototype
+ * @note Do not call blocking functions in the callback function. The msg structure memory is
+ *       allocated and released by the system.
+ * @param simId SIM card ID
+ * @param msg SMS structure
+ * @return None
  */
 typedef void (*TUYA_CELLULAR_SMS_CB)(uint8_t sim_id, TUYA_CELLULAR_SMS_RECV_T* msg);
 
 /**
- * @brief 发送短信
+ * @brief Send SMS
  *
- * @param simId sim卡ID
- * @param smsMsg 发送的短信
+ * @param simId SIM card ID
+ * @param smsMsg SMS to send
  *
- * @return  0 发送成功 其它 发送失败
+ * @return  0 send success, others send failure
  */
 OPERATE_RET tkl_cellular_sms_send(uint8_t sim_id, TUYA_CELLULAR_SMS_SEND_T* sms_msg);
 
 /**
- * @brief 注册短信接收回调函数
- * @note 该函数需在SIM卡激活前注册，否则可能引起异常或短信丢失。
+ * @brief Register SMS receive callback function
+ * @note This function needs to be registered before SIM card activation, otherwise it may cause exceptions or SMS loss.
  *
- * @param callback 短信接收回调函数
+ * @param callback SMS receive callback function
  *
- * @return  0 注册成功 其它 注册失败
+ * @return  0 registration success, others registration failure
  */
 OPERATE_RET tkl_cellular_sms_recv_cb_register(TUYA_CELLULAR_SMS_CB callback);
 
 /**
- * @brief 设置短信接收时静音
- * @note 默认情况下，收到短信时，会通过扬声器播放提示音。通过该函数，可设置接收
- *       短信时，不播放提示音。
+ * @brief Set SMS receive mute
+ * @note By default, when receiving SMS, a notification sound will be played through the speaker. Through this function, you can set
+ *       to not play notification sound when receiving SMS.
  *
- * @param mute TRUE 静音 FALSE 短信接收时打开提示音
+ * @param mute TRUE mute, FALSE enable notification sound when receiving SMS
  *
- * @return 0 设置成功 其它 设置失败
+ * @return 0 setting success, others setting failure
  */
 OPERATE_RET tkl_cellular_sms_mute(bool mute);
 
 /**
- * 短信内容编码转换
+ * SMS content encoding conversion
  *
  * When \a from_charset or \a to_charset is unknown or unsupported,
  * return NULL.
@@ -143,10 +143,10 @@ void *tkl_cellular_sms_convert_str(const void *from, int from_size,
 
 
 /**
- * @brief 设置短信默认接收短信编码
- * @param chset TUYA_CELLULAR_SMS_ENCODE_E类型
+ * @brief Set default SMS receive encoding
+ * @param chset TUYA_CELLULAR_SMS_ENCODE_E type
  *
- * @return 0 设置成功 其它 设置失败
+ * @return 0 setting success, others setting failure
  */
 OPERATE_RET tkl_cellular_sms_set_charactor(TUYA_CELLULAR_SMS_ENCODE_E chset);
 

@@ -28,14 +28,6 @@
 
 #define MAX_SSL_CLIENT_INSTANCE 12
 
-typedef enum 
-{
-    SSL3_0 = 0,
-    TLS1_0,
-    TLS1_1,
-    TLS1_2,
-    SSL_VERSION_ALL, 
-}sslVersion_e;
     
 typedef enum AT_SSL_ERROR
 {
@@ -126,28 +118,6 @@ typedef struct sslContextTag
     mbedtls_x509_crt          clientCert;
     mbedtls_pk_context        pkContext;
 }sslContext;
-
-typedef struct _sslPTUlDataNode
-{
-    struct _sslPTUlDataNode *next;
-    uint16_t    dataLen;    /*the send raw datalength*/
-    uint8_t*    pData;
-}sslPTUlDataNode;
-
-typedef struct _ssl_list_t
-{
-    struct _ssl_list_t * next;
-} ssl_list_t;
-
-typedef struct sslPTUlPendingList_Tag
-{
-   ssl_list_t *head;
-   ssl_list_t *tail;
-   uint8_t nodeCount;
-   uint8_t maxNodeNum;
-   osMutexId_t mut;
-}sslPTUlPendingList;
-
 
 typedef struct sslClientContextTag
 {

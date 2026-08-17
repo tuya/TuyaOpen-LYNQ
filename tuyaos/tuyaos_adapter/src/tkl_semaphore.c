@@ -12,11 +12,9 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_semaphore.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
-
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_sema][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+#include "vlog.h"
 // --- END: user defines and implements ---
 
 /**

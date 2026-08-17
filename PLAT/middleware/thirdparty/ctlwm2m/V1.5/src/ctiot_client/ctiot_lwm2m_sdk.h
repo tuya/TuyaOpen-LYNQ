@@ -29,7 +29,6 @@ extern "C"
 #define CTIOT_DEFAULT_SERVER_ID 123
 #define CTIOT_DEREG_WAIT_TIME 20000
 #define CTIOT_MAX_PACKET_SIZE 1080
-#define CTIOT_MAX_QUEUE_SIZE 20
 #define CTIOT_THREAD_TIMEOUT 200*1000
 #define CTIOT_MAX_URI_LEN     272
 
@@ -238,25 +237,25 @@ typedef enum
     CTIOT_EB_OTHER = 1,                         //其它错误
     CTIOT_PARAMETER_ERROR = 2,
     CTIOT_OPERATOR_NOT_SUPPORTED = 3,
-    CTIOT_EB_NO_IP  = 4,                  
+    CTIOT_EB_NO_IP  = 4,
     CTIOT_LIFETIME_ERROR = 5,
-    CTIOT_DATA_LENGTH_OVERRRUN = 6,            
-    CTIOT_DATA_LENGTH_NOT_EVEN = 7,        
-    CTIOT_NO_RECV_DATA  = 8,             
-    CTIOT_NO_SET_REG_PARAM = 9,   
-    CTIOT_ALREADY_LOGIN = 10,          
+    CTIOT_DATA_LENGTH_OVERRRUN = 6,
+    CTIOT_DATA_LENGTH_NOT_EVEN = 7,
+    CTIOT_NO_RECV_DATA  = 8,
+    CTIOT_NO_SET_REG_PARAM = 9,
+    CTIOT_ALREADY_LOGIN = 10,
     CTIOT_NO_NETWORK = 11,
-    CTIOT_IN_LOGING = 12, 
+    CTIOT_IN_LOGING = 12,
     CTIOT_NO_SESSION = 13,
-    CTIOT_NO_AUTHSTR = 14,        
-    CTIOT_NOT_LOGIN = 15,           
-    CTIOT_OBJECT_NOT_OBSERVED = 16,      
-    CTIOT_QUEUE_OVERRUN = 17,               
+    CTIOT_NO_AUTHSTR = 14,
+    CTIOT_NOT_LOGIN = 15,
+    CTIOT_OBJECT_NOT_OBSERVED = 16,
+    CTIOT_QUEUE_OVERRUN = 17,
     CTIOT_UPLINK_BUSY = 159,                    //Uplink busy/flow control
     CTIOT_SM9_ERROR = 20,                       //SM9 error
     CTIOT_SM9_NO_SUCH_INDEX_ERROR = 21,         //SM9 no such index
     CTIOT_SM9_INIT_FAIL = 22,                   //SM9 init fail
-    CTIOT_SM9_N0_INIT = 23,                     //SM9 no init 
+    CTIOT_SM9_N0_INIT = 23,                     //SM9 no init
     CTIOT_SM9_ENC_FAIL = 24,                    //SM9 enc fail
     CTIOT_SM9_DEC_FAIL = 25,                    //SM9 dec fail
     CTIOT_SM9_SIGN_FAIL = 26,                   //SM9 sign fail
@@ -269,15 +268,6 @@ typedef struct _ctiot_updata_list
     struct _ctiot_updata_list *next;
     //COAP
     uint16_t  msgid;
-    uint8_t   token[8];
-    uint8_t   tokenLen;
-    ctiot_send_mode_e mode;
-    //LWM2M
-    uint8_t* uri;
-
-    uint8_t *data;
-    size_t datalength;
-    uint8_t   seqnum;
 }ctiot_updata_list_t;
 
 typedef struct _ctiot_recvdata_list
@@ -293,7 +283,7 @@ typedef struct
     //ctiot_funcv1_status_type_e statusType;
     char* baseInfo;
     void* extraInfo;
-}ctiot_funcv1_status_t;
+}ctiot_status_t;
 
 typedef struct
 {
@@ -312,7 +302,7 @@ typedef struct
     ctiot_funcv1_wireless_status_e  cState;
     ctiot_funcv1_signal_level_e     cSignalLevel;
     ctiot_funcv1_ip_type_e          cIptype;
-}ctiot_funcv1_chip_info,*ctiot_funcv1_chip_info_ptr;
+}ctiot_chip_info,*ctiot_chip_info_ptr;
 
 typedef struct
 {
@@ -321,7 +311,7 @@ typedef struct
     int sock;
 #ifdef WITH_MBEDTLS
     mbedtls_connection_t * connList;
-#ifdef  FEATURE_REF_AT_ENABLE
+#ifdef  FEATURE_REF_AT_QR_ENABLE
     uint8_t   handshakeResult;//EC add
     bool      resetHandshake;//EC add
 #endif
@@ -339,13 +329,19 @@ typedef enum{
     AT_TO_MCU_STATUS,
     AT_TO_MCU_QUERY_STATUS,
     AT_TO_MCU_SENDSTATUS,
-#ifdef  FEATURE_REF_AT_ENABLE
+#ifdef  FEATURE_REF_AT_QR_ENABLE
     AT_TO_MCU_QLWEVTIND,
     AT_TO_MCU_NSMI,
     AT_TO_MCU_HSSTATUS
 #endif
 }ctiot_at_to_mcu_type_e;
 
+typedef struct
+{
+    uint16_t hasSent;
+    uint8_t pending;
+    uint8_t error;
+}ctiot_updata_statistics_t;
 
 typedef struct
 {
@@ -355,19 +351,16 @@ typedef struct
 
     /*****************************CLIENT*****************************/
     /*模组信息*/
-    ctiot_funcv1_chip_info_ptr      chipInfo;
+    ctiot_chip_info_ptr      chipInfo;
     ctiot_login_status_e     loginStatus;//登录状态，处理时要注意和lwm2m的state同步
     /*平台参数*/
     char *                   serverIP;
     uint32_t                 port;
-#ifdef  FEATURE_REF_AT_ENABLE
+#ifdef  FEATURE_REF_AT_QR_ENABLE
     char *                   bsServerIP;
     uint32_t                 bsPort;
     char *                   endpoint;
     uint8_t                  dtlsType;
-#else //mbtk change
-    char *                   bsServerIP;
-    char *                   endpoint;
 #endif
 	//bool                     ipReadyRereg;
     char                     localIP[40];
@@ -390,22 +383,20 @@ typedef struct
     uint16_t                 pskLen;
 
     /*上下行list*/
-    ctiot_msg_list_head *      updataList;
     ctiot_msg_list_head *    recvdataList;
 
     /*线程*/
-    bool send_thread_status; //false:no need task; true:need task
-    bool send_thread_run;       //false:task not running; true:task is running
     bool main_thread_status; //false:no need task; true:need task
     bool main_thread_run;       //false:task not running; true:task is running
     uint32_t                      reqhandle;  //EC add
-    
+
     uint8_t                  nnmiFlag;
-#ifdef  FEATURE_REF_AT_ENABLE
+#ifdef  FEATURE_REF_AT_QR_ENABLE
     uint8_t                  nsmiFlag;
     /*con data status*/
     ctiot_funcv1_condata_status_e conDataStatus;
-    uint8_t                       seqNum;    
+    ctiot_updata_statistics_t  updatacount;
+    uint8_t                       seqNum;
 #endif
     uint8_t                  paramRestore;
     char*                    hostRestore;
@@ -422,7 +413,7 @@ void ctiot_notify_event(int code);
 void ctiot_register_ind_handler(ctlwm2m_ind_handler_t callback);
 void ctiot_call_ind(uint32_t reqhandle, char* msg);
 
-ctiot_funcv1_chip_info* ctiot_get_chip_instance(void);
+ctiot_chip_info* ctiot_get_chip_instance(void);
 ctiot_context_t* ctiot_get_context(void);
 void ctiot_notify_ind(ctiot_at_to_mcu_type_e infoType,void* params,uint16_t paramLen );
 void prv_set_uri_option(coap_packet_t* messageP,lwm2m_uri_t* uriP);

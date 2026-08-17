@@ -276,18 +276,15 @@ then
 
 		if [ ${PIPESTATUS[0]} -gt 0 ]
 		then
-			echo "333333333333"
 			failHandle
 		fi
 
-		echo "111111111111111111111111111111111111"
 		./tools/fcelf -T -bin ./gccout/$OUTPUT_NAME/ap/$PROJECT_NAME/ap_$PROJECT_NAME.bin -size AP_PKGIMG_LIMIT_SIZE \
 									-bin ./prebuild/FW/lib/gcc/$CHIP_TYPE/$CPBIN_SUBPATH/cp-demo-flash.bin -size CP_PKGIMG_LIMIT_SIZE \
 									-bin ./openlib/$BUILD_PRO_TARGET/bin/ap_bootloader.bin -size BOOTLOADER_PKGIMG_LIMIT_SIZE \
 									-h ./gccout/$OUTPUT_NAME/ap/$PROJECT_NAME/mem_map.txt
 		if [ $? -ne 0 ]
 		then
-			echo "2222222222222"
 			failHandle
 		fi
 		if [ "$BUILD_HEADBIN" == "true" ]

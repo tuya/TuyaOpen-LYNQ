@@ -281,7 +281,9 @@ typedef enum applSockPrimId_Enum
     APPL_REFCR_MIPSOCKET_DROP_IND,
     APPL_REFCR_MIPSOCKET_UDP_SEQ_IND,    /* reference not do udp seq indicatin now */
     APPL_REFCR_MIPSOCKET_SENDPSTH_DATA_IND,
-
+#ifdef FEATURE_APP_TLS_ENABLE
+    APPL_REFCR_MIPSOCKET_SENDPSTH_SSL_DATA_IND,
+#endif
     APPL_SOCKET_PRIM_MAX = 255
 }ApplSockPrimId;
 
@@ -1429,6 +1431,13 @@ typedef struct AtRefCrKeepalive_Tag
     UINT16 keepInterval;
 }AtRefCrKeepalive;
 
+typedef struct AtRefCrSSL_Tag
+{
+    BOOL  sslEnable;
+    UINT8 sslId;
+    UINT8 rsv[2];
+}AtRefCrSSL;
+
 typedef enum AtRefCrCfgType_Tag
 {
     REF_CR_CFG_CID = 0,
@@ -1438,6 +1447,7 @@ typedef enum AtRefCrCfgType_Tag
     REF_CR_CFG_SENDBUF,
     REF_CR_CFG_RECVBUF,
     REF_CR_CFG_ACKMODE,
+    REF_CR_CFG_SSL,
     REF_CR_CFG_TCP_KEEPALIVE,
 }AtRefCrCfgType;
 
@@ -1462,6 +1472,7 @@ typedef struct AtRefCfgSetReq_Tag
         UINT16 sendBuf;
         UINT16 recvBuf;
         UINT8 ackmode;
+        AtRefCrSSL ssl;
         AtRefCrKeepalive keepalive;
     }u;
 }AtRefCrCfgSetReq;
@@ -1474,10 +1485,10 @@ typedef struct AtRefCrCfgSetRsp_Tag
 
 typedef struct AtRefCrConnState_Tag
 {
-    UINT8 transType;  /* AtRefCrStateTransType */
-    UINT8 state;      /* AtRefCrSockStatus */
-    UINT16 remoteport;
-    ip_addr_t remoteIp;
+    UINT8   transType;  /* AtRefCrStateTransType */
+    UINT8   state;      /* AtRefCrSockStatus */
+    UINT16  remoteport;
+    CHAR    *pRemoteIp;//save remote ip addr, max len = AT_SOC_MAX_REF_URL_IPADDR_LEN
 }AtRefCrConnState;
 
 typedef UINT32 AtRefCrGetStateReq;

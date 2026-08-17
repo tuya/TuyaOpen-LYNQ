@@ -1022,7 +1022,7 @@ int32_t SPI_Send(const void *data, uint32_t num, SPI_RESOURCES *spi)
             */
             if((EIGEN_FLD2VAL(SPI_SR_TX_WL, reg->SR) <= ((SPI_FIFO_DEPTH - 4))) &&
                (info->xfer.tx_cnt < info->xfer.num) &&
-               ((info->xfer.tx_cnt - info->xfer.rx_cnt) < SPI_FIFO_DEPTH))
+               ((info->xfer.tx_cnt - info->xfer.rx_cnt) < (SPI_FIFO_DEPTH - 12)))
             {
                 uint32_t leftToSend = info->xfer.num - info->xfer.tx_cnt;
                 uint32_t wbsr = leftToSend & 0x3;
@@ -1530,7 +1530,7 @@ int32_t SPI_Control(uint32_t control, uint32_t arg, SPI_RESOURCES *spi)
                               EIGEN_VAL2FLD(SPI_DTRCR_WRITE_DEPTH_ONE_BURST, 0x7);
 
             // For rx flow control to get rid of rxfifo overflow
-            spi->reg->TRCR = (spi->reg->TRCR & ~SPI_TRCR_MAS_RX_STOP_LEVEL_Msk) | EIGEN_VAL2FLD(SPI_TRCR_MAS_RX_STOP_LEVEL, SPI_FIFO_DEPTH - 1);
+            spi->reg->TRCR = (spi->reg->TRCR & ~SPI_TRCR_MAS_RX_STOP_LEVEL_Msk) | EIGEN_VAL2FLD(SPI_TRCR_MAS_RX_STOP_LEVEL, SPI_FIFO_DEPTH - 4);
 
             // setup FIFO interrupt trigger level
             if(spi->dma)
@@ -1789,7 +1789,7 @@ void SPI_IRQHandler(SPI_RESOURCES *spi)
     {
         while((EIGEN_FLD2VAL(SPI_SR_TX_WL, reg->SR) <= (SPI_FIFO_DEPTH - 4)) &&
                    (info->xfer.tx_cnt < info->xfer.num) &&
-                   ((info->xfer.tx_cnt - info->xfer.rx_cnt) < SPI_FIFO_DEPTH))
+                   ((info->xfer.tx_cnt - info->xfer.rx_cnt) < (SPI_FIFO_DEPTH - 12)))
         {
             uint32_t leftToSend = info->xfer.num - info->xfer.tx_cnt;
             uint32_t wbsr = leftToSend & 0x3;

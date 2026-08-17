@@ -363,6 +363,10 @@ ifeq ($(BUILD_PLAT_REF_CR_LBS_AT_ENABLE),y)
 CFLAGS += -DFEATURE_PLAT_REF_CR_LBS_AT_ENABLE
 endif
 
+ifeq ($(BUILD_PLAT_REF_CR_FILE_AT_ENABLE),y)
+CFLAGS += -DFEATURE_PLAT_REF_CR_FILE_AT_ENABLE
+endif
+
 ##################################################################################################################
 ##ps general at commands
 ##################################################################################################################

@@ -156,26 +156,18 @@ typedef enum applCmMqttPrimId_Enum
 */
 typedef enum AT_CM_MQTT_ERROR
 {
-    CM_MQTT_PARAM_ERROR = 1,                              /**/
-    CM_MQTT_CREATE_CLIENT_ERROR = 2,                      /**/
-    CM_MQTT_CREATE_SOCK_ERROR = 3,                    /**/
-    CM_MQTT_CONNECT_TCP_FAIL = 4,                         /**/
-    CM_MQTT_CONNECT_MQTT_FAIL = 5,                    /**/
-    CM_MQTT_SUB_FAIL = 6,                                 /**/
-    CM_MQTT_UNSUB_FAIL = 7,                           /**/
-    CM_MQTT_SEND_FAIL = 8,                            /**/
-    CM_MQTT_DELETE_FAIL = 9,                              /**/
-    CM_MQTT_FIND_CLIENT_FAIL = 10,                    /**/
-    CM_MQTT_NOT_SUPPORT = 11,                             /**/
-    CM_MQTT_NOT_CONNECTED = 12,                       /**/
-    CM_MQTT_INFO_FAIL = 13,                           /**/
-    CM_MQTT_NETWORK_FAIL = 14,                        /**/
-    CM_MQTT_PARAM_FAIL = 15,                              /**/
-    CM_MQTT_TASK_FAIL = 16,                         /**/
-    CM_MQTT_RECV_FAIL = 17,
-    CM_MQTT_ALI_ENCRYP_FAIL = 18,
+    CR_MQTT_UNKNOWN_ERROR =  600,                            /**/
+    CR_MQTT_PARAM_ERROR =    601,                            /**/
+    CR_MQTT_CONNECT_ERROR =  602,                      /**/
+    CR_MQTT_CONNECT_ING =    603,                    /**/
+    CR_MQTT_CONNECTED =      604,                         /**/
+    CM_MQTT_NETWORK_ERROR =  605,                    /**/
+    CR_MQTT_STORE_ERROR =    606,                                 /**/
+    CR_MQTT_STATUS_ERROR =   607,                           /**/
+    CM_MQTT_DNS_ERROR =      608,                            /**/
+    CM_MQTT_MAX_ERROR =      649,
 
-}atCmMqttError;
+}atCrMqttError;
 
 
 

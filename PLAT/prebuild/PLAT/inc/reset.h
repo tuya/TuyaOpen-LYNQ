@@ -79,6 +79,21 @@ typedef enum _EPAT_LastResetState_e
 }LastResetState_e;
 
 
+typedef enum
+{
+    POR_STATUS_PWRKEY_STATUS=0,
+    POR_STATUS_PAD_RST = 6,
+    POR_STATUS_AWDG_RST = 7,
+    POR_STATUS_APSW_RST = 8,
+    POR_STATUS_APWDG_RST = 9,
+    POR_STATUS_APLOCK_RST = 10,
+    POR_STATUS_APEXT_RST = 11,
+    POR_STATUS_CPSW_RST = 12,
+    POR_STATUS_CPWDG_RST = 13,
+    POR_STATUS_CPLOCK_RST = 14,
+    POR_STATUS_CPEXT_RST = 15,
+}ResetPorStatus_e;
+
 /*----------------------------------------------------------------------------*
  *                    GLOBAL FUNCTIONS DECLEARATION                           *
  *----------------------------------------------------------------------------*/

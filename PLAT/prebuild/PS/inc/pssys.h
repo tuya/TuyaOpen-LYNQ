@@ -85,7 +85,7 @@
 #define      PS_ENABLE_WIFISCAN_FEATURE             /* 716S iotat, enable WIFISCAN feature */
 #define      PS_ENABLE_UICC_USAT_FEATURE            /* 716S iotat, enable SIM STK feature */
 #define      PS_ENABLE_RLC_UM_FEATURE               /* 716S iotat, enable RLC UM feature */
-#define      PS_ENABLE_MDT_FEATURE                  /* 716S iotat, enable RlfReport/MDT/ConnEstFailReport feature, suggest synchronous disable PS_ENABLE_MDT_ASN1_FEATURE. */
+#undef       PS_ENABLE_MDT_FEATURE                  /* 716S iotat, disable RlfReport/MDT/ConnEstFailReport feature, suggest synchronous disable PS_ENABLE_MDT_ASN1_FEATURE. */
 
 #undef       PS_ENABLE_CMAS_ETWS_FEATURE            /* 716S iotat, disable CMAS & ETWS feature */
 #undef       PS_ENABLE_MODIFY_AND_DEDICATED_BR_FEATURE   /* 716S iotat, disable dedicated BR operation feature. */

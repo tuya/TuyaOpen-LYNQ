@@ -1,7 +1,7 @@
 /**
  * @file tkl_cellular_keypad.h
  * @author www.tuya.com
- * @brief 蜂窝模组键盘功能API实现接口。
+ * @brief Cellular module keypad function API implementation interface.
  *
  * @copyright Copyright (c) tuya.inc 2022
  */

@@ -77,7 +77,7 @@ typedef enum atecMoSmsType_enum
 #define ATC_CSCA_0_ADDR_STR_DEFAULT             NULL
 #define ATC_CSCA_1_TYPE_VAL_MIN                 0
 #define ATC_CSCA_1_TYPE_VAL_MAX                 255
-#define ATC_CSCA_1_TYPE_VAL_DEFAULT             PSIL_SMS_TOA_NUMBER_INTERNATIONAL
+#define ATC_CSCA_1_TYPE_VAL_DEFAULT             PSIL_SMS_TOA_NUMBER_UNKNOWN
 
 /* AT+CNMI */
 #define ATC_CNMI_0_MODE_VAL_MIN                 0
@@ -219,6 +219,15 @@ typedef enum atecMoSmsType_enum
 #define ATC_ECSMSSEND_0_MODE_VAL_MIN            0
 #define ATC_ECSMSSEND_0_MODE_VAL_MAX            1
 #define ATC_ECSMSSEND_0_MODE_VAL_DEFAULT        0
+#define ATC_ECSMSSEND_4_MSG_REF_VAL_MIN         0
+#define ATC_ECSMSSEND_4_MSG_REF_VAL_MAX         255
+#define ATC_ECSMSSEND_4_MSG_REF_VAL_DEFAULT     0
+#define ATC_ECSMSSEND_5_MSG_MAX_VAL_MIN         2
+#define ATC_ECSMSSEND_5_MSG_MAX_VAL_MAX         255
+#define ATC_ECSMSSEND_5_MSG_MAX_VAL_DEFAULT     2
+#define ATC_ECSMSSEND_6_MSG_SEQ_VAL_MIN         1
+#define ATC_ECSMSSEND_6_MSG_SEQ_VAL_MAX         255
+#define ATC_ECSMSSEND_6_MSG_SEQ_VAL_DEFAULT     1
 
 /* AT+CSCB */
 #define ATC_CSCB_0_MODE_VAL_MIN                 0
@@ -227,25 +236,25 @@ typedef enum atecMoSmsType_enum
 #define ATC_CSCB_STR_LEN                        100
 
 /* AT+ECCMGS */
-#define ATC_ECCMGS_2_MSG_ID_VAL_MIN                 0
-#define ATC_ECCMGS_2_MSG_ID_VAL_MAX                 255
-#define ATC_ECCMGS_2_MSG_ID_VAL_DEFAULT             0
-#define ATC_ECCMGS_3_MSG_PARTS_VAL_MIN              0
-#define ATC_ECCMGS_3_MSG_PARTS_VAL_MAX              255
-#define ATC_ECCMGS_3_MSG_PARTS_VAL_DEFAULT          0
-#define ATC_ECCMGS_4_MSG_PART_NUM_VAL_MIN           0
-#define ATC_ECCMGS_4_MSG_PART_NUM_VAL_MAX           255
-#define ATC_ECCMGS_4_MSG_PART_NUM_VAL_DEFAULT       0
+#define ATC_ECCMGS_2_MSG_REF_VAL_MIN            0
+#define ATC_ECCMGS_2_MSG_REF_VAL_MAX            255
+#define ATC_ECCMGS_2_MSG_REF_VAL_DEFAULT        0
+#define ATC_ECCMGS_3_MSG_MAX_VAL_MIN            0
+#define ATC_ECCMGS_3_MSG_MAX_VAL_MAX            255
+#define ATC_ECCMGS_3_MSG_MAX_VAL_DEFAULT        0
+#define ATC_ECCMGS_4_MSG_SEQ_VAL_MIN            0
+#define ATC_ECCMGS_4_MSG_SEQ_VAL_MAX            255
+#define ATC_ECCMGS_4_MSG_SEQ_VAL_DEFAULT        0
 
 #define CONCAT_SMS_MAX_BUFFER_SIZE              5
-#define CONCAT_SMS_BUFFER_GARD_TIMER_SEC        600     /* 600 second */
+#define CONCAT_SMS_BUFFER_GARD_TIMER_SEC        600 /* 600 second */
 
-#define ATC_SMS_CONCAT_SMS_TIMER_ID                 0
-#define ATC_SMS_MT_SMS_ACK_TIMER_ID                 1
-#define ATC_SMS_SMMA_DELAY_TIMER_ID                 2
+#define ATC_SMS_CONCAT_SMS_TIMER_ID             0
+#define ATC_SMS_MT_SMS_ACK_TIMER_ID             1
+#define ATC_SMS_SMMA_DELAY_TIMER_ID             2
 
-#define ATC_SMS_MT_SMS_ACK_TIMER_SEC                17  /* 17 second */
-#define ATC_SMS_SMMA_DELAY_TIMER_SEC                10  /* 10 second */
+#define ATC_SMS_MT_SMS_ACK_TIMER_SEC            17  /* 17 second */
+#define ATC_SMS_SMMA_DELAY_TIMER_SEC            10  /* 10 second */
 
 typedef enum ConcatSmsReportMode_enum
 {

@@ -33,6 +33,7 @@
 #define CR_MQTT_ID_DEFAULT            0xff
 #define CR_MQTT_CLOUD_DEFAULT         0xff
 #define CR_MQTT_TCP_ID_DEFAULT        0xff
+#define CR_MQTT_PDP_ID_DEFAULT        1
 
 #define CR_MQTT_CMD_TIMEOUT_DEFAULT        10000
 #define CR_MQTT_CMD_TIMEOUT_TX_DEFAULT        2
@@ -40,7 +41,7 @@
 
 #define CR_MQTT_KEEPALIVE_DEFAULT        120
 
-#define CR_MQTT_TX_BUF_DEFAULT        (4+128+1024)    /*header+topic+payload*/
+#define CR_MQTT_TX_BUF_DEFAULT        (4+128+6*1024)    /*header+topic+payload*/
 #define CR_MQTT_RX_BUF_DEFAULT        (4+128+1024)    /*header+topic+payload*/
 
 #define CR_MQTT_PORT_DEFAULT        1883
@@ -54,7 +55,7 @@
 
 #define CR_MQTT_TAG_LEN          8
 #define CM_KEEPALIVE_RETRY_MAX    6
-#define CR_MQTT_RECONN_MAX       6
+#define CR_MQTT_RECONN_MAX       0
 
 #define ALI_DYNAMIC_REGISTER_IS_NOT_USED       0
 #define ALI_DYNAMIC_REGISTER_IS_USED           1
@@ -346,6 +347,8 @@ typedef struct
     int ret;    
     int conn_ret_code;
     int sub_ret_value;
+    char sub_ret_qos[4];
+    int sub_ret_qos_count;
     int pub_ret_value;
     int indType;
     int outputDataFormat;
@@ -401,23 +404,26 @@ typedef struct
     UINT16 echomode;
     UINT16 send_data_format;
     UINT16 recv_data_format;
-    UINT16 keepalive;
+    UINT32 keepalive;
     UINT16 keepaliveAckMode;
     UINT16 session;
-    INT32 timeout;
     INT32 version;
     INT32 pkt_timeout;
-    INT32 retry_time;
-    INT32 timeout_notice;
+    CHAR subCountQos[4];
+    INT32 subCountMax;
+    INT32 subCountCurr;
     ali_auth aliAuth;
     UINT32 retransInterval;
     UINT32 retransTimes;
+    INT32  retransTimesCurr;
+    
     UINT16 inputFormat;
     UINT16 outputFormat;
     UINT32 reconnTimes;
     UINT32 reconnInterval;
     UINT32 reconnMode;
-    UINT32 pdp;
+    UINT32 reconnTimesCurr;
+    UINT32 pdpId;
     
     CHAR *sub_topic;
     CHAR *unsub_topic;
@@ -483,6 +489,12 @@ int crMqttClientUnsub(UINT32 reqHandle, int tcpId, char *mqttSubTopic);
 int crMqttClientPub(UINT32 reqHandle, int tcpId, int dup, int qos, int retained, int pubMode, char *mqttPubTopic, int msgLen, char *mqttMessage, int rai);
 int crMqttClientRead(UINT32 reqHandle, int tcpId, int msgCount);
 int crMqttClientState(UINT32 reqHandle, int tcpId, int *state);
+int crMqttReconnectTimerCreate(int tcpId);
+int crMqttReconnectTimerDelete(int tcpId);
+int crMqttReTransTimerCreate(crMqttSendMsg_T *mqttMsg);
+int crMqttReTransTimerDelete(int tcpId);
+int *crMqttReTransTimerDataGet(int tcp_id);
+crMqttContext_T *crMqttCreateContext(int tcpId, char *mqttUri, int mqttPort, int txBufLen, int rxBufLen, int mode);
 
 int crMqttRecvTaskInit(crMqttContext_T *mqttContext);
 int crMqttCycle(crMqttContext_T* context, Timer* timer);

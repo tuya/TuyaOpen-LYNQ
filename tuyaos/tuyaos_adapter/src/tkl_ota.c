@@ -12,14 +12,12 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_ota.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
 #include "osasys.h"
 #include "ol_fota_api.h"
+#include "vlog.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_ota][DBG%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_ota][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 
 static unsigned int offset = 0;
 

@@ -221,7 +221,9 @@ typedef enum AtResultCode_Tag
     AT_RC_AUDIOAMR_ERROR,
     AT_RC_CODECHANDLE_ERR,
     AT_RC_MHTTP_ERROR,           //Timer will Stop, +CME ERROR
-    AT_RC_REF_CR_FOTA_ERROR
+    AT_RC_REF_CR_FOTA_ERROR,
+    AT_RC_MSSL_ERROR,            //Timer will Stop, +CME ERROR
+    AT_RC_CR_MQTT_ERROR,            //Timer will Stop, +CME ERROR
 }AtResultCode;
 
 

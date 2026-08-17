@@ -29,14 +29,6 @@
 #pragma anon_unions
 #endif
 
-#if (defined CHIP_EC618) || (defined TYPE_EC718H) || (defined TYPE_EC718V)
-// the size of rf calibration table is 100K bytes.
-#define RF_CALI_TABLE_SIZE_100K
-#else  // EC618S, EC718S
-// the size of rf calibration table is 50K bytes.
-#define RF_CALI_TABLE_SIZE_50K
-#endif
-
 /*********************************************************************************
 * Defines
 *********************************************************************************/
@@ -107,12 +99,6 @@
 #define FCALI_APC_ONEBAND_TABLE_SIZE         ((FCALI_FREQ_MAX_NUM/2)+(FCALI_FREQ_MAX_NUM*(3+FCALI_APC_FREQCMPST_POINTS_MAX_NUM))+(FCALI_POWER_SWP_MAX_NUM*2)+(FCALI_APC_CENTRA_CMDS_MAX_NUM*2))
 #define NV_HEADER_SIZE                       32
 #define SELFCALI_TABLE_MAX_DATA_SIZE         (8*1024 - NV_HEADER_SIZE)
-#ifdef RF_CALI_TABLE_SIZE_100K
-#define FCALI_TABLE_MAX_DATA_SIZE            (60*1024 - NV_HEADER_SIZE)
-#else
-#define FCALI_TABLE_MAX_DATA_SIZE            (24*1024 - NV_HEADER_SIZE)
-#endif
-
 
 //#define FPGA_DEBUG_ADI
 
@@ -177,6 +163,7 @@ enum
     RF_FCCALI_TABLE_NoClear_Start = 10,
     RF_FCCALI_TABLE_COMPRESS_BACKUP = 11,
     RF_FCCALI_TABLE_EXTENDTABLE = 12,
+    RF_FCCALI_TABLE_OFFLINE = 13,
 };
 
 // EC+ECRFTEST command Index
@@ -334,6 +321,5 @@ void atRfNstRspDebug(INT32 chanId);
 BOOL RfOpenApiDcdcVpaCfg (UINT8 ena, UINT8 voltage);
 void RfCmiReqNoAt(UINT16 primId, UINT16 primSize, void *primBody);
 BOOL RfOpenApiLdoFemVbatCfg (UINT8 ena);
-
 #endif
 

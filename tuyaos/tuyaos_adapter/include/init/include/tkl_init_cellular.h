@@ -24,9 +24,9 @@ extern "C" {
 #endif
 
 /**
- * @brief 蜂窝模组基础服务API接口定义
- * TAL在实现tkl_CellularSvcIntf_t接口后，需要调用tal_cellular_mds_register
- * 把实现的对象注册到tkl中
+ * @brief Cellular module basic service API interface definition
+ * After TAL implements the tkl_CellularSvcIntf_t interface, it needs to call tal_cellular_mds_register
+ * to register the implemented object to tkl
  */
 typedef struct {
     OPERATE_RET (*base_init)(TKL_CELL_INIT_PARAM_T *param);
@@ -67,7 +67,7 @@ typedef struct {
 TKL_CELL_BASE_INTF_T *tkl_cellular_base_desc_get();
 
 /**
- * @brief 蜂窝模组电话拨号API接口定义
+ * @brief Cellular module phone dialing API interface definition
  */
 typedef struct {
     OPERATE_RET (*call_service_available)(uint8_t sim_id, bool *enable);
@@ -97,9 +97,9 @@ typedef struct {
 TKL_CELL_CALL_INTF_T *tkl_cellular_call_desc_get();
 
 /**
- * @brief 蜂窝模组数据服务API接口定义
- * TAL在实现tkl_cellular_mds_intf_t接口后，需要调用tal_cellular_mds_register
- * 把实现的对象注册到tkl中
+ * @brief Cellular module data service API interface definition
+ * After TAL implements the tkl_cellular_mds_intf_t interface, it needs to call tal_cellular_mds_register
+ * to register the implemented object to tkl
  */
 typedef struct {
     OPERATE_RET (*mds_init)(uint8_t sim_id);
@@ -121,7 +121,7 @@ typedef struct {
 TKL_CELL_MDS_INTF_T *tkl_cellular_mds_desc_get();
 
 /**
- * @brief 蜂窝模组短信功能API接口定义
+ * @brief Cellular module SMS function API interface definition
  */
 typedef struct {
     OPERATE_RET (*send)(uint8_t sim_id, TUYA_CELLULAR_SMS_SEND_T *msg);
@@ -139,7 +139,7 @@ typedef struct {
 TKL_CELL_SMS_INTF_T *tkl_cellular_sms_desc_get();
 
 /**
- * @brief 蜂窝模组电池API接口定义
+ * @brief Cellular module battery API interface definition
  */
 typedef struct {
     OPERATE_RET (*get_rsoc)(uint8_t *rsoc);
@@ -159,7 +159,7 @@ typedef struct {
 TKL_CELL_VBAT_INTF_T *tkl_cellular_vbat_desc_get();
 
 /**
- * @brief 蜂窝模组音频接口
+ * @brief Cellular module audio interface
  */
 typedef struct {
     OPERATE_RET (*init)(void *param);

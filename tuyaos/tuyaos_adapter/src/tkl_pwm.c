@@ -12,14 +12,12 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_pwm.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
+#include "vlog.h"
 
 #include "ol_pwm_api.h"
 #include "ol_gpio_api.h"
 
 #define PWM_NUM 5
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_pwm[DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_pwm[ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 
 typedef struct{
     int mbtk_pin;

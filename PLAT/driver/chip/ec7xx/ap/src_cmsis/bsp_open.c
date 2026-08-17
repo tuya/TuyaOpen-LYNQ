@@ -50,9 +50,9 @@ ARM_DRIVER_USART* Mbtk_Get_Driver_USARTx(int dev_id)
     else if(1 == dev_id)
     {
         #if (RTE_UART1)
-		// tuya, uart1 can be used in sleepmode with 9600 baudrate
-        // extern ARM_DRIVER_USART Driver_LPUSART1;
-        return &Driver_USART1;
+		// tuya use lpusart1, it can be wakeup at 9600 if it is in lowpower mode
+        extern ARM_DRIVER_USART Driver_LPUSART1;
+        return &Driver_LPUSART1;
         #endif
     }
     else if(2 == dev_id)

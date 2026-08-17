@@ -36,13 +36,13 @@ typedef enum
 
 typedef struct _smTemplate
 {
-    struct _smTemplate *next;    
+    struct _smTemplate *next;
     uint8_t id;
 } sm9Template_t;
 
 typedef struct _ct_sm9_context
 {
-    struct _ct_sm9_context *next;    
+    struct _ct_sm9_context *next;
     uint8_t  index;
     uint8_t  valid;  //0:not valid;1:valid. bit0:param; bit1:encryptKey; bit2:signkey; bit3:be inited
     uint16_t paramLen;
@@ -84,7 +84,6 @@ void ctiot_set_nnmi_mode(uint8_t type);
 void ctiot_get_nnmi_mode(uint8_t* type);
 uint16_t ctiot_get_recvData(uint16_t* datalen, uint8_t** dataStr);
 bool ctiot_match_uri(lwm2m_uri_t uriC,lwm2m_uri_t targetUri);
-void ctiot_update_sendOption(coap_packet_t* messageP,ctiot_updata_list_t* dataP);
 void ctiot_send_message(ctiot_context_t* pContext,coap_packet_t* message,void* sessionH);
 void ctiot_send_message_con(lwm2m_transaction_t* transacP, void * message);
 
@@ -96,7 +95,7 @@ uint16_t ctiot_check_dereg_condition(void);
 void ctiot_to_dereg(void);
 void ctiot_dereg_done(void);
 uint16_t ctiot_update(void);
-uint16_t ctiot_send(char* data,ctiot_send_mode_e sendMode, UINT8 seqNum);
+uint16_t ctiot_send(char* sendData, ctiot_send_mode_e sendMode, UINT8 seqNum, uint16_t* pMsgid);
 
 void ctiot_init_sleep_handler(void);
 void ctiot_disable_sleepmode(void);
@@ -105,7 +104,7 @@ void ctiot_clear_session(BOOL inMainThread);
 
 void ct_send_loop_callback(ctiot_context_t* pContext);
 
-#ifdef  FEATURE_REF_AT_ENABLE
+#ifdef  FEATURE_REF_AT_QR_ENABLE
 uint16_t ctiot_set_regswt_mode(uint8_t type);
 uint16_t ctiot_get_regswt_mode(uint8_t* type);
 uint16_t ctiot_get_bs_server(char* serverIP,uint16_t* port);

@@ -52,6 +52,9 @@
 #include "osasys.h"
 #endif
 
+#if defined(FEATURE_PS_TCPIP_ECSOCK_SKTSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_QR_TCPIP_QSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_CR_TCPIP_SOCK_AT_ENABLE)
+#include "cms_sock_mgr.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,6 +188,14 @@ typedef enum sockimsdatatype
                                             */
     SOCK_DATA_IMS_DATA_TYPE_MAX     = SOCK_DATA_IMS_OTHERS,
 }sockimsdatatype_t;
+
+typedef enum cms_dl_buf_flag
+{
+    CMS_DL_BUF_DLFC_PREFER          = 0,
+    CMS_DL_BUF_DLFC_ONLY            = 1,
+    CMS_DL_BUF_DLCACHE_ONLY         = 2,
+}cms_dl_buf_flag_t;
+
 
 
 /* Socket protocol types (TCP/UDP/RAW) */
@@ -727,8 +738,11 @@ void lwip_udp_local_sendto_isr(void *data, u16_t size, u16_t toPort, lwip_free_m
 */
 void lwip_udp_local_int_sendto_isr(int value, u16_t size, u16_t toPort);
 
+
+#if defined(FEATURE_PS_TCPIP_ECSOCK_SKTSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_QR_TCPIP_QSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_CR_TCPIP_SOCK_AT_ENABLE)
 int lwip_erecvfrom(int s, void **mem, size_t len, int flags,
               struct sockaddr *from, socklen_t *fromlen);
+#endif
 
 
 #endif
@@ -775,6 +789,14 @@ lwip_socket_expect_withpsstartchk(int domain, int type, int protocol, int expect
 #if ENABLE_PSIF
 #define erecvfrom(s,mem,len,flags,from,fromlen)    lwip_erecvfrom(s,mem,len,flags,from,fromlen)
 #endif
+
+#if defined(FEATURE_PS_TCPIP_ECSOCK_SKTSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_QR_TCPIP_QSOCK_AT_ENABLE) || defined(FEATURE_PS_REF_CR_TCPIP_SOCK_AT_ENABLE)
+
+int lwip_cmsrecvfrom(int s, DlPduBlock **pp_dlpdu, CmsSockDlBufContext **pp_dlbuf, size_t len, int flags,
+              struct sockaddr *from, socklen_t *fromlen, cms_dl_buf_flag_t buf_flag); // buf_flag-->cms_dl_buf_flag_t
+#endif
+
+
 
 
 #if ENABLE_PSIF

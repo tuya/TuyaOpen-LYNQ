@@ -30,6 +30,7 @@
 
 // I2C0 (Inter-integrated Circuit Interface) [Driver_I2C0]
 // Configuration settings for Driver_I2C0 in component ::Drivers:I2C
+// tuya
 #define RTE_I2C0                        1
 
 // { PAD_PIN30},  // 0 : gpio15  / 2: I2C0_SCL
@@ -42,6 +43,7 @@
 
 // I2C1 (Inter-integrated Circuit Interface) [Driver_I2C1]
 // Configuration settings for Driver_I2C1 in component ::Drivers:I2C
+// tuya
 #define RTE_I2C1                        1
 
 // { PAD_PIN20},  // 0 : gpio5  / 2 : I2C1 SCL
@@ -148,6 +150,7 @@
 
 // UART2 (Universal asynchronous receiver transmitter) [Driver_USART2]
 // Configuration settings for Driver_USART2 in component ::Drivers:USART
+// tuya
 #define RTE_UART2                       1
 
 // { PAD_PIN25},  // 0 : gpio10  / 3 : UART2 RXD
@@ -169,6 +172,7 @@
 
 // SPI0 (Serial Peripheral Interface) [Driver_SPI0]
 // Configuration settings for Driver_SPI0 in component ::Drivers:SPI
+// tuya
 #define RTE_SPI0                        0
 
 #if defined CHIP_EC718
@@ -480,6 +484,7 @@ static configuration for USB/UART relatded feature
 // All the I2S's parameters that need user to set are all put here
 //////////////////////////////////////////////////////////////////////////////////////////////
 // I2S0 Configuration
+// tuya
 #define RTE_I2S0                        0
 
 #define RTE_I2S0_MCLK_PAD_ADDR          39

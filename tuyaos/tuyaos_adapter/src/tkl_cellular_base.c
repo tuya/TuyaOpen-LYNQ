@@ -232,6 +232,12 @@ OPERATE_RET tkl_cellular_base_enable_sim_hotplug(uint8_t sim_id, bool enable)
     // --- END: user implements ---
 }
 
+
+bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id)
+{
+    return (simcard_hotplug_enable == 0) ? false : true;
+}
+
 /**
  * @brief 获取SIM卡的状态
  * @param simId sim卡ID
@@ -681,6 +687,13 @@ OPERATE_RET tkl_cellular_base_ioctl(int cmd,void* argv)
     }
     return ret;  
     // --- END: user implements ---
+}
+
+static bool usb_at_enabled = true;
+// 返回0 关闭usb at命令功能，返回1打开usb at命令功能
+int mbtk_get_atcmd_flag(void)
+{
+    return usb_at_enabled;
 }
 
 // --- BEGIN: user defines and implements ---

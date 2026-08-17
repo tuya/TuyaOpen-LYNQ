@@ -12,18 +12,18 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_cellular_comm.h"
 #include "tkl_cellular_base.h"
-#include "tkl_output.h"
+
 
 #if !defined(ENABLE_CELLULAR_PLUGIN) || ENABLE_CELLULAR_PLUGIN == 0
 
-#include "cms_api.h"
+#include "osasys.h"
+#include "cmsis_os2.h"
 #include "ps_lib_api.h"
+#include "ol_open_api.h"
+#include "ol_nw_api.h"
 #include "ol_time_api.h"
-#include "ol_sys_api.h"
-#include "hal_pwrkey.h"
-
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_cell_comm][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_cell_comm][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+#include "ol_at_api.h"
+#include "vlog.h"
 
 static void tuya_cniot_get_sysfw_info(char fw_name[64], char fw_ver[11])
 {
@@ -334,30 +334,6 @@ OPERATE_RET tkl_cellular_comm_set_plmn(char *plmn)
 	}
     return OPRT_OK;
     // --- END: user implements ---
-}
-
-/**
- * @brief 设置RRC connect切换到idle的延迟时间
- * @param time 单位秒。
- * @return OPERATE_RET 类型，0 表示成功，其他值表示失败
- */
-OPERATE_RET tkl_cellular_comm_set_rrc_release_time(uint32_t time)
-{
-    // --- BEGIN: user implements ---
-    return OPRT_NOT_SUPPORTED;
-    // --- END: user implements ---       
-}
-
-/**
- * @brief 获取当前设备RRC connect切换到idle的延迟时间
- * @param time 单位秒。
- * @return OPERATE_RET 类型，0 表示成功，其他值表示失败
- */
-OPERATE_RET tkl_cellular_comm_get_rrc_release_time(uint32_t *time)
-{
-    // --- BEGIN: user implements ---
-    return OPRT_NOT_SUPPORTED;
-    // --- END: user implements ---    
 }
 
 /**

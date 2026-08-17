@@ -14,6 +14,10 @@
 #ifndef __EC_XOTA_API_H__
 #define __EC_XOTA_API_H__
 
+#include <stdint.h>
+
+#define XOTA_URC_BUF_MAXLEN         128
+
 //errno
 typedef enum
 {
@@ -83,5 +87,17 @@ typedef enum
             referr = xerr;/* keep the same! */\
         }\
 
+typedef struct
+{
+    char* url;
+    char* user;
+    char* passwd;
+    uint32_t packetSize;
+    uint8_t sslId;
+    uint8_t timeout;
+} AtXotaDownloadReq_t;
+
+
 #endif
+
 

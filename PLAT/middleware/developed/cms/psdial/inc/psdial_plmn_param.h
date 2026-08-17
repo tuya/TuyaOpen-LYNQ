@@ -575,6 +575,7 @@ typedef enum {
     OPER_ID_INDOSAT_0540,
     OPER_ID_AXIS_0541,
     OPER_ID_TELKOMSEL_0542,
+    OPER_CN_CBN_0543,
 
     OPER_MAX_NUM = 2047
 }OperatorId;

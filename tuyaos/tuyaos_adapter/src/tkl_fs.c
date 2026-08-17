@@ -12,15 +12,15 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_fs.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "osasys.h"
 #include "cmsis_os2.h"
 #include "ol_fs_api.h"
+#include "vlog.h"
 #include "lfs_port.h"
 
-#define LOGD(fmt, ...) tkl_log_output("[tkl_fs][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...) tkl_log_output("[tkl_fs][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+#undef LOGD
+#define LOGD(fmt, ...) 
 
 typedef struct
 {
@@ -286,6 +286,8 @@ TUYA_FILE tkl_fopen(const char *path, const char *mode)
         LOGD("tkl_fopen failed, path: %s, file: %s, mode: %s", path, file, mode);
         return NULL;
     }
+
+    LOGD("tkl_fopen succ, path: %s, file: %s, mode: %s", path, file, mode);
     return fp;
     // --- END: user implements ---
 }
@@ -303,8 +305,8 @@ int tkl_fclose(TUYA_FILE file)
 {
     // --- BEGIN: user implements ---
     int ret = ol_fs_close(file);
-    if(ret)
-        LOGD("tkl_fclose, %d", ret);
+
+    LOGD("tkl_fclose, %d", ret);
     return (0 == ret) ? OPRT_OK : OPRT_COM_ERROR;
     // --- END: user implements ---
 }
@@ -392,7 +394,7 @@ int tkl_fsync(int fd)
 char *tkl_fgets(char *buf, int len, TUYA_FILE file)
 {
     // --- BEGIN: user implements ---
-    LOGE("tkl_fgets not support");
+    LOGD("tkl_fgets not support");
     return NULL;
     // --- END: user implements ---
 }
@@ -468,6 +470,7 @@ int tkl_fgetsize(const char *filepath)
     }
     int size = ol_fs_size(fp);
     tkl_fclose(fp);
+    LOGD("tkl_fgetsize succ: %s", filepath);
     return size;
     // --- END: user implements ---
 }
@@ -573,7 +576,7 @@ int tkl_ftruncate(int fd, uint64_t length)
     TUYA_FILE fp = (TUYA_FILE)fd;
     ty_fs* hd = (ty_fs*)fp;
     lfs_file_t* lfs_ptr = (lfs_file_t*)hd->lfs_ptr;
-    LOGD("tkl_ftruncate name = %s",lfs_ptr->name);
+    LOGE("tkl_ftruncate name = %s",lfs_ptr->name);
     return LFS_fileTruncate(lfs_ptr, length);
     // --- END: user implements ---
 }

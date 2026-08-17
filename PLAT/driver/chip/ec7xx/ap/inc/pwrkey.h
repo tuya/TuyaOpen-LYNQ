@@ -87,7 +87,8 @@ typedef struct
     pwrKeyCallback_t pwrKeyCallback;
     pwrKeyPressStatus curStatus;
     pwrKeyPressStatus keyBuf[KEY_BUF_SIZE];
-    uint8_t bufOffset;
+    uint8_t inOffset;
+    uint8_t outOffset;
 }pwrKeyInfo_t;
 
 
@@ -101,17 +102,17 @@ typedef struct
 * @param pwrKeyInfo
    @param status
 
-* @return null
+* @return false: list full, nothing push in
 */
-void pwrKeyPushKey(pwrKeyInfo_t *pwrKeyInfo, pwrKeyPressStatus status);
+bool pwrKeyPushKey(pwrKeyInfo_t *pwrKeyInfo, pwrKeyPressStatus status);
 /**
 * @brief pwrKeyPopKey
 * @details pop a key from power key buffer and return the key status
 *
 * @param pwrKeyInfo
-* @return null
+* @return false: list empty, nothing pop out
 */
-pwrKeyPressStatus pwrKeyPopKey(pwrKeyInfo_t *pwrKeyInfo);
+bool pwrKeyPopKey(pwrKeyInfo_t *pwrKeyInfo, pwrKeyPressStatus *status);
 /**
 * @brief pwrKeyStartPowerOff
 * @details force to enter power off status

@@ -1,7 +1,7 @@
 /**
  * @file tkl_cellular_call.h
  * @author www.tuya.com
- * @brief 蜂窝模组电话拨号API实现接口。
+ * @brief Cellular module phone dialing API implementation interface.
  *
  * @copyright Copyright (c) tuya.inc 2021
  */
@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 /**
- * 信号音类型定义
+ * Tone type definition
  */
 typedef enum
 {
@@ -39,25 +39,25 @@ typedef enum
 } TUYA_TONE_TYPE_E;
 
 /**
- * @brief 电话号码最大长度
- * @note 电话号码为字符串形式，该长度包含'\0'字符。
+ * @brief Maximum length of phone number
+ * @note The phone number is in string format, this length includes the '\0' character.
  */
 #define TKL_CELLULAR_CALLNUM_LEN_MAX  24
 
 /**
- * @brief 呼叫回调状态
+ * @brief Call callback status
  */
 typedef enum
 {
-    TUYA_CALL_IND_CALLIN = 1,       /*< 呼入指示 */
-    TUYA_CALL_IND_RELEASE,          /*< 呼叫释放指示 */
-    TUYA_CALL_IND_CALL_RSP_OK,      /*< 呼出应答成功指示 */
-    TUYA_CALL_IND_CALL_RSP_FAIL,    /*< 呼出应答失败指示 */
-    TUYA_CALL_IND_RING,             /*< 呼出对方振铃指示 */
-    TUYA_CALL_IND_ACCEPT_CALL_OK,   /*< 呼入应答响应成功指示 */
-    TUYA_CALL_IND_ACCEPT_CALL_FAIL, /*< 呼入应答响应失败指示 */
-    TUYA_CALL_IND_RELEASE_RSP,      /*< 呼叫释放响应指示 */
-    TUYA_CALL_IND_DTMF_KEY,         /*< 获取收到的DTMF对应的键值*/
+    TUYA_CALL_IND_CALLIN = 1,       /*< Incoming call indication */
+    TUYA_CALL_IND_RELEASE,          /*< Call release indication */
+    TUYA_CALL_IND_CALL_RSP_OK,      /*< Outgoing call response success indication */
+    TUYA_CALL_IND_CALL_RSP_FAIL,    /*< Outgoing call response failure indication */
+    TUYA_CALL_IND_RING,             /*< Outgoing call ringing indication */
+    TUYA_CALL_IND_ACCEPT_CALL_OK,   /*< Incoming call answer response success indication */
+    TUYA_CALL_IND_ACCEPT_CALL_FAIL, /*< Incoming call answer response failure indication */
+    TUYA_CALL_IND_RELEASE_RSP,      /*< Call release response indication */
+    TUYA_CALL_IND_DTMF_KEY,         /*< Get the key value corresponding to the received DTMF*/
     TUYA_CALL_IND_MAX
 } TUYA_CELLULAR_CALL_IND_STATE_E;
 
@@ -69,153 +69,153 @@ typedef enum {
 }TUYA_CELLULAR_CALL_IOCTL_CMD_E;
 
 /**
- * @brief 呼叫回调处理函数原型
- * @param state 呼叫状态
- * @param simId sim卡ID
- * @param callNum 电话号码
- * @return 无
+ * @brief Call callback handler function prototype
+ * @param state Call status
+ * @param simId SIM card ID
+ * @param callNum Phone number
+ * @return None
  */
 typedef void (*TKL_CELLULAR_CALL_CB)(TUYA_CELLULAR_CALL_IND_STATE_E state, uint8_t simId, char callNum[TKL_CELLULAR_CALLNUM_LEN_MAX]);
 
 /**
- * @brief 通话过程中，对方的按键输入侦测回调函数定义，用于侦测对方的DTMF输入
+ * @brief During a call, the other party's key input detection callback function definition, used to detect the other party's DTMF input
  * @param dtmf
- * @return 无
+ * @return None
  */
 typedef void (*TKL_CELLULAR_CALL_KTDETECH_CB)(TUYA_TONE_TYPE_E dtmf);
 
 /**
- * @brief 查询呼叫服务是否可用
- * @note 该函数用于查询呼叫服务是否可用，只有在呼叫服务可用时，才能使用使用
- *       其它呼叫服务接口。
- * @param simId sim卡ID
- * @param enalbe 呼叫服务是否可用
- * @return 0 成功，其他失败
+ * @brief Query whether call service is available
+ * @note This function is used to query whether call service is available. Only when call service is available,
+ *       other call service interfaces can be used.
+ * @param simId SIM card ID
+ * @param enalbe Whether call service is available
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_service_available(uint8_t sim_id, bool *enable);
 
 /**
- * @brief 呼叫拨号接口函数
+ * @brief Call dialing interface function
  *
- * @param simId sim卡ID号
- * @param callNUm 呼叫号码，字符串形式
- * @return  0 发起呼叫成功 其它 失败
+ * @param simId SIM card ID number
+ * @param callNUm Call number, string format
+ * @return  0 call initiated successfully, others failure
  */
 OPERATE_RET tkl_cellular_call(uint8_t sim_id, char callNum[TKL_CELLULAR_CALLNUM_LEN_MAX]);
 
 /**
- * @brief 外部呼叫到来时，应答接听接口函数
- * @return   0 应答成功 其它 失败
+ * @brief When an external call comes in, answer and pick up interface function
+ * @return   0 answer success, others failure
  */
 OPERATE_RET tkl_cellular_call_answer(uint8_t sim_id);
 
 /**
- * @brief 呼叫通话后，挂机接口函数
- * @return  0 挂机成功 其它 失败
+ * @brief After a call conversation, hang up interface function
+ * @return  0 hang up success, others failure
  */
 OPERATE_RET tkl_cellular_call_hungup(uint8_t sim_id);
 
 /**
- * @brief 注册用户定义的呼叫回调处理函数
- * @param callback 呼叫回调处理函数
- * @return 0 注册成功 其它 注册失败
+ * @brief Register user-defined call callback handler function
+ * @param callback Call callback handler function
+ * @return 0 registration success, others registration failure
  */
 OPERATE_RET tkl_cellular_call_cb_register(TKL_CELLULAR_CALL_CB callback);
 
 /**
- * @brief 设置呼入时铃声静音
- * @param mute TRUE 静音 FALSE 非静音
- * @return 0 设置成功 其它 设置失败
+ * @brief Set incoming call ringtone mute
+ * @param mute TRUE mute FALSE unmute
+ * @return 0 setting success, others setting failure
  */
 OPERATE_RET tkl_cellular_call_set_callin_mute(bool mute);
 
 /**
- * @brief 启动或者关闭volte功能
- * @param enable TRUE启用volte,false关闭volte
- * @return 0 设置成功 其它 设置失败
+ * @brief Start or turn off volte function
+ * @param enable TRUE enable volte, false disable volte
+ * @return 0 setting success, others setting failure
  */
 OPERATE_RET tkl_cellular_call_set_volte(uint8_t sim_id,bool enable);
 
 /**
- * @brief 播放电话的拨号音
- * @param tone 拨号音的特征值
- * @param duration 播放音的持续时间
- * @return 0 成功，其他失败
+ * @brief Play phone dial tone
+ * @param tone Dial tone characteristic value
+ * @param duration Duration of the tone playback
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_play_tone(TUYA_TONE_TYPE_E tone, int  duration);
 
 /**
- * @brief 停止电话的拨号音
- * @return 0 成功，其他失败
+ * @brief Stop phone dial tone
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_stop_tone(void);
 
 /**
- * @brief 将DTMF数字按键音频发送到语音通道
- * @note 1、该函数用于实现10086之类的语音交互，语音提示后，用户操作按键，调用该函数
- *       将按键音频发送到语音通道，该函数只能在通话状态后调用，否则将引起系统异常。
- *       2、dtmfTone只能是TKL_TONE_DTMF_0 ~ TKL_TONE_DTMF_STAR中的一种。
+ * @brief Send DTMF digit key audio to voice channel
+ * @note 1. This function is used to implement voice interaction like 10086. After voice prompt, user operates keys, call this function
+ *       to send key audio to voice channel. This function can only be called after call state, otherwise it will cause system exception.
+ *       2. dtmfTone can only be one of TKL_TONE_DTMF_0 ~ TKL_TONE_DTMF_STAR.
  *
- * @param dtmfTone 拨号按键
- * @param duration 音频持续时长
- * @return 0 成功
- *        -1 dtmfTone 类型错误
- *        -2 分配内存失败
- *    OPRT_TIMEOUT 获取信号量超时
- *    OPRT_BASE_OS_ADAPTER_REG_NULL_ERROR 函数未适配
+ * @param dtmfTone Dial key
+ * @param duration Audio duration
+ * @return 0 success
+ *        -1 dtmfTone type error
+ *        -2 memory allocation failed
+ *    OPRT_TIMEOUT semaphore acquisition timeout
+ *    OPRT_BASE_OS_ADAPTER_REG_NULL_ERROR function not adapted
  */
 OPERATE_RET tkl_cellular_call_dtmf2voice(TUYA_TONE_TYPE_E dtmfTone, uint32_t duration);
 
 /**
- * @brief 设置语音通话音频的音量
- * @param vol （0~100）
- * @return 0 成功，其他失败
+ * @brief Set the volume of voice call audio
+ * @param vol (0~100)
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_set_voice_vol(int  vol);
 
 /**
- * @brief 获取语音通话音频的音量
- * @param vol （0~100）
- * @return 0 成功，其他失败
+ * @brief Get the volume of voice call audio
+ * @param vol (0~100)
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_get_voice_vol(int* vol);
 
 /**
- * @brief 通话过程中，上行音频是否设置静音
+ * @brief Whether to set mute for uplink audio during call
  * When the current voice call is finished, the property will be kept.
- * 当前的语音呼叫结束后，这个属性会被保存下来。下次再进行语音通话的过程中，如果
- * 上次被设置为静音，则继续静音。但是重启后，会被默认恢复成非静音
+ * When the current voice call ends, this property will be saved. In the next voice call process, if
+ * it was set to mute last time, it will continue to be muted. But after restart, it will be restored to unmute by default
  * @param TRUE for mute uplink of voice call
- * @return 0 成功，其他失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_set_voice_mute(bool mute);
 
 /**
- * @brief 获取通话过程中的上行声音的静音状态。
- * @param mute : TRUE 静音
- * @return 0 成功，其他失败
+ * @brief Get the mute status of uplink sound during call.
+ * @param mute : TRUE mute
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_get_voice_mute(bool *mute);
 
 /**
- * @brief 注册DMTF侦测回调函数
- * @param cb :  回调函数
- * @return 0 成功，其他失败
+ * @brief Register DMTF detection callback function
+ * @param cb :  callback function
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_reg_KTDetect(TKL_CELLULAR_CALL_KTDETECH_CB cb);
 
 /**
- * @brief 控制DTMF侦测功能是否使能，系统默认未使能。（开启这个功能，音频相关业务过程中，会增加系统负荷）
- * @param enable : TRUE 使能 FALSE 禁止
- * @return 0 成功，其他失败
+ * @brief Control whether DTMF detection function is enabled, system default is disabled. (Enabling this function will increase system load during audio-related business processes)
+ * @param enable : TRUE enable FALSE disable
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_ctrl_KTDetect(bool enable);
 
 /**
- * @brief 电话功能ioctl接口
- * @param cmd 命令
- * @param argv 参数
- * @return 0 成功，其他失败
+ * @brief Phone function ioctl interface
+ * @param cmd Command
+ * @param argv Parameters
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_call_ioctl(int cmd, void *argv);
 

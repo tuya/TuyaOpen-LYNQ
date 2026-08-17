@@ -12,10 +12,9 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_thread.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
+#include "vlog.h"
 
 #include "cmsis_os2.h"
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_thread[ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 // --- END: user defines and implements ---
 
 /**

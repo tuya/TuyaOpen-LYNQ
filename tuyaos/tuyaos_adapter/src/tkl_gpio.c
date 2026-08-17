@@ -12,15 +12,21 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_gpio.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
+
 
 #include "osasys.h"
 #include "cmsis_os2.h"
 #include "ol_gpio_api.h"
+#include "vlog.h"
+
 #include "slpman.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_gpio][INFO/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_gpio][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+typedef struct 
+{
+	bool  can_use_in_sleep;		//低功耗模式下可用
+	bool  is_output;
+	bool  output_level;
+}state_struct;
 
 typedef struct {
 	uint8_t mbtk_pin;
@@ -28,28 +34,51 @@ typedef struct {
 	ol_gpio_interrupt_enum intr;
 	bool	irq_flag;
 	bool 	init_flag;				//初始化标志
+	state_struct lowpower_state;	//低功耗状态保存
 	TUYA_GPIO_IRQ_CB cb;
 	void* arg;
 	TUYA_GPIO_BASE_CFG_T cfg;
 } gpio_map_t;
 
-static gpio_map_t pinMap[] = {
-	{16, 0, 0, false, false, 0, 0}, 			//NET_STATUS 	-> GPIO14			//ok，网络指示灯接口占用，验证ok
-	{17, 0, 0, false, false, 0, 0}, 			//MAIN_RXD 		-> GPIO8			//
-	{18, 0, 0, false, false, 0, 0}, 			//MAIN_TXD 		-> GPIO9			//
-	{19, 0, 0, false, false, 0, 0}, 			//MAIN_DTR 		-> 					//ok, 支持低功耗唤醒
-	{20, 0, 0, false, false, 0, 0}, 			//MAIN_RI		-> GPIO25			//ok，通用对接用于唤醒mcu，验证ok，对应pad4
-	{21, 4, 0, false, false, 0, 0}, 			//MAIN_DCD		-> GPIO18			//ok, 验证ok
-	{22, 4, 0, false, false, 0, 0}, 			//MAIN_CTS		-> GPIO19			//ok，验证ok
-	{23, 4, 0, false, false, 0, 0}, 			//MAIN_RTS		-> GPIO20			//ok，验证ok
-	{25, 0, 0, false, false, 0, 0}, 			//STATUS		-> GPIO12			//ok，验证ok，对应pad5
-	{28, 0, 0, false, false, 0, 0}, 			//DBG_RXD 		-> GPIO4			//
-	{29, 0, 0, false, false, 0, 0}, 			//AUX_RXD 		-> GPIO5			//
-	{38, 0, 0, false, false, 0, 0}, 			//AUX_TXD 		-> GPIO6			//
-	{39, 0, 0, false, false, 0, 0}, 			//DBG_TXD 		-> GPIO7			//
-	{82, 0, 0, false, false, 0, 0}, 			//USB_BOOT 		-> GPIO0			//
-};
 #define GPIO_NUM_MAX    sizeof(pinMap)/sizeof(gpio_map_t)
+extern bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id);
+
+static gpio_map_t pinMap[] = {
+	{16, 0, 0, false, false, {true, false, false}, 0, 0}, 			//NET_STATUS 	-> GPIO14			//ok，网络指示灯接口占用，验证ok
+	{17, 0, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_RXD 		-> GPIO8			//
+	{18, 0, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_TXD 		-> GPIO9			//
+	{19, 0, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_DTR 		-> 					//ok, 支持低功耗唤醒
+	{20, 0, 0, false, false, {true, false, false}, 0, 0}, 			//MAIN_RI		-> GPIO25			//ok，通用对接用于唤醒mcu，验证ok，对应pad4
+	{21, 4, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_DCD		-> GPIO18			//ok, 验证ok
+	{22, 4, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_CTS		-> GPIO19			//ok，验证ok
+	{23, 4, 0, false, false, {false, false, false}, 0, 0}, 			//MAIN_RTS		-> GPIO20			//ok，验证ok
+	{25, 0, 0, false, false, {true, false, false}, 0, 0}, 			//STATUS		-> GPIO12			//ok，验证ok，对应pad5
+	{28, 0, 0, false, false, {false, false, false}, 0, 0}, 			//DBG_RXD 		-> GPIO4			//
+	{29, 0, 0, false, false, {false, false, false}, 0, 0}, 			//AUX_RXD 		-> GPIO5			//
+	{38, 0, 0, false, false, {false, false, false}, 0, 0}, 			//AUX_TXD 		-> GPIO6			//
+	{39, 0, 0, false, false, {false, false, false}, 0, 0}, 			//DBG_TXD 		-> GPIO7			//
+	{79, 0, 0, false, false, {false, false, false}, 0, 0},			//USIM1_DET 						// sim卡检测脚，关闭sim卡热插拔功能后设置成中断
+	{82, 0, 0, false, false, {false, false, false}, 0, 0}, 			//USB_BOOT 		-> GPIO0			//
+};
+static bool use_pin_output_in_lowpower = false;
+
+void keep_pin_output_in_lowpower(void)
+{
+	if(use_pin_output_in_lowpower == false)
+		return;
+
+	ol_gpio_config_struct config;
+    memset(&config,0x0,sizeof(config));
+	for(int i = 0;i<GPIO_NUM_MAX;i++) {
+		gpio_map_t *map = &pinMap[i];
+		if(map->lowpower_state.can_use_in_sleep && map->lowpower_state.is_output) {
+			config.gpio_func = map->function;
+    		config.gpio_dir = OL_GPIO_OUTPUT;
+			ol_pin_config(map->mbtk_pin, &config);
+    		ol_pin_set_level(map->mbtk_pin, map->lowpower_state.output_level);
+		}
+	}
+}
 
 static gpio_map_t *get_pinmap(int pin)
 {
@@ -103,6 +132,7 @@ static OPERATE_RET agpio_irq_set(gpio_map_t *map, bool enable)
 		case 19:	type = PadWakeup0_IRQn;		break;
 		case 20:	type = PadWakeup4_IRQn;		break;
 		case 25:	type = PadWakeup5_IRQn;		break;
+		case 79:	type = PadWakeup1_IRQn;		break;
 		default:
 			return OPRT_INVALID_PARM;
 	}
@@ -122,8 +152,7 @@ static OPERATE_RET tkl_gpio_irq_set(TUYA_GPIO_NUM_E pin_id, bool enable)
         return OPRT_COM_ERROR;
 	}
 
-	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25) {
-	// if(map->mbtk_pin == 20 || map->mbtk_pin == 25) {
+	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25 || map->mbtk_pin == 79) {
 		return agpio_irq_set(map, enable);
 	}
 
@@ -134,7 +163,7 @@ static OPERATE_RET tkl_gpio_irq_set(TUYA_GPIO_NUM_E pin_id, bool enable)
 	
 	int ret;
 	if (false == enable) {
-		ret = ol_pin_set_interrupt(map->mbtk_pin, OL_GPIO_INTERRUPT_DISABLED, isr_cb);
+		ret = ol_pin_set_interrupt(map->mbtk_pin, OL_GPIO_INTERRUPT_DISABLED, NULL);
 		map->irq_flag = false;
 	} else {
 		ret = ol_pin_set_interrupt(map->mbtk_pin, map->intr, isr_cb);
@@ -191,13 +220,21 @@ static OPERATE_RET agpio_irq_init(gpio_map_t *map, const TUYA_GPIO_IRQ_T *cfg)
 			slpManSetWakeupPadCfg(WAKEUP_PAD_5, true, &wakeupPadSetting);
 			NVIC_EnableIRQ(PadWakeup5_IRQn);
 		break;
+		case 79:
+			if(tkl_cellular_get_sim_hotplug_status(0)) {
+				LOGE("sim hotplug enabled, can't set sim detect pin irq");
+				return OPRT_COM_ERROR;
+			}
+			slpManSetWakeupPadCfg(WAKEUP_PAD_1, true, &wakeupPadSetting);
+			NVIC_EnableIRQ(PadWakeup1_IRQn);
+		break;
 	}
 
 	map->intr = cfg->mode;
 	map->cb = cfg->cb;
 	map->arg = cfg->arg;
 	map->irq_flag = true;
-    LOGE("agpio irq init success, pin: %d", map->mbtk_pin);
+    LOGI("agpio irq init success, pin: %d", map->mbtk_pin);
     return OPRT_OK;
 }
 // --- END: user defines and implements ---
@@ -230,7 +267,8 @@ OPERATE_RET tkl_gpio_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_BASE_CFG_T *cf
 	switch(map->mbtk_pin)
 	{
 		case 19:
-			return OPRT_NOT_SUPPORTED;		//pin19仅支持irq功能
+		case 79:
+			return OPRT_NOT_SUPPORTED;		//pin19，79仅支持irq功能
 		break;
 		case 20:
 			slpManSetWakeupPadCfg(WAKEUP_PAD_4, false, &wakeupPadSetting);
@@ -260,11 +298,16 @@ OPERATE_RET tkl_gpio_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_BASE_CFG_T *cf
 
 	map->init_flag = true;
 	memcpy(&map->cfg, cfg, sizeof(TUYA_GPIO_BASE_CFG_T));
-    LOGD("gpio init success, pin/%d, mode/%d, direct/%d, level/%d", pin_id, cfg->mode, cfg->direct, cfg->level);
+    LOGI("gpio init success, pin/%d, mode/%d, direct/%d, level/%d", pin_id, cfg->mode, cfg->direct, cfg->level);
 
 	if(cfg->direct == TUYA_GPIO_OUTPUT) {
 		ol_gpio_level_enum ol_level = (TUYA_GPIO_LEVEL_HIGH == cfg->level) ? OL_GPIO_LEVEL_HIGH : OL_GPIO_LEVEL_LOW;
 		ret = ol_pin_set_level(map->mbtk_pin, ol_level);
+		if(map->lowpower_state.can_use_in_sleep) {
+			use_pin_output_in_lowpower = true;
+			map->lowpower_state.is_output = true;
+			map->lowpower_state.output_level = cfg->level;
+		}
 	}
     return OPRT_OK;
 	// --- END: user implements ---
@@ -284,6 +327,12 @@ OPERATE_RET tkl_gpio_deinit(TUYA_GPIO_NUM_E pin_id)
 	if(map == NULL) {
 		LOGE("gpio deinit failed, invalid pin: %d", pin_id);
         return OPRT_COM_ERROR;
+	}
+
+	if(pin_id == 19 || pin_id == 79) {
+		tkl_gpio_irq_disable(pin_id);
+		map->irq_flag = false;
+		return OPRT_OK;
 	}
 
 	ol_gpio_config_struct config = {
@@ -310,8 +359,17 @@ OPERATE_RET tkl_gpio_deinit(TUYA_GPIO_NUM_E pin_id)
 	map->cb = NULL;
 	map->arg = NULL;
 	map->init_flag = false;
+	map->lowpower_state.is_output = false;
 
-    LOGD("gpio deinit success, pin: %d", pin_id);
+	use_pin_output_in_lowpower = false;
+	for(int i = 0;i<GPIO_NUM_MAX;i++) {
+		if(pinMap[i].lowpower_state.can_use_in_sleep && pinMap[i].lowpower_state.is_output) {
+			use_pin_output_in_lowpower = true;
+			break;
+		}
+	}
+
+    LOGI("gpio deinit success, pin: %d", pin_id);
     return OPRT_OK;
 	// --- END: user implements ---
 }
@@ -347,6 +405,12 @@ OPERATE_RET tkl_gpio_write(TUYA_GPIO_NUM_E pin_id, TUYA_GPIO_LEVEL_E level)
 		return OPRT_COM_ERROR;
 	}
 
+	if(map->lowpower_state.can_use_in_sleep) {
+		use_pin_output_in_lowpower = true;
+		map->lowpower_state.is_output = true;
+		map->lowpower_state.output_level = level;
+	}
+
     return OPRT_OK;
 	// --- END: user implements ---
 }
@@ -370,8 +434,7 @@ OPERATE_RET tkl_gpio_read(TUYA_GPIO_NUM_E pin_id, TUYA_GPIO_LEVEL_E *level)
 	}
 
 	//agpio 中断方式下，按一下方式读取电平
-	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25) {
-	// if(map->mbtk_pin == 20 || map->mbtk_pin == 25) {
+	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25 || map->mbtk_pin == 79) {
 		if(map->irq_flag) {
 			int bit = 0;
 			switch (map->mbtk_pin)
@@ -379,6 +442,7 @@ OPERATE_RET tkl_gpio_read(TUYA_GPIO_NUM_E pin_id, TUYA_GPIO_LEVEL_E *level)
 			case 19:	bit = 0;	break;
 			case 20:	bit = 4;	break;
 			case 25:	bit = 5;	break;
+			case 79:	bit = 1;	break;
 			}
 			*level = ((slpManGetWakeupPinValue() >> bit) & 0x1);
 			return OPRT_OK;
@@ -421,8 +485,7 @@ OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_IRQ_T *cfg
         return OPRT_COM_ERROR;
 	}
 
-	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25) {
-	// if(map->mbtk_pin == 20 || map->mbtk_pin == 25) {
+	if(map->mbtk_pin == 19 || map->mbtk_pin == 20 || map->mbtk_pin == 25 || map->mbtk_pin == 79) {
 		return agpio_irq_init(map, cfg);
 	}
 
@@ -462,7 +525,7 @@ OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_IRQ_T *cfg
 	map->cb = cfg->cb;
 	map->arg = cfg->arg;
 	map->irq_flag = true;
-    LOGD("gpio irq init success, pin: %d", pin_id);
+    LOGI("gpio irq init success, pin: %d", pin_id);
     return OPRT_OK;
 	// --- END: user implements ---
 }

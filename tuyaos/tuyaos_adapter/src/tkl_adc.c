@@ -11,15 +11,11 @@
 
 // --- BEGIN: user defines and implements ---
 #include "tkl_adc.h"
-#include "tuya_error_code.h"
-#include "tkl_output.h"
-
 #include "osasys.h"
 #include "cmsis_os2.h"
 #include "ol_adc_api.h"
+#include "vlog.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_adc][INFO/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_adc][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
 #define ADC_CHN_MAX    2
 // --- END: user defines and implements ---
 
@@ -154,7 +150,7 @@ OPERATE_RET tkl_adc_read_voltage(TUYA_ADC_NUM_E port_num, int32_t *buff, uint16_
     // --- BEGIN: user implements ---
 	int32_t uV;
     if (port_num >= ADC_CHN_MAX || NULL == buff || 0 == len) {
-        LOGE("read voltage failed, port_num/%d, buff/%08x, len/%d", port_num, buff, len);
+        LOGE("read voltage failed, port_num/%d, len/%d", port_num, len);
         return OPRT_INVALID_PARM;
     }
 

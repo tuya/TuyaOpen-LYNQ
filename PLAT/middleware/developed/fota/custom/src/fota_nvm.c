@@ -94,7 +94,11 @@ FLASH_FOTA_REGION_END        |---------------------------------|
 */
 
 #if defined CHIP_EC718 || defined CHIP_EC716
+#if defined (FEATURE_GLO_CALI_ENABLE)
+#define FOTA_NVM_DELTA_BACKUP_SIZE     (FOTA_BUF_SIZE_4K)
+#else
 #define FOTA_NVM_DELTA_BACKUP_SIZE     (FOTA_BUF_SIZE_1K * 44)
+#endif
 #elif defined CHIP_EC626
 #define FOTA_NVM_DELTA_BACKUP_SIZE     (FOTA_BUF_SIZE_4K)
 #else /* defined CHIP_EC616 || defined CHIP_EC616_Z0 || defined CHIP_EC616S || CHIP_EC618 */

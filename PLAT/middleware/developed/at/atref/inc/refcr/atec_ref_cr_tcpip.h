@@ -140,6 +140,13 @@
 #define MIPCFG_ACKMODE_MAX           1
 #define MIPCFG_ACKMODE_DEF           0
 
+#define MIPCFG_SSL_ENABLE_MIN           0
+#define MIPCFG_SSL_ENABLE_MAX           1
+#define MIPCFG_SSL_ENABLE_DEF           0
+
+#define MIPCFG_SSL_ID_MIN           0
+#define MIPCFG_SSL_ID_MAX           5
+#define MIPCFG_SSL_ID_DEF           0
 
 #define MIPTKA_0_CONNECT_ID_MIN         0
 #define MIPTKA_0_CONNECT_ID_MAX         5
@@ -278,14 +285,16 @@ typedef enum RefCrSockRecvFmt_Tag
 
 typedef struct RefCrSocketCfg_Tag
 {
-    UINT8 connectionId;    /* 0 ~ 5 */
-    UINT8 cid;
-    UINT8 sendTimeout;     /* 1 ~ 180, default: 10 */
-    UINT8 isAutoFree : 1;  /* 0 (not need MIPCLOSE to free resource) or 1, default: 0 */
-    UINT8 sendFmt    : 2;  /* 0 (ASCII), 1(Hex string), 2(escape string), default: 0 */
-    UINT8 recvFmt    : 1;  /* 0 (ASCII), 1(Hex string), default: 0 */
-    UINT8 ackmode    : 1;  /* 0 (no urc when receive tcp ack) or 1, default: 0, RefCrSockAckMode*/
-    UINT8 rsv        : 3;
+    UINT32 connectionId :3;   /* 0 ~ 5 */
+    UINT32 cid          :8;   /* 1 ~ 15 */
+    UINT32 sendTimeout  :8;   /* 1 ~ 180, default: 10 */
+    UINT32 isAutoFree   :1;   /* 0 (not need MIPCLOSE to free resource) or 1, default: 0 */
+    UINT32 sendFmt      :2;   /* 0 (ASCII), 1(Hex string), 2(escape string), default: 0 */
+    UINT32 recvFmt      :1;   /* 0 (ASCII), 1(Hex string), default: 0 */
+    UINT32 ackmode      :1;   /* 0 (no urc when receive tcp ack) or 1, default: 0, RefCrSockAckMode*/
+    UINT32 sslEnable    :1;   /* 0 ~ 1 */
+    UINT32 sslId        :3;   /* 0 ~ 5 */
+    UINT32 rsv          :4;
 
     UINT16 sendBufSize;    /* 1 ~ 8192 , default: 1460  */
     UINT16 rcvBufSize;     /* 1 ~ 65535, default: 65535 */

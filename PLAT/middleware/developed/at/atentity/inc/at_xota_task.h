@@ -127,6 +127,12 @@ typedef struct
     uint32_t size;
 }XotaNvmZone_t;
 
+typedef struct
+{
+    uint8_t  hasDone;
+    uint8_t  rsvd[3];
+}XotaClearDesc_t;
+
 typedef enum
 {
     XOTA_DF_DLVR_START = 0,
@@ -173,6 +179,7 @@ typedef struct
     union
     {
         XotaNvmZone_t   nvm;
+        XotaClearDesc_t clr;
         XotaPkgDesc_t   pkg;
         XotaVeriDesc_t  veri;
     }u;

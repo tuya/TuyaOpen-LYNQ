@@ -226,8 +226,8 @@ struct pbuf {
                          * a) for DL, pkg will be fwd to host directly, it will free as dl pdu info by ccio rx task
                          * b) for UL, pkg will be fwd/freed to/in L2 task,
                         */
-  u16_t imsDataFlag:2;  /* sockimsdatatype_t */
-  u16_t rsvd:8;
+  u16_t imsDataFlag:3;  /* sockimsdatatype_t */
+  u16_t rsvd:7;
   u8_t bind_ded_cid;
   u8_t sequence;
   u32_t sysTick;

@@ -71,8 +71,6 @@ static void app_init(void *arg)
     //register network change event callback
     ol_ps_event_register(app_netPSEventCallback);
 
-    xPortGetFreeHeapSizeEc();
-
     OL_LOG_PRINTF("App demo init: %s", ol_get_sw_version());
 
     ResetStateGet(&ap_state, &cp_state);

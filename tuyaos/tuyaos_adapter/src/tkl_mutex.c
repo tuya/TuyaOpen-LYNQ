@@ -12,12 +12,12 @@
 // --- BEGIN: user defines and implements ---
 #include "tkl_mutex.h"
 #include "tuya_error_code.h"
-#include "tkl_output.h"
 
 #include "cmsis_os2.h"
+#include "vlog.h"
 
-#define LOGD(fmt, ...)  tkl_log_output("[tkl_mutex][DBG/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
-#define LOGE(fmt, ...)  tkl_log_output("[tkl_mutex][ERR/%d]: " fmt "\r\n", __LINE__, ##__VA_ARGS__)
+#undef LOGD
+#define LOGD(fmt, ...) 
 // --- END: user defines and implements ---
 
 /**
@@ -50,8 +50,8 @@ OPERATE_RET tkl_mutex_create_init(TKL_MUTEX_HANDLE *pMutexHandle)
 		return OPRT_COM_ERROR;
 	}
 
-	LOGD("create mutex success, id: %p", id);
 	*pMutexHandle = id;
+	LOGD("create mutex success");
 	return OPRT_OK;
 	// --- END: user implements ---
 }
@@ -133,6 +133,7 @@ OPERATE_RET tkl_mutex_unlock(const TKL_MUTEX_HANDLE mutexHandle)
 		return OPRT_COM_ERROR;
 	}
 	
+	LOGD("mutex unlock success");
 	return OPRT_OK;
 	// --- END: user implements ---
 }
@@ -160,6 +161,7 @@ OPERATE_RET tkl_mutex_release(const TKL_MUTEX_HANDLE mutexHandle)
 		return OPRT_COM_ERROR;
 	}
 	
+	LOGD("mutex release success");
 	return OPRT_OK;
 	// --- END: user implements ---
 }

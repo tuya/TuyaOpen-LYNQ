@@ -48,7 +48,10 @@ OPERATE_RET tkl_cellular_vbat_get_voltage(uint32_t* voltage)
     if (ret < 0) {
         LOGE("vbat get voltage failed, ret: %d", ret);
         return OPRT_COM_ERROR;
-    
+    }
+
+    *voltage = ret;
+    return OPRT_OK;
 }
 
 /**

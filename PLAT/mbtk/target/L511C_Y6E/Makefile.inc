@@ -57,7 +57,7 @@ THIRDPARTY_LZMA_ENABLE       = y
 BIN_COMPRESS                 = y
 
 DRIVER_ADC_ENABLE            = y
-DRIVER_SPI_ENABLE            = y
+DRIVER_SPI_ENABLE            = n
 DRIVER_I2C_ENABLE            = y
 DRIVER_I2S_ENABLE            = n
 DRIVER_LCD_ENABLE            = n
@@ -68,7 +68,7 @@ DRIVER_PSRAM_ENABLE          = n
 DRIVER_PCACHE_ENABLE         = n
 DRIVER_ONEWIRE_ENABLE        = n
 DRIVER_ACVOICE_ENABLE        = n
-DRIVER_EXSTORAGE_ENABLE      = y
+DRIVER_EXSTORAGE_ENABLE      = n
 
 MIDDLEWARE_USB_CCID_ENABLE   = n
 MIDDLEWARE_FOTAPAR_ENABLE    = y
@@ -84,12 +84,12 @@ BUILD_PS_ROHC_ENABLE         = n
 
 THIRDPARTY_HTTPC_ENABLE        = y
 MBEDTLS_WITH_HTTP_TLS          = n
-THIRDPARTY_MQTT_ENABLE         = y
+THIRDPARTY_MQTT_ENABLE         = n
 MBEDTLS_WITH_MQTT_TLS          = n
 THIRDPARTY_MBEDTLS_ENABLE      = n
 
 #cjson is refered by MQTT
-THIRDPARTY_CJSON_ENABLE        = y
+THIRDPARTY_CJSON_ENABLE        = n
 THIRDPARTY_CTCC_DM_ENABLE      = n
 THIRDPARTY_CUCC_DM_ENABLE      = n
 THIRDPARTY_CMCC_DM_ENABLE      = n
@@ -213,8 +213,8 @@ BUILD_AT_DEBUG                 = n
 BUILD_AT_REF                   = y
 
 MBTK_OPENCPU_SMS               = n
-MBTK_OPENCPU_AT                = n
-MBTK_OPENCPU_SSL               = y
+MBTK_OPENCPU_AT                = y
+MBTK_OPENCPU_SSL               = n
 MBTK_OPENCPU_TCP               = n
 
 MBTK_OPENCPU_SUPPORT = y
@@ -235,7 +235,7 @@ CFLAGS += -DFEATURE_UART_HELP_DUMP_ENABLE
 ##default value is y to support
 ##################################################################################################################
 ifeq ($(BUILD_AT), y)
-BUILD_RIL_AT_API_ENABLE      = n
+BUILD_RIL_AT_API_ENABLE      = y
 endif
 
 ##################################################################################################################

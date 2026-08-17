@@ -1375,8 +1375,9 @@ typedef struct CmiMmTriggerTauReq_Tag
 
 typedef struct CmiMmTriggerTauCnf_Tag
 {
-    BOOL    isTriggered;        //TRUE:  TAU is triggered, TAU procedure maybe fail
-                                //FALSE: TAU is not triggered
+    BOOL    isTriggered;        /* TRUE:  TAU is triggered, TAU procedure maybe fail
+                                 * FALSE: TAU is not triggered
+                                */
     UINT8   rsvd0[3];
 }CmiMmTriggerTauCnf;
 
@@ -1384,13 +1385,27 @@ typedef struct CmiMmTriggerTauCnf_Tag
  * CMI_MM_TRIGGER_RRC_RELEASE_REQ,
  * CmiMmTriggerRrcReleaseReq
 ******************************************************************************/
-typedef CamCmiEmptySig CmiMmTriggerRrcReleaseReq;
+typedef struct CmiMmTriggerRrcReleaseReq_Tag
+{
+    BOOL     tauUserSetting;      /* TRUE:  PS DIAL need to triggered periodic TAU after local release
+                                   * FALSE: PS DIAL don't need to triggered periodic TAU after local release
+                                   */
+    UINT16   allowRelTimeGap;     /* The time gap in seconds which allow local release,
+                                   * range: 0 ~ 65535, and 0 is valid value.
+                                   */
+    UINT8    rsvd;
+}CmiMmTriggerRrcReleaseReq;
 
 typedef struct CmiMmTriggerRrcReleaseCnf_Tag
 {
-    BOOL    isTriggered;        //TRUE:  RRC connection local release is triggered
-                                //FALSE: RRC connection local release is not triggered
-    UINT8   rsvd0[3];
+    BOOL    isTriggered;          /* TRUE:  RRC connection local release is triggered
+                                   * FALSE: RRC connection local release is not triggered
+                                   */
+
+    BOOL    tauUserSetting;       /* TRUE:  PS DIAL need to triggered periodic TAU after local release
+                                   * FALSE: PS DIAL don't need to triggered periodic TAU after local release
+                                   */
+    UINT8   rsvd[2];
 }CmiMmTriggerRrcReleaseCnf;
 
 /******************************************************************************

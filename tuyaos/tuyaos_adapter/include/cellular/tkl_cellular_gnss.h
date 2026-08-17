@@ -208,88 +208,88 @@ typedef struct
 typedef void (*TKL_GNSS_REGISTION_NOTIFY)(TUYA_CELLULAR_GNSS_NOTIFY_MSG_ID_E msg, void *data,int len);
 
 /**
- * @brief 初始化蜂窝GNSS服务
- * @param handle 返回蜂窝GNSS设备服务句柄
- * @return 0 成功  其它 失败
+ * @brief Initialize cellular GNSS service
+ * @param handle Return cellular GNSS device service handle
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_init(TUYA_CELLULAR_GNSS_DEV_HANDLE *handle);
 
 /**
- * @brief 去初始化蜂窝GNSS服务
- * @param handle 蜂窝GNSS设备服务句柄
- * @return 0 成功  其它 失败
+ * @brief Deinitialize cellular GNSS service
+ * @param handle Cellular GNSS device service handle
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_deinit(TUYA_CELLULAR_GNSS_DEV_HANDLE handle);
 
 /**
- * @brief 注册蜂窝GNSS服务消息回调函数
- * @param notify TKL_GNSS_REGISTION_NOTIFY 回调函数
- * @return 0 成功  其它 失败
+ * @brief Register cellular GNSS service message callback function
+ * @param notify TKL_GNSS_REGISTION_NOTIFY callback function
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_register_notify(TKL_GNSS_REGISTION_NOTIFY notify);
 
 /**
- * @brief 设置蜂窝GNSS定位模式
- * @param handle 蜂窝GNSS设备服务句柄
- * @param pt_mode 定位模式
- * @return 0 成功  其它 失败
+ * @brief Set cellular GNSS positioning mode
+ * @param handle Cellular GNSS device service handle
+ * @param pt_mode Positioning mode
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_set_position_mode(TUYA_CELLULAR_GNSS_DEV_HANDLE nohandletify, TUYA_CELLULAR_GNSS_MODE_INFO_T pt_mode);
 
 /**
- * @brief 设置蜂窝GNSS定位系统模式
- * @param handle 蜂窝GNSS设备服务句柄
- * @param pt_mode 定位模式
- * @return 0 成功  其它 失败
+ * @brief Set cellular GNSS positioning system mode
+ * @param handle Cellular GNSS device service handle
+ * @param pt_mode Positioning mode
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_set_system_mode(TUYA_CELLULAR_GNSS_DEV_HANDLE nohandletify, TUYA_CELLULAR_GNSS_SYS_MODE_E pt_mode);
 
 /**
- * @brief 启动导航
- * @param handle 蜂窝GNSS设备服务句柄
- * @return 0 成功  其它 失败
+ * @brief Start navigation
+ * @param handle Cellular GNSS device service handle
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_start_navigation(TUYA_CELLULAR_GNSS_DEV_HANDLE handle);
 
 /**
- * @brief 停止导航
- * @param handle 蜂窝GNSS设备服务句柄
- * @return 0 成功  其它 失败
+ * @brief Stop navigation
+ * @param handle Cellular GNSS device service handle
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_stop_navigation(TUYA_CELLULAR_GNSS_DEV_HANDLE handle);
 
 /**
- * @brief 获取当前的位置信息
- * @param handle 蜂窝GNSS设备服务句柄
- * @param location  位置信息
- * @param timeout_sec 获取位置信息的超时时间
- * @return 0 成功  其它 失败
+ * @brief Get current location information
+ * @param handle Cellular GNSS device service handle
+ * @param location Location information
+ * @param timeout_sec Timeout for getting location information
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_get_location(TUYA_CELLULAR_GNSS_DEV_HANDLE handle,TUYA_CELLULAR_GNSS_LOCATION_INFO_T *location,int timeout_sec);
 
 /**
- * @brief 直接注入时间数据
- * @param handle 蜂窝GNSS设备服务句柄
- * @param pt_info  时间数据
- * @return 0 成功  其它 失败
+ * @brief Directly inject time data
+ * @param handle Cellular GNSS device service handle
+ * @param pt_info Time data
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_injecttime(TUYA_CELLULAR_GNSS_DEV_HANDLE handle,TUYA_CELLULAR_GNSS_INJECT_TIME_INFO_T *pt_info);
 
 /**
- * @brief 直接注入位置信息
- * @param handle 蜂窝GNSS设备服务句柄
- * @param pt_info  位置数据
- * @return 0 成功  其它 失败
+ * @brief Directly inject location information
+ * @param handle Cellular GNSS device service handle
+ * @param pt_info Location data
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_injectlocation(TUYA_CELLULAR_GNSS_DEV_HANDLE handle, TUYA_CELLULAR_GNSS_INJECT_LOCATION_INFO_T *pt_info);
 
 /**
- * @brief GNSS服务的自定义接口
- * @param handle 蜂窝GNSS设备服务句柄
- * @param cmd  GNSS命令
- * @param pdata 数据指针
+ * @brief GNSS service custom interface
+ * @param handle Cellular GNSS device service handle
+ * @param cmd GNSS command
+ * @param pdata Data pointer
  * @param datalen pdata size
- * @return 0 成功  其它 失败
+ * @return 0 success, others failure
  */
 OPERATE_RET tkl_cellular_gnss_ioctl(TUYA_CELLULAR_GNSS_DEV_HANDLE handle,int cmd,void *pdata,int datalen);
 

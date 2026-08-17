@@ -1694,3 +1694,8 @@ void mbtkInitENGpio(void)
     GPIO_pinWrite((gpio_num / 16), 1 << (gpio_num % 16), (1) << (gpio_num % 16));
 }
 
+int mbtk_get_atcmd_flag(void)
+{
+    return 0;
+}
+
