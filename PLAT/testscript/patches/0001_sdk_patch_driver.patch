@@ -1,0 +1,139 @@
+diff --git a/PLAT/driver/board/ec7xx_0h00/src/camera/cameraDrv.c b/PLAT/driver/board/ec7xx_0h00/src/camera/cameraDrv.c
+index 8e1b413..c227612 100644
+--- a/PLAT/driver/board/ec7xx_0h00/src/camera/cameraDrv.c
++++ b/PLAT/driver/board/ec7xx_0h00/src/camera/cameraDrv.c
+@@ -529,7 +529,7 @@ PLAT_PM_RAMCODE void timeRead(UINT32 *sysTime)
+     RestoreIRQMask(mask);
+ }
+ 
+-
++#if (ENABLE_CAMERA_RING_BUF == 1)
+ static uint8_t findNextCamBuf()
+ {
+ 	int bypassIndex = -1;
+@@ -559,7 +559,7 @@ static uint8_t findNextCamBuf()
+ 
+ 	return minIndex;
+ }
+-
++#endif
+ void camDmaCb(uint32_t dmaStatus)
+ {
+ #if (ENABLE_CAMERA_RING_BUF == 1)	
+diff --git a/PLAT/driver/board/ec7xx_0h00/src/codec/codecDev/es8311.c b/PLAT/driver/board/ec7xx_0h00/src/codec/codecDev/es8311.c
+index ba3c272..0b181a9 100644
+--- a/PLAT/driver/board/ec7xx_0h00/src/codec/codecDev/es8311.c
++++ b/PLAT/driver/board/ec7xx_0h00/src/codec/codecDev/es8311.c
+@@ -986,9 +986,9 @@ HalCodecSts_e es8311Resume(HalCodecMode_e mode)
+ HalCodecSts_e es8311SetVolume(HalCodecCfg_t* codecHalCfg, int volume)
+ {
+     HalCodecSts_e res = CODEC_EOK;
+-    MWNvmCfgUsrSetCodecVolumn volumeOld = {0};
+ 
+ #ifdef FEATURE_OS_ENABLE
++    MWNvmCfgUsrSetCodecVolumn volumeOld = {0};
+ #if (USE_NV_VOLUME)    
+     //bool saveRet = true;
+     int calGainDb = 0; // calculated db, should divide 10
+diff --git a/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdComm.c b/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdComm.c
+index 94bc5dd..d4c1e92 100644
+--- a/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdComm.c
++++ b/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdComm.c
+@@ -23,7 +23,7 @@ AP_PLAT_COMMON_DATA lspiDrvInterface_t *lcdDrv  = &lspiDrvInterface2;
+ AP_PLAT_COMMON_BSS int32_t lcdDmaTxCh          = 0;
+ AP_PLAT_COMMON_BSS static lcdUspCb userUspCb   = NULL;
+ AP_PLAT_COMMON_BSS static lcdUspCb userDmaCb   = NULL;
+-PLAT_FM_ZI DmaDescriptor_t __ALIGNED(16) lcdDmaTxDesc[DMA_DESC_MAX];
++AP_PLAT_COMMON_BSS DmaDescriptor_t __ALIGNED(16) lcdDmaTxDesc[DMA_DESC_MAX];    // 0x0804b010/0x08068ff0
+ extern lcdDrvFunc_t* lcdDevHandle;
+ AP_PLAT_COMMON_DATA DmaTransferConfig_t lcdDmaTxCfg =
+ {
+@@ -353,8 +353,11 @@ void lcdDmaLoop(lcdDrvFunc_t *lcd, void *sourceAddress, uint32_t totalLength, ui
+     lspiCmdCtrl.ramWrHaltMode       = 1; // maintain cs as low between cmd and data
+     #endif
+ #endif
+-
+-	lspiCmdCtrl.dataLen = 0x3fffff; // infinate
++    #if (defined TYPE_EC718M)
++    lspiCmdCtrl.dataLen = 0x3fffff; // infinate
++    #else
++    lspiCmdCtrl.dataLen = 0x3ffff;  // infinate
++    #endif
+ 	lcdDrv->ctrl(LSPI_CTRL_CMD_CTRL, 0);
+ 
+ 	uint8_t chainCnt = totalLength / dmaTrunkLen;
+@@ -746,7 +749,7 @@ END:
+     return level;
+ }
+ 
+-static void lcdPwmBkInit(void)
++void lcdPwmBkInit(void)
+ {
+     PadConfig_t config;
+     PAD_getDefaultConfig(&config);
+diff --git a/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdDrv.c b/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdDrv.c
+index 6189766..3a7e856 100644
+--- a/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdDrv.c
++++ b/PLAT/driver/board/ec7xx_0h00/src/lcd/lcdDrv.c
+@@ -85,6 +85,7 @@ void lcdIoInit(bool isAonIO)
+     gpioCfg.misc.initOutput = 0;
+     GPIO_pinConfig(LCD_BK_GPIO_INSTANCE, LCD_BK_GPIO_PIN, &gpioCfg);
+ #elif (BK_USE_PWM == 1)
++    extern void lcdPwmBkInit(void);
+     lcdPwmBkInit();
+ #endif
+ 
+diff --git a/PLAT/driver/chip/ec7xx/ap/inc/timer.h b/PLAT/driver/chip/ec7xx/ap/inc/timer.h
+index c01beca..3d168a8 100644
+--- a/PLAT/driver/chip/ec7xx/ap/inc/timer.h
++++ b/PLAT/driver/chip/ec7xx/ap/inc/timer.h
+@@ -21,7 +21,7 @@
+ /*******************************************************************************
+  * Definitions
+  ******************************************************************************/
+-
++#define EIGEN_TIMER(n)      ((TIMER_TypeDef *) (AP_TIMER0_BASE_ADDR + 0x1000*n))
+ /** \brief List of TIMER clock source */
+ typedef enum
+ {
+diff --git a/PLAT/driver/chip/ec7xx/ap/src/timer.c b/PLAT/driver/chip/ec7xx/ap/src/timer.c
+index 4a37082..78c016e 100644
+--- a/PLAT/driver/chip/ec7xx/ap/src/timer.c
++++ b/PLAT/driver/chip/ec7xx/ap/src/timer.c
+@@ -22,7 +22,7 @@
+ #define TIMER_BSS_SECTION      SECTION_DEF_IMPL(.sect_timer_bss)
+ 
+ 
+-#define EIGEN_TIMER(n)             ((TIMER_TypeDef *) (AP_TIMER0_BASE_ADDR + 0x1000*n))
++// move to timer.h
+ 
+ #ifdef PM_FEATURE_ENABLE
+ 
+diff --git a/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_can.c b/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_can.c
+index 842f1ed..ec16f9a 100644
+--- a/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_can.c
++++ b/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_can.c
+@@ -583,7 +583,7 @@ static uint32_t CAN_GetClock(CAN_RESOURCES *can)
+ #ifdef FPGA_TEST
+     return 50000000UL;
+ #else
+-    uint32_t instance = CAN_GetInstanceNumber(can);
++    // uint32_t instance = CAN_GetInstanceNumber(can);
+ 
+     return GPR_getClockFreq(CLK_APB_MP);
+ #endif
+diff --git a/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_spi_v2.c b/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_spi_v2.c
+index 5643d38..db8aaed 100644
+--- a/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_spi_v2.c
++++ b/PLAT/driver/chip/ec7xx/ap/src_cmsis/bsp_spi_v2.c
+@@ -88,9 +88,9 @@ typedef struct _spi_database
+ } spi_database_t;
+ 
+ BSP_SPI_BSS_SECTION static spi_database_t g_spiDataBase[SPI_INSTANCE_NUM] = {0};
++BSP_SPI_RODATA_SECTION static SPI_TypeDef* const g_spiBases[] = SPI_INSTANCE_ARRAY;
+ #endif
+ 
+-BSP_SPI_RODATA_SECTION static SPI_TypeDef* const g_spiBases[] = SPI_INSTANCE_ARRAY;
+ BSP_SPI_RODATA_SECTION static const ClockId_e g_spiClocks[] = SPI_CLOCK_VECTOR;
+ BSP_SPI_RODATA_SECTION static const ClockResetVector_t g_spiResetVectors[] = SPI_RESET_VECTORS;
+ 

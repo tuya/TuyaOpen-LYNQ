@@ -1,0 +1,2 @@
+i2c_id,type,gpio_num,fw_id,brief
+0,"CST816D",21,0,TP Device

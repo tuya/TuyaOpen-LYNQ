@@ -1,0 +1,2 @@
+pwm,pin,act,ratio,freq,mode,brief
+0,16,1,80,1000,1,PWM0

@@ -1,0 +1,1 @@
+{"name":"电话簿","nextLevel":[{"name":"增加新联系人","id":11},{"name":"删除联系人","id":12},{"name":"复制联系人","id":13},{"name":"移动联系人","id":14},{"name":"设置","id":15,"nextLevel":[{"name":"存储位置"}]},{"name":"导入导出","id":16,"nextLevel":[{"name":"导入联系人"},{"name":"导出联系人"}]},{"name":"其他","id":17,"nextLevel":[{"name":"容量查询"}]}]}

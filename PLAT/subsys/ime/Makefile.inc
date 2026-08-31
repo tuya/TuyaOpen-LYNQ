@@ -1,0 +1,10 @@
+SUBSYS_IME_DIR  := $(TOP)/PLAT/subsys/ime
+
+CFLAGS_INC += -I $(SUBSYS_IME_DIR)/inc
+
+SUBSYS_APPHUB_SRC_DIRS += 	$(SUBSYS_IME_DIR)/src
+
+CFLAGS += -DFEATURE_SUBSYS_IME_ENABLE
+ifeq ($(SUBSYS_IME_HW_ENABLE),y)
+include $(SUBSYS_IME_DIR)/hw/Makefile.inc
+endif

@@ -1,0 +1,4 @@
+gpio,locked,direction,default,active,interrupt,brief
+18,0,1,1,0,0,TP_RST
+28,0,1,1,0,0,LED_B
+36,0,0,0,0,4,TP_IRQ

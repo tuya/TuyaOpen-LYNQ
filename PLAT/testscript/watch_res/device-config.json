@@ -1,0 +1,88 @@
+{
+  "tp": {
+    "enabled": true,
+    "i2c_id": 0,
+    "type": 0,
+    "gpio_num": 36,
+    "fw_id": 0
+  },
+  "camera": {
+    "enabled": true,
+    "drv_id": 1,
+    "type": 3,
+    "int_mode": 2,
+    "mclk_freq": 3,
+    "reso": 1,
+    "seq_cfg": {
+      "clock_delay": 2
+    },
+    "img_out_wnd": false,
+    "wnd_cfg": {
+      "start_x": 0,
+      "start_y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "spi_cfg": {
+      "endianMode": 1,
+      "wireNum": 1,
+      "rxSeq": 1,
+      "cpol": 0,
+      "cpha": 1,
+      "ddrMode": true,
+      "wordIdSeq": 1,
+      "yOnly": false,
+      "rowScaleRatio": 1,
+      "colScaleRatio": 1,
+      "scaleBytes": 3,
+      "dummyAllowed": true
+    },
+    "ext_pwr_cfg": {
+      "io_num": 16,
+      "enabled": true
+    },
+    "rst_pin_cfg": {
+      "io_num": 20,
+      "reset_level": 1
+    },
+    "i2c_cfg": {
+      "i2c_port": 0,
+      "i2c_speed": 1,
+      "addr": 33
+    },
+    "qbuf_cfg": {
+      "item_count": 3,
+      "item_size": 153600
+    }
+  },
+  "lcd": {
+    "enabled": true,
+    "drv_id": 0,
+    "type": 1,
+    "int_type": 3,
+    "bk_light_mode": 0,
+    "gpio_cfg": {
+      "gpio_num": 0
+    },
+    "pwm_cfg": {
+      "pad": 16,
+      "pwm": 0,
+      "timer_port": 0
+    },
+    "init_backlight_level": 0,
+    "ext_pwr_io": 22,
+    "reset_io_num": 19,
+    "reset_level": 0,
+    "freq": 75497472,
+    "bpp": 16,
+    "data_lane_num": 1,
+    "width": 240,
+    "height": 320,
+    "offset_x": 0,
+    "offset_y": 0,
+    "te_circle": 16742,
+    "te_wait_time": 623,
+    "display_mode": 0,
+    "pix_mode": 1
+  }
+}

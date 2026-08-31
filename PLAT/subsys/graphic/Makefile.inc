@@ -1,0 +1,18 @@
+SUBSYS_GRAPHIC_DIR  := $(TOP)/PLAT/subsys/graphic
+
+CFLAGS_INC += -I $(SUBSYS_GRAPHIC_DIR)/inc
+
+SUBSYS_APPHUB_SRC_DIRS += 	$(SUBSYS_GRAPHIC_DIR)/src
+
+CFLAGS += -DFEATURE_SUBSYS_GRAPHIC_ENABLE
+ifeq ($(SUBSYS_GRAPHIC_OPENIMAGE_ENABLE),y)
+include $(SUBSYS_GRAPHIC_DIR)/openimage/Makefile.inc
+endif
+
+ifeq ($(SUBSYS_GRAPHIC_ARM2D_ENABLE),y)
+include $(SUBSYS_GRAPHIC_DIR)/arm2d/Makefile.inc
+endif
+
+ifeq ($(SUBSYS_GRAPHIC_TINYGL_ENABLE),y)
+include $(SUBSYS_GRAPHIC_DIR)/tinygl/Makefile.inc
+endif

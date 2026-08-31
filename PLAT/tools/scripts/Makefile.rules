@@ -1,0 +1,376 @@
+# default target
+all::
+
+include $(TOP)/PLAT/tools/scripts/Makefile.vars
+
+OUTTARGET = $(OUTPUT_NAME)
+
+ifeq ($(TOOLCHAIN),GCC)
+BUILDDIR ?= $(TOP)/PLAT/gccout/$(OUTTARGET)/$(CORE)/$(PROJECT)
+endif
+
+ifeq ($(TOOLCHAIN),ARMCC)
+BUILDDIR ?= $(TOP)/PLAT/out/$(OUTTARGET)/$(CORE)/$(PROJECT)
+endif
+
+LIBDIR   ?= $(TOP)/PLAT/prebuild
+
+
+#-------------------------------------------------------------------------------
+#		Rules
+#-------------------------------------------------------------------------------
+include $(TOP)/PLAT/device/target/Makefile.inc
+include $(TOP)/PLAT/driver/Makefile.inc
+include $(TOP)/PLAT/os/Makefile.inc
+include $(TOP)/PLAT/middleware/developed/Makefile.inc
+include $(TOP)/PLAT/middleware/thirdparty/Makefile.inc
+ifeq ($(SUBSYS_ENABLE),y)
+include $(TOP)/PLAT/subsys/Makefile.inc
+endif
+
+include $(TOP)/PLAT/open_api/Makefile.inc
+include $(TOP)/PLAT/openlib/Makefile.inc
+
+ifneq ($(BINNAME),ap_bootloader)
+include $(TOP)/PLAT/open_source/Makefile.inc
+endif
+
+ifeq ($(BUILD_USE_PREBUILD_LIB), n)
+PROJPRIV = $(TOP)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/MakeProj.priv
+ifeq ($(PROJPRIV), $(wildcard $(PROJPRIV)))
+include $(PROJPRIV)
+endif
+endif
+
+ifeq ($(BUILD_USE_PREBUILD_LIB),n)
+ifeq ($(BUILD_FW),y)
+include $(TOP)/FIRMWARE/Makefile.inc
+include $(TOP)/PROTOCOL/SRC/psl1/Makefile.inc
+endif
+ifeq ($(BUILD_PS),y)
+include $(TOP)/PROTOCOL/SRC/ps/Makefile.inc
+include $(TOP)/PROTOCOL/SRC/tcpip/Makefile.inc
+include $(TOP)/PROTOCOL/SRC/psl1/Makefile.inc
+ifeq ($(BUILD_IMS),y)
+include $(TOP)/PROTOCOL/SRC/ims/Makefile.inc
+endif
+endif
+
+
+
+ifeq ($(BUILD_USE_USB_LIB),y)
+include $(LIBDIR)/PLAT/Makefile.inc
+endif
+else
+ifeq ($(BUILD_FW),y)
+include $(LIBDIR)/FW/Makefile.inc
+endif
+ifeq ($(BUILD_PS),y)
+include $(LIBDIR)/PS/Makefile.inc
+endif
+include $(LIBDIR)/PLAT/Makefile.inc
+endif
+
+vpath %.c $(TOP)
+vpath %.s $(TOP)
+vpath %.S $(TOP)
+
+OBJS := $(addprefix $(BUILDDIR)/, $(obj-y))
+LIBS := $(addprefix $(BUILDDIR)/lib/,$(lib-y))
+LIBS_USBCUST := $(addprefix $(BUILDDIR)/lib/,$(lib-usbcust-y))
+
+DISABLE_LTO_OBJS := $(addprefix $(BUILDDIR)/, $(disable-lto-objs))
+$(DISABLE_LTO_OBJS) : DISABLE_LTO_FLAG=no-
+
+PPFILES += $(patsubst %.o, %.pp, $(OBJS))
+
+LD_PRECOMPILE_FILE ?= $(BUILDDIR)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/$(TARGET)_flash.c
+LD_COMPILED_FILE ?= $(BUILDDIR)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/$(TARGET)_flash_output.ld
+MEM_MAP_ORIGIN_FILE ?= $(TOP)/PLAT/device/target/board/$(BOARD_NAME)/common/inc/mem_map.h
+
+ifneq ($(MAKECMDGOALS), unilog)
+-include $(OBJS:.o=.d)
+endif
+-include $(OBJS:.o=.dd)
+-include $(patsubst %.ld,%.d,$(LD_COMPILED_FILE))
+
+.PHONY: all build clean size cleanall unilog cpp
+
+ifeq ($(BIN_COMPRESS),y)
+all:: build bincompress
+else
+all:: build
+endif
+
+ifeq ($(TOOLCHAIN),GCC)
+
+ifeq ($(SDK),true)	
+build: $(BUILDDIR)/$(BINNAME).elf \
+	$(BUILDDIR)/$(BINNAME).bin \
+	$(BUILDDIR)/$(BINNAME).size
+else
+build: $(BUILDDIR)/$(BINNAME).elf \
+	$(BUILDDIR)/$(BINNAME).symbols \
+	$(BUILDDIR)/$(BINNAME).bin \
+	$(BUILDDIR)/$(BINNAME).size
+endif
+	
+endif
+
+ifeq ($(TOOLCHAIN),ARMCC)
+
+build: $(BUILDDIR)/$(BINNAME).axf
+
+endif
+
+$(BUILDDIR):
+	@mkdir -p $(BUILDDIR)
+
+$(LIBDIR):
+	@mkdir -p $(LIBDIR)
+
+ifeq ($(BIN_COMPRESS),y)
+ifeq ($(BUILD_ENV),linux)
+define binCompress
+	@cp $(BUILDDIR)/$(BINNAME).bin $(BUILDDIR)/$(BINNAME)_unZip.bin
+	@$(TOP)/PLAT/tools/fcelf -C -bin $(BUILDDIR)/$(BINNAME)_unZip.bin -cfg $(TOP)/$(LINK_FILE_PATH)/sectionInfo_$(TYPE).json -map $(BUILDDIR)/$(BINNAME).map -out $(BUILDDIR)/$(BINNAME).bin;[ $$? -eq 0 ]
+endef
+else
+define binCompress
+	@cp $(BUILDDIR)/$(BINNAME).bin $(BUILDDIR)/$(BINNAME)_unZip.bin
+	@$(TOP)/PLAT/tools/fcelf.exe -C -bin $(BUILDDIR)/$(BINNAME)_unZip.bin -cfg $(TOP)/$(LINK_FILE_PATH)/sectionInfo_$(TYPE).json -map $(BUILDDIR)/$(BINNAME).map -out $(BUILDDIR)/$(BINNAME).bin;[ $$? -eq 0 ]
+endef
+endif
+endif
+
+ifeq ($(TOOLCHAIN),GCC)
+
+$(BUILDDIR)/%.sc: %.c
+	@mkdir -p $(dir $@)
+	@cp $< $@
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/coan/coan source $(filter -D%, $(CFLAGS)) -E --replace --implicit -ge $@; echo $$?
+else
+	@$(TOP)/PLAT/tools/coan/coan-6.0.1-x86_64.exe source $(filter -D%, $(CFLAGS) $(CFLAGS_DEFS)) -E --replace --implicit -ge $@; [[ $$? -ne 4 ]] && [[ $$? -ne 8 ]]
+endif
+$(BUILDDIR)/%.pp: %.c
+	@mkdir -p $(dir $@)
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) -MM -MP $< -MT $(basename $@).pp -MF $(basename $@).dd
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) -E -P $< -o $@
+ifeq ($(BUILD_ENV),linux)
+	$(Q)$(TOP)/PLAT/tools/LogPrePass -P $(BUILDDIR) $(PPFLAG) $@;[ $$? -eq 0 ]
+else
+	$(Q)$(TOP)/PLAT/tools/LogPrePass.exe -P $(BUILDDIR) $(PPFLAG) $@;[ $$? -eq 0 ]
+endif
+$(BUILDDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(ECHO) CC $<
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) $(DEPFLAGS) -c $< -o $@
+
+#overwrite implicit rule
+%.o: %.c
+	@mkdir -p $(dir $@)
+	$(ECHO) CC $<
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) $(DEPFLAGS) -c $< -o $@
+
+$(BUILDDIR)/%.o: %.s
+	@mkdir -p $(dir $@)
+	$(ECHO) ASM $<
+	$(Q)$(CC) $(CFLAGS_ASM) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) $(DEPFLAGS) -c $< -o $@
+
+$(BUILDDIR)/%.o: %.S
+	@mkdir -p $(dir $@)
+	$(ECHO) ASM $<
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) $(DEPFLAGS) -c $< -o $@
+
+$(LD_COMPILED_FILE): $(LD_FILE)
+	cp $< $(LD_PRECOMPILE_FILE)
+	$(ECHO) CC $<
+	$(Q) $(CC) $(CFLAGS_INC) -E -P $(CFLAGS_DEFS) $(filter -D%,$(CFLAGS)) -MMD -MP -MF $(basename $@).d -MT $(basename $@).ld $(LD_PRECOMPILE_FILE) > $@	
+
+ifeq ($(FLOAT_FLAG_ENABLE),y)
+$(BUILDDIR)/$(BINNAME).elf: $(OBJS) $(LIBS) $(LIBS_USBCUST) $(LD_COMPILED_FILE)
+	$(ECHO) LINK $@
+	$(Q)$(CC) $(LDFLAGS) $(CFLAGS_CPU) $(CFLAGS_DEFS) -T$(LD_COMPILED_FILE) -Wl,-Map,$(BUILDDIR)/$(BINNAME).map -o $@ $(OBJS) -u _scanf_float -u _printf_float -Wl,--start-group -Wl,--whole-archive $(LIBS) $(PREBUILDLIBS) -Wl,--no-whole-archive -Wl,--end-group -lc -lm -Wl,--no-undefined -Wl,--no-print-map-discarded
+else
+$(BUILDDIR)/$(BINNAME).elf: $(OBJS) $(LIBS) $(LIBS_USBCUST) $(LD_COMPILED_FILE)
+	$(ECHO) LINK $@
+ifeq ($(CORE),cp)
+ifeq ($(EC718XM_LD_AND_PREC), y)
+	$(Q)$(CC) $(LDFLAGS) $(CFLAGS_CPU) $(CFLAGS_DEFS) -T$(LD_COMPILED_FILE) $(TOP)/PLAT/device/target/board/$(BOARD_NAME)/$(CORE)/gcc/ec718xm/cpRomConstTable.txt -Wl,-Map,$(BUILDDIR)/$(BINNAME).map -o $@ $(OBJS) -Wl,--start-group -Wl,--whole-archive $(LIBS) $(PREBUILDLIBS) -Wl,--no-whole-archive -Wl,--end-group -Wl,--no-undefined -Wl,--no-print-map-discarded
+else
+	$(Q)$(CC) $(LDFLAGS) $(CFLAGS_CPU) $(CFLAGS_DEFS) -T$(LD_COMPILED_FILE) -Wl,-Map,$(BUILDDIR)/$(BINNAME).map -o $@ $(OBJS) -Wl,--start-group -Wl,--whole-archive $(LIBS) $(PREBUILDLIBS) -Wl,--no-whole-archive -Wl,--end-group -Wl,--no-undefined -Wl,--no-print-map-discarded
+endif
+else
+	$(Q)$(CC) $(LDFLAGS) $(CFLAGS_CPU) $(CFLAGS_DEFS) -T$(LD_COMPILED_FILE) -Wl,-Map,$(BUILDDIR)/$(BINNAME).map -o $@ $(OBJS) -Wl,--start-group -Wl,--whole-archive $(LIBS) $(PREBUILDLIBS) -Wl,--no-whole-archive -Wl,--end-group -Wl,--no-undefined -Wl,--no-print-map-discarded
+endif
+endif
+$(BUILDDIR)/mem_map.txt: $(TOP)/PLAT/device/target/board/$(BOARD_NAME)/common/inc/mem_map.h
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) -E -P $< -o $@
+
+ifeq ($(SDK),true)
+$(BUILDDIR)/$(BINNAME).bin: $(BUILDDIR)/$(BINNAME).elf $(BUILDDIR)/mem_map.txt
+	$(ECHO) OBJCOPY $@
+	$(Q)$(OBJCOPY) -O binary $< $@
+	@$(OBJDUMP) -d -h $< > $(BUILDDIR)/$(BINNAME).txt
+	@$(SIZE) $(OBJECTS) $<
+
+$(BUILDDIR)/$(BINNAME).size: $(BUILDDIR)/$(BINNAME).elf
+	@$(OBJDUMP) -h $< > $@
+	@$(SIZE) -G $< >> $@
+	@$(foreach lib, $(LIBS), $(SIZE) $(lib) -t -G >> $@;)
+else
+$(BUILDDIR)/$(BINNAME).symbols: $(BUILDDIR)/$(BINNAME).elf
+	$(Q)$(NM) --size-sort --print-size -r $< >$@
+
+$(BUILDDIR)/$(BINNAME).bin: $(BUILDDIR)/$(BINNAME).elf $(BUILDDIR)/mem_map.txt
+	$(ECHO) OBJCOPY $@
+	$(Q)$(OBJCOPY) -O binary $< $@
+	$(Q)$(OBJCOPY) -O verilog $< $(@:.bin=.hex)
+	@$(OBJDUMP) -d -h $< > $(BUILDDIR)/$(BINNAME).txt
+	@$(SIZE) $(OBJECTS) $<
+
+$(BUILDDIR)/$(BINNAME).size: $(BUILDDIR)/$(BINNAME).elf
+	@$(OBJDUMP) -h $< > $@
+	@$(SIZE) -G $< >> $@
+	@$(foreach lib, $(LIBS), $(SIZE) $(lib) -t -G >> $@;)
+endif
+
+ifeq ($(BIN_COMPRESS),y)
+bincompress: $(BUILDDIR)/$(BINNAME).elf $(BUILDDIR)/$(BINNAME).bin $(BUILDDIR)/$(BINNAME).size $(BUILDDIR)/mem_map.txt
+	$(call binCompress)
+endif
+
+clean:
+	@rm -rf $(BUILDDIR)
+
+cleanall:
+	@rm -rf $(TOP)/PLAT/gccout/$(OUTTARGET) $(TOP)/PLAT/middleware/developed/debug/inc/debug_log_*p.h
+
+size: $(BUILDDIR)/$(BINNAME).elf
+	@$(SIZE) $(OBJECTS) $(BUILDDIR)/$(BINNAME).elf
+
+ifeq ($(CORE),cp)
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb_$(CORE).txt; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb_$(CORE).txt; [ $$? -eq 0 ]
+endif
+else
+
+ifeq ($(SDK),true)	
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/tools/comdblib.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_cust_lib.h  -d $(TOP)/PLAT/tools/comdb_cust_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/tools/comdblib.txt $(TOP)/PLAT/openlib/$(BUILD_PRO_TARGET)/comdb_cust_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/tools/comdblib.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_cust_lib.h  -d $(TOP)/PLAT/tools/comdb_cust_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/tools/comdblib.txt $(TOP)/PLAT/openlib/$(BUILD_PRO_TARGET)/comdb_cust_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]	
+endif
+else
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/gccout/$(OUTTARGET)/cp/cp_project/comdb_cp.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE)_lib.h  -d $(BUILDDIR)/comdb_$(CORE)_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass -I $(BUILDDIR)/comdb_$(CORE)_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/gccout/$(OUTTARGET)/cp/cp_project/comdb_cp.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE)_lib.h  -d $(BUILDDIR)/comdb_$(CORE)_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(BUILDDIR)/comdb_$(CORE)_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]	
+endif
+endif
+
+endif
+	
+
+endif
+
+ifeq ($(TOOLCHAIN),ARMCC)
+
+$(BUILDDIR)/%.pp:%.c 
+	@mkdir -p $(dir $@)
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) -M --depend_target $(basename $@).pp $< --depend $(basename $@).dd
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_CPU) $(CFLAGS_INC) $(CFLAGS_DEFS) -EP $< -o $@
+ifeq ($(BUILD_ENV),linux)
+	$(Q)$(TOP)/PLAT/tools/LogPrePass -P $(BUILDDIR) $(PPFLAG) $@;[ $$? -eq 0 ]
+else
+	$(Q)$(TOP)/PLAT/tools/LogPrePass.exe -P $(BUILDDIR) $(PPFLAG) $@;[ $$? -eq 0 ]
+endif	
+$(BUILDDIR)/%.o %.d: %.c
+	@mkdir -p $(dir $@)
+	$(ECHO) CC $<
+	$(Q)$(CC) $(CFLAGS) $(CFLAGS_INC) $(CFLAGS_DEFS) $< --depend $(basename $@).d -o $@
+
+$(BUILDDIR)/%.o %.d : %.s
+	@mkdir -p $(dir $@)
+	$(ECHO) AS $<
+	$(Q)$(AS) $(ASMFLAGS) $(CFLAGS_INC) $(CFLAGS_DEFS)  $< --depend $(basename $@).d -o $@
+
+$(BUILDDIR)/$(BINNAME).axf: $(OBJS) $(LIBS) $(linker-script-y)
+	$(ECHO) LINK $@
+	$(ECHO) $(LIBS)
+	$(Q)$(LD) $(LDFLAGS) --entry=Reset_Handler --scatter $(linker-script-y) -o $@ $(OBJS) $(LIBS) $(PREBUILDLIBS) --list $(BUILDDIR)/$(BINNAME).map --symdefs=$(BUILDDIR)/$(BINNAME).symbols
+	$(Q)$(ELF) --bin --output $(BUILDDIR)/$(BINNAME).bin $(BUILDDIR)/$(BINNAME).axf
+	$(Q)$(ELF) $(ELFFLAGS) --output $(BUILDDIR)/$(BINNAME).hex $(BUILDDIR)/$(BINNAME).axf
+	$(Q)$(ELF) -c $(BUILDDIR)/$(BINNAME).axf -o $(BUILDDIR)/$(BINNAME).txt
+
+clean:
+	@rm -rf $(BUILDDIR)
+cleanall:
+	@rm -rf $(TOP)/PLAT/out/* $(TOP)/PLAT/middleware/developed/debug/inc/debug_log_*p.h
+
+ifeq ($(CORE),cp)
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb_$(CORE).txt; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb_$(CORE).txt; [ $$? -eq 0 ]
+endif
+else
+
+ifeq ($(SDK),true)	
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/tools/comdblib.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_cust_lib.h  -d $(TOP)/PLAT/tools/comdb_cust_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/tools/comdblib.txt $(TOP)/PLAT/tools/comdb_cust_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/tools/comdblib.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_cust_lib.h  -d $(TOP)/PLAT/tools/comdb_cust_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/tools/comdblib.txt $(TOP)/PLAT/tools/comdb_cust_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]
+endif
+else
+unilog: cpp
+ifeq ($(BUILD_ENV),linux)
+	@$(TOP)/PLAT/tools/LogPrePass -I $(TOP)/PLAT/out/$(OUTTARGET)/cp/cp_project/comdb_cp.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE)_lib.h  -d $(BUILDDIR)/comdb_$(CORE)_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass -I $(BUILDDIR)/comdb_$(CORE)_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]
+else
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(TOP)/PLAT/out/$(OUTTARGET)/cp/cp_project/comdb_cp.txt -l $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE)_lib.h  -d $(BUILDDIR)/comdb_$(CORE)_lib.txt; [ $$? -eq 0 ]
+	@$(TOP)/PLAT/tools/LogPrePass.exe -I $(BUILDDIR)/comdb_$(CORE)_lib.txt -L $(BUILDDIR)/ -h $(BUILDDIR)/debug_log_$(CORE).h  -d $(BUILDDIR)/comdb.txt -v $(BUILDDIR)/dbversion.h; [ $$? -eq 0 ]	
+endif
+endif
+
+endif
+
+endif
+
+
+cpp: $(PPFILES) $(LIBPPFILES) $(LIBUSBPPFILES) $(CUSTLIBPPFILES)
+$(LIBPPFILES):
+$(LIBUSBPPFILES):
+$(CUSTLIBPPFILES):
+
+ifeq ($(CORE),ap)
+ifeq ($(BUILD_CUST),qcom)
+$(PPFILES):    PPFLAG=-C
+$(LIBPPFILES): PPFLAG=-C
+$(LIBUSBPPFILES): PPFLAG=-c
+$(CUSTLIBPPFILES): PPFLAG=-c
+else
+$(PPFILES):    PPFLAG=-C
+$(LIBPPFILES): PPFLAG=-c
+$(LIBUSBPPFILES): PPFLAG=-c
+$(CUSTLIBPPFILES): PPFLAG=-c
+endif
+else
+$(PPFILES):    PPFLAG=-c
+$(LIBPPFILES): PPFLAG=-c
+endif
+

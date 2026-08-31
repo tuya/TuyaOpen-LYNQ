@@ -1,0 +1,344 @@
+diff --git a/PLAT/middleware/developed/ccio/core/src/ccio_rbuf.c b/PLAT/middleware/developed/ccio/core/src/ccio_rbuf.c
+index 59d1f0b..3c83269 100644
+--- a/PLAT/middleware/developed/ccio/core/src/ccio_rbuf.c
++++ b/PLAT/middleware/developed/ccio/core/src/ccio_rbuf.c
+@@ -200,7 +200,6 @@ CCIO_NET_FM_RAMCODE static int32_t ccioRbufGetBatchXfer(CcioRbuf_t *rbuf)
+ {
+     uint8_t              isRxWinEn = 0;
+     RbufSize_t           rxWinSize = 0;
+-    RbufSize_t           lastWrIdx = 0;
+     CcioDevice_t            *chdev = NULL;
+     CcioXferBatch_t        *xbatch = &rbuf->xbatch;
+     CcioDummyXfer_t        *xdummy = &xbatch->dummy;
+@@ -230,8 +229,9 @@ CCIO_NET_FM_RAMCODE static int32_t ccioRbufGetBatchXfer(CcioRbuf_t *rbuf)
+     {
+         rbuf->chgRxWinFn(rbuf->rbufId, getRecv.xferCnt);
+     }
+-
+-    lastWrIdx = rbuf->writeIdx;
++#if (LOG_FILTER_LEVEL < 1)
++    RbufSize_t lastWrIdx = rbuf->writeIdx;
++#endif
+     rbuf->writeIdx = getRecv.writeIdx;
+ 
+     xbatch->isXferChk = getRecv.isXferChk;
+@@ -241,9 +241,11 @@ CCIO_NET_FM_RAMCODE static int32_t ccioRbufGetBatchXfer(CcioRbuf_t *rbuf)
+     xdummy->dumSti    = getRecv.dummySti;
+     xdummy->dumCnt    = getRecv.dummyCnt;
+ 
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, RBUF_GET_XBATCH_2, P_VALUE, "rbuf(%d): batchCnt(%d/%d|%d) @sti(%d), wri(%d --> %d), dummy(0x%x)",
+                                         rbuf->rbufId, getRecv.xferCnt, xbatch->xferCnt, xbatch->batchSize,
+                                         xbatch->startIdx, lastWrIdx, rbuf->writeIdx, getRecv.dummyCnt << 16 | getRecv.dummySti);
++#endif
+ 
+ GET_BATCH_XFER_END:
+     return getRecv.xferCnt;
+@@ -1566,8 +1568,9 @@ RBUF_QUEUE_END:
+ CCIO_NET_FM_RAMCODE int32_t ccioRbufDequeue(uint8_t rbufId, UlPduBlock_t *ulpdu)
+ {
+     CcioRbuf_t     *rbuf = (CcioRbuf_t*)ccioGetEntityRbuf(rbufId);
++#if (LOG_FILTER_LEVEL < 1)
+     RbufSize_t   lastRdi = rbuf->readIdx;
+-
++#endif
+     EC_ASSERT(rbuf && (ulpdu->memType == UL_RBUF_MEM || ulpdu->memType == UL_RBUF2_MEM), ulpdu->memType, rbuf, rbufId);
+ 
+     if(rbuf->isVolMode)
+@@ -1593,7 +1596,9 @@ CCIO_NET_FM_RAMCODE int32_t ccioRbufDequeue(uint8_t rbufId, UlPduBlock_t *ulpdu)
+         }
+     }
+ 
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, RBUF_DEQUEUE, P_VALUE, "rbuf(%d): rdi up(%d --> %d)", rbuf->rbufId, lastRdi, rbuf->readIdx);
++#endif
+     ccioRbufSyncForNextXfer(rbuf, (CcioDevice_t*)((CcioEntity_t*)rbuf->chent)->chdev, CCIO_RBUF_TRIGG_OFF);
+ 
+     return CCIO_EOK;
+diff --git a/PLAT/middleware/developed/ccio/custom/src/ccio_message.c b/PLAT/middleware/developed/ccio/custom/src/ccio_message.c
+index 9518cf9..db2e120 100644
+--- a/PLAT/middleware/developed/ccio/custom/src/ccio_message.c
++++ b/PLAT/middleware/developed/ccio/custom/src/ccio_message.c
+@@ -1212,11 +1212,11 @@ static int32_t ccioHandleUsbState(CcioChanMessage_t *chmsg)
+ {
+     chdevPostHandleFunc   postHandleFn = NULL;
+     uint32_t              handleExtras = (chmsg->info.data << 16) | (chmsg->extras.data & 0xffff);
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, HANDLE_USB_STATE, P_SIG, "usb is %s(%d/%d/%d) for i/o!",
+                                    chmsg->flags ? "enabled" : "disabled",
+                                    chmsg->flags, chmsg->info.data, chmsg->extras.data);
+-
++#endif
+     switch(chmsg->extras.data)
+     {
+         case USBD_STATE_INIT:
+@@ -2329,7 +2329,9 @@ CCIO_NET_FM_RAMCODE int32_t ccioHandleChanMsg(CcioChanMessage_t *chmsg, CcioChan
+         return CCIO_EMATCHED;
+     }
+ 
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, HANDLE_CMSG_3, P_VALUE, "handle chan message: %e<CcioChanMessageId_e, 0xFF00FFFF>", chmsg->msgId);
++#endif
+ 
+     /* msg handler! */
+     entry->msgHandlFn(chmsg);
+diff --git a/PLAT/middleware/developed/ccio/custom/src/ccio_monitor.c b/PLAT/middleware/developed/ccio/custom/src/ccio_monitor.c
+index 3de1f78..ab4b911 100644
+--- a/PLAT/middleware/developed/ccio/custom/src/ccio_monitor.c
++++ b/PLAT/middleware/developed/ccio/custom/src/ccio_monitor.c
+@@ -504,15 +504,16 @@ CCIO_NET_FM_RAMCODE static int32_t ccioSendToRxTask(CcioChanMessage_t *chmsg, ui
+ 
+     queId = CCIO_CHAN_QUEUE_RX_0 + (((chmsg->msgId & CCIO_CHAN_MSG_CTRL_MASK) & 0x000F0000) >> 16);
+ 
+-    //uint32_t mask = SaveAndSetIRQMask();
++    //uint32_t mask = SaveAndSetIRQMask();
+ 
+     status = osMessageQueuePut(gChanMonitor.msgqHandle[queId], (const void*)chmsg,  0, timeout);
+     EC_ASSERT(queId <= CCIO_CHAN_QUEUE_RX_2 && status == osOK, status, chmsg->msgId, timeout << 16 | queId);
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, SEND_TO_RXTASK_1, P_VALUE, "send message(0x%x) to Rx(%d) task!", chmsg->msgId, queId);
++#endif
+     osEventFlagsSet(gChanMonitor.rxPollHandle, CCIO_CHAN_EF_RXQUEUE_SET(queId));
+ 
+-    //RestoreIRQMask(mask);
++    //RestoreIRQMask(mask);
+ 
+     return CCIO_EOK;
+ }
+@@ -584,9 +585,9 @@ CCIO_NET_FM_RAMCODE static int32_t ccioSendToTxTask(CcioChanMessage_t *chmsg, ui
+         }
+     #endif
+     }while(0);
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, SEND_TO_TXTASK_2, P_VALUE, "send message(0x%x) to Tx(%d) task!", chmsg->msgId, bmCos >> 16);
+-
++#endif
+     status = osMessageQueuePut(gChanMonitor.msgqHandle[queId],  (const void*)chmsg, 0, timeout);
+     EC_ASSERT(status == osOK, status, chmsg->msgId, timeout << 16 | queId);
+ 
+@@ -1355,9 +1356,9 @@ int32_t ccioPullDownChannels(uint8_t chanType, void *chent)
+ CCIO_NET_FM_RAMCODE int32_t ccioHandleDevStatus(uint32_t flags, void *args)
+ {
+     int32_t  ret = CCIO_EOK;
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, HANDLE_DEV_STATUS_1, P_DEBUG, "handle DS: %e<CcioDevStatusFlags_e>", flags);
+-
++#endif
+     switch(flags)
+     {
+         case CCIO_DSF_QUERY_PEER_MAC:
+diff --git a/PLAT/middleware/developed/ccio/device/src/usb_device.c b/PLAT/middleware/developed/ccio/device/src/usb_device.c
+index 15b895b..da5e934 100644
+--- a/PLAT/middleware/developed/ccio/device/src/usb_device.c
++++ b/PLAT/middleware/developed/ccio/device/src/usb_device.c
+@@ -290,7 +290,7 @@ USB_DEVICE_BSS_SECTION static CcioDevice_t  *gptUsbDevAgent = NULL;
+ USB_DEVICE_BSS_SECTION static UsbDevAutoSusp_t  gUsbDevAutoSusp = {0};
+ 
+ USB_DEVICE_BSS_SECTION static usbmst_cmn_lowlevel_ops t_cmn_lowlevel_ops;
+-USB_DEVICE_BSS_SECTION static uint8_t gUsbInitCalled = 0;
++USB_DEVICE_BSS_SECTION uint8_t gUsbInitCalled = 0;
+ 
+ 
+ /*for this table:
+@@ -623,10 +623,10 @@ CCIO_NET_FM_RAMCODE static int32_t usbDevTriggNextXfer(CcioDevice_t *chdev)
+     {
+         /* already set before! */
+         if(devWrap->isTriggEn == 1) return CCIO_EOK;
+-
++#if (LOG_FILTER_LEVEL < 1)
+         ECPLAT_PRINTF(UNILOG_CCIO, USBD_NEXT_XFER_1, P_SIG, "usbd(%d): avlbSize(%d) < avlbThres(%d/%d)! waiting more...",
+                                                           chdev->llsn, avlbSize, devWrap->avlbThres, devWrap->isThresEn);
+-
++#endif
+         /* need no protection for 'isTriggEn',
+          * could be triggered in next round!
+          */
+@@ -1485,9 +1485,9 @@ uint8_t usbDevResumeChkEthContTxEpBlk(void)
+ CCIO_NET_FM_RAMCODE static int32_t usbDevExecInstr(uint32_t flags, void *args)
+ {
+     int32_t  ret = CCIO_EOK;
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, USBD_EXEC_INSTR_1, P_INFO, "recv usb instr: %e<CcioDevExecFlags_e>", flags);
+-
++#endif
+     switch(flags)
+     {
+         case CCIO_DEF_ADD_DEV_CMPLT:
+@@ -2126,7 +2126,7 @@ static int32_t usbDevLowLvlEvtInit(usbmst_top_st  *ptop , uint8_t cfgidx)
+ 
+     gUsbInitCalled = 1;
+ 
+-#if MEASURE_USB_INT_TIME
++#if (LOG_FILTER_LEVEL < 1)  // MEASURE_USB_INT_TIME
+     TMU_APTimeReadOpen(&endTime);
+     ECPLAT_PRINTF(UNILOG_CCIO, usbDevLowLvlEvtInit_5, P_VALUE, "USB IRQ usbDevLowLvlEvtInit Process Time=%d", (endTime-startTime));
+ #endif
+@@ -2421,11 +2421,11 @@ CCIO_NET_FM_RAMCODE int32_t usbDevCfgOutXfer(UsbIfIdx_e ifIdx)
+ 
+ 
+     uint32_t mask = SaveAndSetIRQMask();
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, USBD_CFG_OUT_XFER_0, P_DEBUG, "usbd(%d): cfg xfer, type: %e<UsbIfType_e>, size: %d!",
+                                                      ifIdx, usbIfEpMapTbl.usbIf2Ep[ifIdx].usbIfType,
+                                                      usbIfEpMapTbl.usbIf2Ep[ifIdx].maxNextXferSize);
+-
++#endif
+     EC_ASSERT((usbIfEpMapTbl.usbIf2Ep[ifIdx].usbIfType < USB_INTERFACE_MAXTYPE) &&  \
+               ((usbIfEpMapTbl.usbIf2Ep[ifIdx].maxNextXferSize == CCIO_RNDIS_XFER_MAXSIZE) || \
+               (usbIfEpMapTbl.usbIf2Ep[ifIdx].maxNextXferSize == CCIO_ECM_XFER_MAXSIZE) || \
+@@ -2458,9 +2458,9 @@ CcioDevice_t* usbDevCreate(uint32_t usbIfIdx, UsbDevConf_t *usbConf)
+     }
+ 
+     if(gUsbDevice[usbIfIdx].wkState != CCIO_DWS_UNDEF) return &gUsbDevice[usbIfIdx];
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, USBD_CREATE_1, P_INFO, "create usb device(%d)", usbIfIdx);
+-
++#endif
+     extern uint8_t apmuGetImageType(void);
+     if(1 == apmuGetImageType())
+     {
+@@ -2703,9 +2703,9 @@ int32_t usbDevNotifyState(UsbDevState_e state)
+     uint8_t              hasSet = 0;
+     uint16_t               loop = 0;
+     uint32_t               mask = 0;
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, USBD_NOTIFY_STATE_1, P_SIG, "usbd: notify isr state(%d)!", state);
+-
++#endif
+     switch(state)
+     {
+         case USBD_STATE_RESUME:
+@@ -2869,9 +2869,9 @@ void usbDevNotifySerlEvent(uint32_t flags, void *args)
+     }
+ 
+     EC_ASSERT(serlCtrl->t_ctl_req.len == 2, serlCtrl->t_ctl_req.len, serlCtrl->func_idx, bmSignal);
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, USBD_SERL_EVT_1, P_DEBUG, "usbd(%d): serl request set-line-state(0x%x)!", serlCtrl->func_idx, bmSignal);
+-
++#endif
+     if(serlCtrl->func_idx >= USB_DEV_REAL_MAXNUM)
+     {
+         //ECPLAT_PRINTF(UNILOG_CCIO, USBD_SERL_EVT_2, P_ERROR, "usbd(%d): err! idx overflows!", serlCtrl->func_idx);
+diff --git a/PLAT/middleware/developed/ccio/service/src/ccio_opaq.c b/PLAT/middleware/developed/ccio/service/src/ccio_opaq.c
+index e086e7f..0a2b298 100644
+--- a/PLAT/middleware/developed/ccio/service/src/ccio_opaq.c
++++ b/PLAT/middleware/developed/ccio/service/src/ccio_opaq.c
+@@ -339,8 +339,9 @@ uint32_t opaqIsDlPduPendListEmpty(uint8_t opaqCid, uint8_t outFmt)
+ CCIO_NET_FM_RAMCODE uint32_t opaqGetDlPduPendList(uint8_t opaqCid, uint8_t outFmt, DlPduBlockList_t *list)
+ {
+     uint32_t       count = 0;
++#if (LOG_FILTER_LEVEL < 1)
+     CcioEntity_t  *chent = (CcioEntity_t*)OPAQ_GET_SERL_ENT(gptOpaqEntMan[opaqCid]);
+-
++#endif
+     EC_ASSERT((outFmt == CCIO_OXF_CMD_LINE || outFmt == CCIO_OXF_RAW_DATA) &&
+               (opaqCid < OPAQ_CHAN_MAXNUM && gptOpaqEntMan[opaqCid]), opaqCid, outFmt, gptOpaqEntMan[opaqCid]);
+ 
+@@ -355,10 +356,10 @@ CCIO_NET_FM_RAMCODE uint32_t opaqGetDlPduPendList(uint8_t opaqCid, uint8_t outFm
+         gOpaqPendListMan[opaqCid].blockList[outFmt].head = gOpaqPendListMan[opaqCid].blockList[outFmt].tail = NULL;
+     }
+     RestoreIRQMask(mask);
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CCIO, OPAQ_GET_PEND_LIST, P_INFO, "opaqCid(%d/0x%x): %d %s line(s) in total...",
+                          opaqCid, chent->chanId, count, outFmt == CCIO_OXF_CMD_LINE ? "cmd" : "rawdata");
+-
++#endif
+     return count;
+ }
+ 
+diff --git a/PLAT/middleware/developed/cms/cms/src/cms_api.c b/PLAT/middleware/developed/cms/cms/src/cms_api.c
+index 72930f7..721fbf2 100644
+--- a/PLAT/middleware/developed/cms/cms/src/cms_api.c
++++ b/PLAT/middleware/developed/cms/cms/src/cms_api.c
+@@ -195,10 +195,10 @@ void cmsStartPs(void)
+     {
+         return;
+     }
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_CMS, cmsStartPs_s_1, P_SIG,
+                   "Call CMS SYN API to start PS...");
+-
++#endif
+     /* Could only be called in task */
+     OsaCheck(osIsInISRContext() != TRUE, 0, __get_PRIMASK(), __get_BASEPRI());
+ 
+diff --git a/PLAT/middleware/developed/cms/psdial/src/psdial_ps_ctrl.c b/PLAT/middleware/developed/cms/psdial/src/psdial_ps_ctrl.c
+index 2f68d72..d6a04d1 100644
+--- a/PLAT/middleware/developed/cms/psdial/src/psdial_ps_ctrl.c
++++ b/PLAT/middleware/developed/cms/psdial/src/psdial_ps_ctrl.c
+@@ -497,8 +497,10 @@ void psDialStartPs(void)
+ 
+     if (pDialCtx->psTaskReady)
+     {
++#if (LOG_FILTER_LEVEL < 1)
+         ECPLAT_PRINTF(UNILOG_PS_DIAL, psDialStartPs_w_1, P_WARNING,
+                       "PS DIAL, PS task is ready, don't need to restart");
++#endif
+         return;
+     }
+ 
+diff --git a/PLAT/middleware/developed/common/src/mw_aon_info.c b/PLAT/middleware/developed/common/src/mw_aon_info.c
+index 68af82f..dd97e78 100644
+--- a/PLAT/middleware/developed/common/src/mw_aon_info.c
++++ b/PLAT/middleware/developed/common/src/mw_aon_info.c
+@@ -394,9 +394,10 @@ void mwAonSetNitzUtcTimeSyncFlag(BOOL bSync)
+ */
+ void mwAonPsDialInfoChanged(void)
+ {
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_PLA_MIDWARE, mwAonPsDialInfoChanged_s_1, P_SIG,
+                   "MW AON, PS DIAL AON info changed");
+-
++#endif
+     apmuSdkFlashWrReq(AP_FLASHREQ_MIDWARE_AON);
+ 
+     return;
+@@ -524,7 +525,8 @@ void mwAonGetDefaultAonDnsCfg(UINT8 cid, MidWareDefaultAonDnsCfg *mwDefaultAonDn
+     }
+ 
+ }
+-
++
++
+ 
+ 
+ /**
+diff --git a/PLAT/middleware/thirdparty/littlefs/port/lfs_port_task.c b/PLAT/middleware/thirdparty/littlefs/port/lfs_port_task.c
+index 1b612f8..05c01ed 100644
+--- a/PLAT/middleware/thirdparty/littlefs/port/lfs_port_task.c
++++ b/PLAT/middleware/thirdparty/littlefs/port/lfs_port_task.c
+@@ -576,9 +576,9 @@ static void LFS_reply(osThreadId_t threadId, int retCode)
+     osStatus_t status;
+ 
+     reply.retCode = retCode;
+-
++#if (LOG_FILTER_LEVEL < 1)
+     ECPLAT_PRINTF(UNILOG_LFS, LFS_Reply_0, P_INFO, "LFS reply, ret:%d, threadId:%x", reply.retCode, threadId);
+-
++#endif
+     status = osMessageQueuePut(gLfsReplyMsgQueue, &reply, 0, osWaitForever);
+ 
+     EC_ASSERT(status == osOK, status, 0, 0);
+@@ -635,9 +635,9 @@ static void LFS_daemonTaskEntry(void *arg)
+ 
+         // wait for message
+         status = osMessageQueueGet(gLfsRequestMsgQueue, &request, 0, osWaitForever);
+-
++#if (LOG_FILTER_LEVEL < 1)
+         ECPLAT_PRINTF(UNILOG_LFS, LFS_daemonTaskEntry, P_INFO, "LFS Daemon task recv a request, type:%d, threadId:%x", request.type, request.threadId);
+-
++#endif
+         if(status == osOK)
+         {
+             switch(request.type)

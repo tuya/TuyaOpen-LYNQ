@@ -1,0 +1,3 @@
+paddr,mux,pullUp,pullDown,pullSelect,inputControl,outputControl,brief
+14,4,1,0,1,0,0,GPIO19
+23,0,0,0,0,0,0,GPIO8

@@ -1,0 +1,51 @@
+#ifndef __PKG_718P_MAPDEF_H__
+#define __PKG_718P_MAPDEF_H__
+
+#define AP_FLASH_BASE_LNA 0x800000
+
+//For 718P, CP image in AP Flash
+#define CP_PKGIMG_LNA (0x0081a000)
+
+#define BL_PKGIMG_LNA (0x00803000)
+
+#define BOOTLOADER_PKGIMG_LIMIT_SIZE (0x12000)
+
+#if defined (FEATURE_AMR_CP_ENABLE) || defined (FEATURE_VEM_CP_ENABLE)
+
+#define AP_PKGIMG_LNA (0x008BA000)
+
+#define AP_PKGIMG_LIMIT_SIZE (0x2C7000)
+
+#define CP_PKGIMG_LIMIT_SIZE (0xA0000)
+
+#else
+
+#define AP_PKGIMG_LNA (0x0087e000)
+
+#define AP_PKGIMG_LIMIT_SIZE (0x303000)
+
+#define CP_PKGIMG_LIMIT_SIZE (0x64000)
+
+#endif
+
+#define XPKGDBLSH_VIRTIMG_MERGE_LNA    (0x0)
+#define XPKGDSYSH_VIRTIMG_MERGE_LNA    (0x1000)
+#define XPKGDPRM_VIRTIMG_MERGE_LNA  (0x0)
+#define XPKGDCMN_VIRTIMG_MERGE_LNA  (0x0)
+#define XPKG_VIRTIMG_LOAD_SIZE      (0x100000)
+
+#define PKGFLXAPP_APP0_LNA      (0x00B81000)
+#define PKGFLXAPP_APP0_SIZE     (0x8000)
+
+#define EF_IMG_TTS_LNA          (0x80100000)
+#define EF_IMG_TTS_SIZE         (0x100000)
+#define EF_IMG_LFS_LNA          (0x80200000)
+#define EF_IMG_LFS_SIZE         (0x100000)
+
+#define PKGFLXTTS_LNA           (0xAF5000)
+#define PKGFLXTTS_SIZE          (0x8C000)
+#define PKGFLXLFS_LNA           (0xBA1000)
+#define PKGFLXLFS_SIZE          (0xC000)
+
+#endif
+

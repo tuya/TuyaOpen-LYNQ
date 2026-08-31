@@ -1,0 +1,59 @@
+SUBSYS_CAM_DIR := $(TOP)/PLAT/subsys/openhal/dev/cam
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers
+CFLAGS += -DFEATURE_HAL_CAM_ENABLE
+SUBSYS_CAM_FILES := $(SUBSYS_CAM_DIR)/api_cam.c
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/hal_cam.c
+
+ifeq ($(BUILTIN_CAM_BF20A6), y)
+CFLAGS += -DHAL_CAM_BF20A6_BUILTIN
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/bf20a6/bf20a6.c
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers/bf20a6
+endif
+
+ifeq ($(BUILTIN_CAM_BF30A2), y)
+CFLAGS += -DHAL_CAM_BF30A2_BUILTIN
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/bf30a2/bf30a2.c
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers/bf30a2
+endif
+
+ifeq ($(BUILTIN_CAM_GC032A), y)
+CFLAGS += -DHAL_CAM_GC032A_BUILTIN
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/gc032a/gc032a.c
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers/gc032a
+endif
+
+ifeq ($(BUILTIN_CAM_GC6133), y)
+CFLAGS += -DHAL_CAM_GC6133_BUILTIN
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/gc6133/gc6133.c
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers/gc6133
+endif
+
+ifeq ($(BUILTIN_CAM_GC6153), y)
+CFLAGS += -DHAL_CAM_GC6153_BUILTIN
+SUBSYS_CAM_FILES += $(SUBSYS_CAM_DIR)/drivers/gc6153/gc6153.c
+CFLAGS_INC += -I $(SUBSYS_CAM_DIR)/drivers/gc6153
+endif
+
+CAM_EXCLUDE_FILES := 
+
+SUBSYS_CAM_CFILES = $(filter-out $(CAM_EXCLUDE_FILES), $(SUBSYS_CAM_FILES))
+SUBSYS_CAM_COBJSTEMP := $(patsubst %.c, %.o, $(SUBSYS_CAM_CFILES))
+SUBSYS_CAM_COBJSTEMP := $(subst $(SUBSYS_CAM_DIR), PLAT/subsys/openhal/dev/cam, $(SUBSYS_CAM_COBJSTEMP))
+SUBSYS_CAM_COBJS := $(addprefix $(BUILDDIR)/, $(SUBSYS_CAM_COBJSTEMP))
+SUBSYS_CAM_PPFILES := $(patsubst %.o, %.pp, $(SUBSYS_CAM_COBJS))
+CUSTLIBPPFILES += $(SUBSYS_CAM_PPFILES)
+
+ifneq ($(MAKECMDGOALS), build-unilog)
+-include $(SUBSYS_CAM_COBJS:.o=.d)
+endif
+-include $(SUBSYS_CAM_COBJS:.o=.dd)
+
+ifeq ($(TOOLCHAIN),GCC)
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/gcc
+lib-y += libcam.a
+$(BUILDDIR)/lib/libcam.a: $(SUBSYS_CAM_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) -cr $@ $^
+endif

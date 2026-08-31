@@ -1,0 +1,2 @@
+drv_id,type,int_type,bk_light_mode,bk_light_gpio,bk_light_pwm,init_backlight_level,freq,width,height,offset_x,offset_y,te_circle,te_wait_time,pixel_width,display_mode,pix_mode,brief
+0,"ST7789",1,1,15,0,100,53477376,240,320,0,0,16742,623,16,0,0,LCD Device

@@ -1,0 +1,45 @@
+SUBSYS_HTTP_DOWNLOADER_DIR  := $(TOP)/PLAT/subsys/comm/http_downloader
+CFLAGS_INC += -I $(SUBSYS_HTTP_DOWNLOADER_DIR)
+
+CFLAGS += -DFEATURE_SUBSYS_HTTP_DOWNLOADER_ENABLE
+SUBSYS_HTTP_DOWNLOADER_SRC_DIRS += $(SUBSYS_HTTP_DOWNLOADER_DIR)
+SUBSYS_HTTP_DOWNLOADER_EXCLUDE_FILES :=
+SUBSYS_HTTP_DOWNLOADER_CSRC = $(foreach dir, $(SUBSYS_HTTP_DOWNLOADER_SRC_DIRS), $(wildcard $(dir)/*.c))
+SUBSYS_HTTP_DOWNLOADER_CFILES = $(filter-out $(SUBSYS_HTTP_DOWNLOADER_EXCLUDE_FILES), $(SUBSYS_HTTP_DOWNLOADER_CSRC))
+SUBSYS_HTTP_DOWNLOADER_COBJSTEMP := $(patsubst %.c, %.o, $(SUBSYS_HTTP_DOWNLOADER_CFILES))
+SUBSYS_HTTP_DOWNLOADER_COBJSTEMP :=$(subst $(SUBSYS_HTTP_DOWNLOADER_DIR),PLAT/subsys/comm/http_downloader,$(SUBSYS_HTTP_DOWNLOADER_COBJSTEMP))
+SUBSYS_HTTP_DOWNLOADER_COBJS := $(addprefix $(BUILDDIR)/, $(SUBSYS_HTTP_DOWNLOADER_COBJSTEMP))
+SUBSYS_HTTP_DOWNLOADER_PPFILES := $(patsubst %.o, %.pp, $(SUBSYS_HTTP_DOWNLOADER_COBJS))
+PPFILES += $(SUBSYS_HTTP_DOWNLOADER_PPFILES)
+
+
+ifneq ($(MAKECMDGOALS), build-unilog)
+-include $(SUBSYS_HTTP_DOWNLOADER_COBJS:.o=.d)
+endif
+-include $(SUBSYS_HTTP_DOWNLOADER_COBJS:.o=.dd)
+
+ifeq ($(TOOLCHAIN),GCC)
+
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/gcc
+
+lib-y += libsubsys_http_downloader.a
+
+$(BUILDDIR)/lib/libsubsys_http_downloader.a: $(SUBSYS_HTTP_DOWNLOADER_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) -cr $@ $^
+
+endif
+
+ifeq ($(TOOLCHAIN),ARMCC)
+
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/keil
+
+lib-y += libsubsys_http_downloader.lib
+
+$(BUILDDIR)/lib/libsubsys_http_downloader.lib: $(SUBSYS_HTTP_DOWNLOADER_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+endif

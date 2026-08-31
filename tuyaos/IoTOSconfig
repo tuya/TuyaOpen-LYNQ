@@ -1,0 +1,50 @@
+# Ktuyaconf
+
+config PMU_NORMAL_GPIO_LEVEL
+    bool "enable normal gpio level 3.3v"
+    default n
+
+config PMU_AON_GPIO_LEVEL
+    bool "enable aon gpio level 3.3v"
+    default n
+
+config ENABLE_SPI_LCD
+    bool "enable spi lcd"
+    default n
+
+config ENABLE_BUILD_IN_GPS
+    bool "enable build in gps module"
+    default n
+
+menuconfig ENABLE_EXT_FLASH
+    bool "enable ext flash"
+        default n
+    select ENABLE_SPI
+    select ENABLE_STORAGE
+
+    if ENABLE_EXT_FLASH
+        choice
+            prompt "ext flash spi index"
+            default EXT_FLASH_SPI_INDEX1
+
+        config EXT_FLASH_SPI_INDEX0
+            bool "spi0"
+            help
+                External flash connects to SPI0 (OL_SPI_INDEX_0).
+
+        config EXT_FLASH_SPI_INDEX1
+            bool "spi1"
+            help
+                External flash connects to SPI1 (OL_SPI_INDEX_1).
+
+        endchoice
+
+        config EXT_FLASH_SPI_INDEX
+            int
+            default 0 if EXT_FLASH_SPI_INDEX0
+            default 1 if EXT_FLASH_SPI_INDEX1
+
+        config EXT_FLASH_MOUNT_PATH
+            string "ext flash dir name"
+            default "/ext"
+    endif

@@ -1,0 +1,672 @@
+/******************************************************************************
+
+*(C) Copyright 2018 EIGENCOMM International Ltd.
+
+* All Rights Reserved
+
+******************************************************************************
+*  Filename:
+*
+*  Description:
+*
+*  History:
+*
+*  Notes:
+*
+******************************************************************************/
+#ifndef _ATEC__DEV_H
+#define _ATEC__DEV_H
+
+#include "at_util.h"
+
+/* AT+CFUN */
+#define ATC_CFUN_0_FUN_VAL_MIN                  0
+#ifdef FEATURE_PS_REF_CR_EPS_AT_ENABLE
+#define ATC_CFUN_0_FUN_VAL_MAX                  5
+#else
+#define ATC_CFUN_0_FUN_VAL_MAX                  4
+#endif
+#define ATC_CFUN_0_FUN_VAL_DEFAULT              1
+#define ATC_CFUN_1_RST_VAL_MIN                  0
+#define ATC_CFUN_1_RST_VAL_MAX                  1
+#define ATC_CFUN_1_RST_VAL_DEFAULT              0
+
+
+/* AT+ECBAND */
+#define ATC_ECBAND_0_NW_MODE_VAL_DEFAULT            2
+#define ATC_ECBAND_1_BAND_VAL_MIN                   0
+#define ATC_ECBAND_1_BAND_VAL_MAX                   255
+#define ATC_ECBAND_1_BAND_VAL_DEFAULT               0
+
+/* AT+ECFREQ */
+#define ATC_ECFREQ_0_NW_MODE_VAL_MIN                0
+#define ATC_ECFREQ_0_NW_MODE_VAL_MAX                3
+#define ATC_ECFREQ_0_NW_MODE_VAL_DEFAULT            0
+#define ATC_ECFREQ_1_EARFCN_VAL_MIN                 0
+#define ATC_ECFREQ_1_EARFCN_VAL_MAX                 0x7FFFFFFF
+#define ATC_ECFREQ_1_EARFCN_VAL_DEFAULT             0
+#define ATC_ECFREQ_2_PHYCELL_VAL_MIN                0
+#define ATC_ECFREQ_2_PHYCELL_VAL_MAX                503
+#define ATC_ECFREQ_2_PHYCELL_VAL_DEFAULT            0
+
+/* AT+ECCGSN */
+#define ATC_CGSN_0_MAX_PARM_STR_LEN                 16
+#define ATC_CGSN_0_MAX_PARM_STR_DEFAULT             NULL
+#define ATC_CGSN_1_MAX_PARM_STR_LEN                 32
+#define ATC_CGSN_1_MAX_PARM_STR_DEFAULT             NULL
+
+/* AT+ECCGSNLOCK */
+#define ATC_ECCGSNLOCK_0_IMEI_STR_LEN               16
+#define ATC_ECCGSNLOCK_0_IMEI_STR_DEFAULT           "imeiLock"
+#define ATC_ECCGSNLOCK_0_SN_STR_LEN                 16
+#define ATC_ECCGSNLOCK_0_SN_STR_DEFAULT             "snLock"
+
+
+/* AT+CIOTPOWER */
+#define ATC_CIOTPOWER_0_VAL_MIN                     0
+#define ATC_CIOTPOWER_0_VAL_MAX                     2
+#define ATC_CIOTPOWER_0_VAL_DEFAULT                 0
+
+
+/* AT+ECCFG */
+#define ATC_ECCFG_0_MAX_PARM_STR_LEN                 32
+#define ATC_ECCFG_0_MAX_PARM_STR_DEFAULT             NULL
+#define ATC_ECCFG_1_GCFTEST_VAL_MIN                  0
+#define ATC_ECCFG_1_GCFTEST_VAL_MAX                  1
+#define ATC_ECCFG_1_GCFTEST_VAL_DEFAULT              (-1)
+#define ATC_ECCFG_1_AUTOAPN_VAL_MIN                  0
+#define ATC_ECCFG_1_AUTOAPN_VAL_MAX                  1
+#define ATC_ECCFG_1_AUTOAPN_VAL_DEFAULT              (-1)
+#define ATC_ECCFG_1_SUPPORTSMS_VAL_MIN               0
+#define ATC_ECCFG_1_SUPPORTSMS_VAL_MAX               1
+#define ATC_ECCFG_1_SUPPORTSMS_VAL_DEFAULT           (-1)
+#define ATC_ECCFG_1_TAUFORSMS_VAL_MIN                0
+#define ATC_ECCFG_1_TAUFORSMS_VAL_MAX                1
+#define ATC_ECCFG_1_TAUFORSMS_VAL_DEFAULT            (-1)
+#define ATC_ECCFG_1_T3324_VAL_MIN                    0
+#define ATC_ECCFG_1_T3324_VAL_MAX                    0xFFFFFF
+#define ATC_ECCFG_1_T3324_VAL_DEFAULT                0xFFFFFF
+#define ATC_ECCFG_1_BAR_VAL_MIN                      1
+#define ATC_ECCFG_1_BAR_VAL_MAX                      600
+#define ATC_ECCFG_1_BAR_VAL_DEFAULT                  120
+#define ATC_ECCFG_1_SIMTEST_VAL_MIN                  0
+#define ATC_ECCFG_1_SIMTEST_VAL_MAX                  1
+#define ATC_ECCFG_1_SIMTEST_VAL_DEFAULT              (-1)
+#define ATC_ECCFG_1_USIMSIMULATOR_VAL_MIN            0
+#define ATC_ECCFG_1_USIMSIMULATOR_VAL_MAX            1
+#define ATC_ECCFG_1_USIMSIMULATOR_VAL_DEFAULT        (-1)
+#define ATC_ECCFG_1_SUPPORTUPRAI_VAL_MIN             0
+#define ATC_ECCFG_1_SUPPORTUPRAI_VAL_MAX             1
+#define ATC_ECCFG_1_SUPPORTUPRAI_VAL_DEFAULT         (-1)
+#define ATC_ECCFG_1_DIT_VAL_MIN                      0
+#define ATC_ECCFG_1_DIT_VAL_MAX                      0xff
+#define ATC_ECCFG_1_DIT_VAL_DEFAULT                  (-1)
+
+//RelaxMonitor SearchDeltaP, unit: dB
+#define ATC_ECCFG_1_RM_DETLAP_VAL_MIN                0
+#define ATC_ECCFG_1_RM_DETLAP_VAL_MAX                15
+#define ATC_ECCFG_1_RM_DETLAP_VAL_DEFAULT            0
+
+//RelaxMonitor TsearchDeltaP, unit: second
+#define ATC_ECCFG_2_RM_EVAL_TIME_VAL_MIN             3
+#define ATC_ECCFG_2_RM_EVAL_TIME_VAL_MAX             300
+#define ATC_ECCFG_2_RM_EVAL_TIME_VAL_DEFAULT         8
+
+#define ATC_ECCFG_1_POWERLEVEL_VAL_MIN               0
+#define ATC_ECCFG_1_POWERLEVEL_VAL_MAX               4
+#define ATC_ECCFG_1_POWERLEVEL_VAL_DEFAULT           (-1)
+#define ATC_ECCFG_1_REL_VERSION_VAL_MIN              9
+#define ATC_ECCFG_1_REL_VERSION_VAL_MAX              14
+#define ATC_ECCFG_1_REL_VERSION_VAL_DEFAULT          13
+#define ATC_ECCFG_1_ROHC_VAL_MIN                     0
+#define ATC_ECCFG_1_ROHC_VAL_MAX                     1
+#define ATC_ECCFG_1_ROHC_VAL_DEFAULT                 (-1)
+#define ATC_ECCFG_1_EPCO_VAL_MIN                     0
+#define ATC_ECCFG_1_EPCO_VAL_MAX                     1
+#define ATC_ECCFG_1_EPCO_VAL_DEFAULT                 (-1)
+#define ATC_ECCFG_1_MULTICARRIER_VAL_MIN             0
+#define ATC_ECCFG_1_MULTICARRIER_VAL_MAX             1
+#define ATC_ECCFG_1_MULTICARRIER_VAL_DEFAULT         (-1)
+#define ATC_ECCFG_1_MULTITONE_VAL_MIN                0
+#define ATC_ECCFG_1_MULTITONE_VAL_MAX                1
+#define ATC_ECCFG_1_MULTITONE_VAL_DEFAULT            (-1)
+#define ATC_ECCFG_1_IPV6RSFORTESTSIM_VAL_MIN         0
+#define ATC_ECCFG_1_IPV6RSFORTESTSIM_VAL_MAX         1
+#define ATC_ECCFG_1_IPV6RSFORTESTSIM_VAL_DEFAULT     (-1)
+#define ATC_ECCFG_1_POWERCFUN_VAL_MIN                0
+#define ATC_ECCFG_1_POWERCFUN_VAL_MAX                4
+#define ATC_ECCFG_1_POWERCFUN_VAL_DEFAULT            1   //CFUN1
+#define ATC_ECCFG_1_PSPOWERONMAXDEALY_VAL_MIN        0
+#define ATC_ECCFG_1_PSPOWERONMAXDEALY_VAL_MAX        0xFFFF
+#define ATC_ECCFG_1_PSPOWERONMAXDEALY_VAL_DEFAULT    0
+#define ATC_ECCFG_1_IPV6RSDELAY_VAL_MIN              0
+#define ATC_ECCFG_1_IPV6RSDELAY_VAL_MAX              65535
+#define ATC_ECCFG_1_IPV6RSDELAY_VAL_DEFAULT          (15)
+#define ATC_ECCFG_1_DISABLENCELLMEAS_VAL_MIN         (0)
+#define ATC_ECCFG_1_DISABLENCELLMEAS_VAL_MAX         (1)
+#define ATC_ECCFG_1_DISABLENCELLMEAS_VAL_DEFAULT     (0)
+#define ATC_ECCFG_1_UECATEGORY_VAL_MIN               (1)
+#define ATC_ECCFG_1_UECATEGORY_VAL_MAX               (2)  //1 - CAT1, 2 - CAT1 bis
+#define ATC_ECCFG_1_UECATEGORY_VAL_DEFAULT           (1)
+
+#define ATC_ECCFG_1_PSSOFTRESET_VAL_MIN              (0)
+#define ATC_ECCFG_1_PSSOFTRESET_VAL_MAX              (1)
+#define ATC_ECCFG_1_PSSOFTRESET_VAL_DEFAULT          (0)
+
+#define ATC_ECCFG_1_ENABLEEAB_VAL_MIN                (0)
+#define ATC_ECCFG_1_ENABLE_VAL_MAX                   (1)
+#define ATC_ECCFG_1_ENABLE_VAL_DEFAULT               (1)
+
+#define ATC_ECCFG_1_ENABLEABCHECK_VAL_MIN            (0)
+#define ATC_ECCFG_1_ENABLEABCHECK_VAL_MAX            (1)
+#define ATC_ECCFG_1_ENABLEABCHECK_VAL_DEFAULT        (0)
+
+#define ATC_ECCFG_1_WEAKCELLOPT_VAL_MIN              (0)
+#define ATC_ECCFG_1_WEAKCELLOPT_VAL_MAX              (1)
+#define ATC_ECCFG_1_WEAKCELLOPT_VAL_DEFAULT          (0)
+
+#define ATC_ECCFG_1_QRXLEVMIN_VAL_MIN                (-156)
+#define ATC_ECCFG_1_QRXLEVMIN_VAL_MAX                (0)
+#define ATC_ECCFG_1_QRXLEVMIN_VAL_DEFAULT            (0)
+
+#define ATC_ECCFG_1_RESELTOWEAKNCELLOPT_VAL_MIN      (0)
+#define ATC_ECCFG_1_RESELTOWEAKNCELLOPT_VAL_MAX      (100)
+#define ATC_ECCFG_1_RESELTOWEAKNCELLOPT_VAL_DEFAULT  (0)
+
+#define ATC_ECCFG_1_ROHC_PROFILE_BIT_VAL_MIN         (0)   //bit '0 0000 0000'
+#define ATC_ECCFG_1_ROHC_PROFILE_BIT_VAL_MAX         (511) //bit '1 1111 1111'
+#define ATC_ECCFG_1_ROHC_PROFILE_BIT_VAL_DEFAULT     (0)
+
+#define ATC_ECCFG_1_ENABLE_SPS_VAL_MIN               (0)
+#define ATC_ECCFG_1_ENABLE_SPS_VAL_MAX               (1)
+#define ATC_ECCFG_1_ENABLE_SPS_VAL_DEFAULT           (0)
+
+#define ATC_ECCFG_1_ENABLE_TTIBUNDLING_VAL_MIN       (0)
+#define ATC_ECCFG_1_ENABLE_TTIBUNDLING_VAL_MAX       (1)
+#define ATC_ECCFG_1_ENABLE_TTIBUNDLING_VAL_DEFAULT   (0)
+
+#define ATC_ECCFG_1_ATTACHBEARERCID_VAL_MIN          (1)
+#define ATC_ECCFG_1_ATTACHBEARERCID_VAL_MAX          (15)
+#define ATC_ECCFG_1_ATTACHBEARERCID_VAL_DEFAULT      (1)
+
+#define ATC_ECCFG_1_TCPTPTOPT_VAL_MIN                 0
+#define ATC_ECCFG_1_TCPTPTOPT_VAL_MAX                 2
+#define ATC_ECCFG_1_TCPTPTOPT_VAL_DEFAULT             (0)
+
+#define ATC_ECCFG_1_ATTACH_WITH_IMSI_CONTROL_VAL_MIN        (0)
+#define ATC_ECCFG_1_ATTACH_WITH_IMSI_CONTROL_VAL_MAX        (2)
+#define ATC_ECCFG_1_ATTACH_WITH_IMSI_CONTROL_VAL_DEFAULT    (1)
+
+#define ATC_ECCFG_1_POWER_ATTACH_WITHOUT_EIA_VAL_MIN        (0)
+#define ATC_ECCFG_1_POWER_ATTACH_WITHOUT_EIA_VAL_MAX        (1)
+#define ATC_ECCFG_1_POWER_ATTACH_WITHOUT_EIA_VAL_DEFAULT    (1)
+
+
+#define ATC_ECCFG_1_DATACOUNTER_VAL_MIN              (0)
+#define ATC_ECCFG_1_DATACOUNTER_VAL_MAX              (1)
+#define ATC_ECCFG_1_DATACOUNTER_VAL_DEFAULT          (0)
+
+#define ATC_ECCFG_1_SMALL_UL_TBS_OPT_VAL_MIN         (0)
+#define ATC_ECCFG_1_SMALL_UL_TBS_OPT_VAL_MAX         (1)
+#define ATC_ECCFG_1_SMALL_UL_TBS_OPT_DEFAULT         (0)
+
+#define ATC_ECCFG_1_UPDATE_LOCI_CTRL_VAL_MIN              (0)
+#define ATC_ECCFG_1_UPDATE_LOCI_CTRL_VAL_MAX              (2)
+#define ATC_ECCFG_1_UPDATE_LOCI_CTRL_VAL_DEFAULT          (0)
+
+#define ATC_ECCFG_1_ROAM_MODE_VAL_MIN              (1)
+#define ATC_ECCFG_1_ROAM_MODE_VAL_MAX              (255)
+#define ATC_ECCFG_1_ROAM_MODE_VAL_DEFAULT          (2)
+#define ATC_ECCFG_2_ROAM_MODE_EFFECT_VAL_MIN       (0)
+#define ATC_ECCFG_2_ROAM_MODE_EFFECT_VAL_MAX       (1)
+#define ATC_ECCFG_2_ROAM_MODE_EFFECT_VAL_DEFAULT   (1)
+
+#define ATC_ECCFG_1_SAVE_PLMN_SEL_MODE_VAL_MIN              (0)
+#define ATC_ECCFG_1_SAVE_PLMN_SEL_MODE_VAL_MAX              (1)
+#define ATC_ECCFG_1_SAVE_PLMN_SEL_MODE_VAL_DEFAULT          (1)
+
+#define ATC_ECCFG_1_EMERGENCY_CAMP_VAL_MIN          (0)
+#define ATC_ECCFG_1_EMERGENCY_CAMP_VAL_MAX          (1)
+#define ATC_ECCFG_1_EMERGENCY_CAMP_VAL_DEFAULT      (0)
+
+#define ATC_ECCFG_1_ACL_VAL_MIN          (0)
+#define ATC_ECCFG_1_ACL_VAL_MAX          (1)
+#define ATC_ECCFG_1_ACL_VAL_DEF          (0)
+
+#define ATC_ECCFG_1_PDPREMAP_VAL_MIN        (0)
+#define ATC_ECCFG_1_PDPREMAP_VAL_MAX        (2)
+#define ATC_ECCFG_1_PDPREMAP_VAL_DEF        (0)
+
+#define ATC_ECCFG_1_PDPREACT_VAL_MIN        (0)
+#define ATC_ECCFG_1_PDPREACT_VAL_MAX        (1)
+#define ATC_ECCFG_1_PDPREACT_VAL_DEF        (0)
+
+#define ATC_ECCFG_1_UPDATE_FREQ_CTRL_VAL_MIN        (0)
+#define ATC_ECCFG_1_UPDATE_FREQ_CTRL_VAL_MAX        (1)
+#define ATC_ECCFG_1_UPDATE_FREQ_CTRL_VAL_DEF        (0)
+
+#define ATC_ECCFG_1_QUALITY_FIRST_VAL_MIN        (0)
+#define ATC_ECCFG_1_QUALITY_FIRST_VAL_MAX        (2)
+#define ATC_ECCFG_1_QUALITY_FIRST_VAL_DEFAULT    (0)
+
+#define ATC_ECCFG_1_STATIC_CONFIG_VAL_MIN        (0)
+#define ATC_ECCFG_1_STATIC_CONFIG_VAL_MAX        (1)
+#define ATC_ECCFG_1_STATIC_CONFIG_VAL_DEFAULT    (0)
+
+/* AT+ECCFG="DisableCDRX"
+ * 0 - Enable both short DRX and long DRX.
+ * 1 - Disable both short DRX and long DRX.
+ * 2 - Disable short DRX but enable long DRX.
+ */
+#define ATC_ECCFG_1_DISABLE_CDRX_VAL_MIN         (0)
+#define ATC_ECCFG_1_DISABLE_CDRX_VAL_MAX         (2)
+#define ATC_ECCFG_1_DISABLE_CDRX_VAL_DEFAULT     (0)
+
+#define ATC_ECCFG_1_IGNORE_EMM_CAUSE_VAL_MIN     (0)
+#define ATC_ECCFG_1_IGNORE_EMM_CAUSE_VAL_MAX     (1)
+#define ATC_ECCFG_1_IGNORE_EMM_CAUSE_VAL_DEF     (1)
+
+/* 0 - Not extend/reduce DrxCycle value configured from NW
+ * 1 - DrxCycle length = DrxCyle(NW) * 1/8
+ * 2 - DrxCycle length = DrxCyle(NW) * 1/4
+ * 3 - DrxCycle length = DrxCyle(NW) * 1/2
+ * 4 - DrxCycle length = DrxCyle(NW) * 2
+ * 5 - DrxCycle length = DrxCyle(NW) * 4
+ * 6 - DrxCycle length = DrxCyle(NW) * 8
+ * 7 - DrxCycle length = DrxCyle(NW) * 16
+ *
+ * [8-12] configure a fixed DrxCycle length, UE will apply the fixed value only when the fixed value larger than DrxCycle(NW)
+ * 8 - DrxCycle (320ms)
+ * 9 - DrxCycle (640ms)
+ * 10- DrxCycle (1280ms)
+ * 11- DrxCycle (2560ms)
+ * 12- DrxCycle (5120ms)
+*/
+#define ATC_ECCFG_1_USER_DRXCYCLE_VAL_MIN    (0)
+#define ATC_ECCFG_1_USER_DRXCYCLE_VAL_MAX    (12)
+#define ATC_ECCFG_1_USER_DRXCYCLE_VAL_DEF    (0)
+
+#define ATC_ECCFG_1_FAKE_CELL_OPT_ENABLE_VAL_MIN    (0)
+#define ATC_ECCFG_1_FAKE_CELL_OPT_ENABLE_VAL_MAX    (1)
+#define ATC_ECCFG_1_FAKE_CELL_OPT_ENABLE_VAL_DEF    (1)
+#define ATC_ECCFG_2_FAKE_CELL_OPT_BAR_TIMER_VAL_MIN (1)
+#define ATC_ECCFG_2_FAKE_CELL_OPT_BAR_TIMER_VAL_MAX (65535)
+#define ATC_ECCFG_2_FAKE_CELL_OPT_BAR_TIMER_VAL_DEF (30*60) /* default: 30mins */
+
+#define ATC_ECCFG_1_PLMN_SEARCH_OPT_VAL_MIN     0
+#define ATC_ECCFG_1_PLMN_SEARCH_OPT_VAL_MAX     1
+#define ATC_ECCFG_1_PLMN_SEARCH_OPT_VAL_DEFAULT 1
+
+//AT+ECCFG="CfunClrBarCell"
+#define ATC_ECCFG_1_CFUN_CLEAR_BARCELL_VAL_MIN       (0)
+#define ATC_ECCFG_1_CFUN_CLEAR_BARCELL_VAL_MAX       (1)
+#define ATC_ECCFG_1_CFUN_CLEAR_BARCELL_VAL_DEFAULT   (0)
+
+//AT+ECCFG="EnableLoggedMDT"
+#define ATC_ECCFG_1_ENABLE_LOGGED_MDT_VAL_MIN       (0)
+#define ATC_ECCFG_1_ENABLE_LOGGED_MDT_VAL_MAX       (1)
+#define ATC_ECCFG_1_ENABLE_LOGGED_MDT_VAL_DEFAULT   (0)
+
+//AT+ECCFG="L2ExtSnCapaBitmap"
+#define ATC_ECCFG_1_L2_EXT_SN_CAPA_BITMAP_VAL_MIN        (0)
+#define ATC_ECCFG_1_L2_EXT_SN_CAPA_BITMAP_VAL_MAX        (7)
+#define ATC_ECCFG_1_L2_EXT_SN_CAPA_BITMAP_VAL_DEFAULT    (0)
+
+//AT+ECCFG="T3402Opt"
+#define ATC_ECCFG_1_T3402_OPT_VAL_MIN     (0)
+#define ATC_ECCFG_1_T3402_OPT_VAL_MAX     (1)
+#define ATC_ECCFG_1_T3402_OPT_VAL_DEF     (1)
+
+//AT+ECCFG="AntiDetect"
+#define ATC_ECCFG_1_ANTIDETECT_VAL_MIN      (0)
+#define ATC_ECCFG_1_ANTIDETECT_VAL_MAX      (1)
+#define ATC_ECCFG_1_ANTIDETECT_VAL_DEFAULT  (0)
+
+#define ATC_ECCFG_1_CLEAR_FORBIDDEN_TAC_VAL_MIN      (0)
+#define ATC_ECCFG_1_CLEAR_FORBIDDEN_TAC_VAL_MAX      (1)
+#define ATC_ECCFG_1_CLEAR_FORBIDDEN_TAC_VAL_DEFAULT  (0)
+
+#define ATC_ECCFG_1_FORBIDDEN_TAC_TIMER_VAL_MIN         1
+#define ATC_ECCFG_1_FORBIDDEN_TAC_TIMER_VAL_MAX         43200   //max 12 hours(43200 seconds)
+#define ATC_ECCFG_1_FORBIDDEN_TAC_TIMER_VAL_DEFAULT     43200   //default 12 hours(43200 seconds)
+
+#define ATC_ECCFG_1_ATTEMPT_HPLMN_VAL_MIN       (0)
+#define ATC_ECCFG_1_ATTEMPT_HPLMN_VAL_MAX       (1)
+#define ATC_ECCFG_1_ATTEMPT_HPLMN_VAL_DEFAULT   (0)
+
+#define ATC_ECCFG_1_SET_OPERATOR_ID_VAL_MIN       (0)
+#define ATC_ECCFG_1_SET_OPERATOR_ID_VAL_MAX       (100)
+#define ATC_ECCFG_1_SET_OPERATOR_ID_VAL_DEFAULT   (0)
+
+/* AT+ECCFG="AsUeCapaBitmap"
+ * BIT0: Capability defined for UESpecificRefSigSupported
+ * BIT1: Capability defined for RachReport
+ * BIT2: Capability defined for FGI17-IntraFreqANR.
+ * BIT3: Capability defined for FGI18-InterFreqANR.
+ * BIT4: Capability defined for FGI102-Type1Srs.
+ * BIT5: Capability defined for FGI115-TimeDomainSfRestricServCell.
+ */
+#define ATC_ECCFG_1_AS_UE_CAPA_BITMAP_VAL_MIN        (0)
+#define ATC_ECCFG_1_AS_UE_CAPA_BITMAP_VAL_MAX        (0x0000003F)
+#define ATC_ECCFG_1_AS_UE_CAPA_BITMAP_VAL_DEFAULT    (0x0000003F)
+
+// AT+ECCFG="BarAfterRrcTryNum"
+#define ATC_ECCFG_1_BAR_AFTER_RRC_TRY_VAL_MIN       (1)
+#define ATC_ECCFG_1_BAR_AFTER_RRC_TRY_VAL_MAX       (5)
+#define ATC_ECCFG_1_BAR_AFTER_RRC_TRY_VAL_DEFAULT   (1)
+
+// AT+ECCFG="EnableSibRevOpt"
+#define ATC_ECCFG_1_ENABLE_SIB_RECV_OPT_VAL_MIN     (0)
+#define ATC_ECCFG_1_ENABLE_SIB_RECV_OPT_VAL_MAX     (1)
+#define ATC_ECCFG_1_ENABLE_SIB_RECV_OPT_VAL_DEFAULT (0)
+
+#define ATC_ECCFG_1_SAME_IP_ADDR_PROC_VAL_MIN       (0)
+#define ATC_ECCFG_1_SAME_IP_ADDR_PROC_VAL_MAX       (1)
+#define ATC_ECCFG_1_SAME_IP_ADDR_PROC_VAL_DEFAULT   (0)
+
+#define ATC_ECCFG_1_EIT_PCO_CONEXIST_VAL_MIN        (0)
+#define ATC_ECCFG_1_EIT_PCO_CONEXIST_VAL_MAX        (1)
+#define ATC_ECCFG_1_EIT_PCO_CONEXIST_VAL_DEFAULT    (0)
+
+// AT+ECCFG="CellPrefer", mode, scoreAdd
+//mode: 0 - not used; 1 - FDD; 2 - TDD
+#define ATC_ECCFG_1_CELL_PREFER_MODE_VAL_MIN        (0)
+#define ATC_ECCFG_1_CELL_PREFER_MODE_VAL_MAX        (2)
+#define ATC_ECCFG_1_CELL_PREFER_MODE_VAL_DEFAULT    (0)
+
+//scoreAdd - UE will add the score to the prefer fdd/tdd frequency point score during cell search
+//advice set the scoreAdd as 40 if user does not how to configure
+#define ATC_ECCFG_2_CELL_PREFER_SCORE_ADD_VAL_MIN       (0)
+#define ATC_ECCFG_2_CELL_PREFER_SCORE_ADD_VAL_MAX       (100)
+#define ATC_ECCFG_2_CELL_PREFER_SCORE_ADD_VAL_DEFAULT   (0)
+
+#define ATC_ECCFG_1_QUICK_SEARCH_VAL_MIN            (0)
+#define ATC_ECCFG_1_QUICK_SEARCH_VAL_MAX            (1)
+#define ATC_ECCFG_1_QUICK_SEARCH_VAL_DEFAULT        (0)
+
+
+#define ATEC_ECCFG_GET_RSP_STR_LEN          512
+
+/* AT+ECMEASCFG */
+#define ATC_ECMEASCFG_MAX_SET_PARAMS_NUM     12
+#define ATC_ECMEASCFG_0_MAX_PARM_STR_LEN     32
+#define ATC_ECMEASCFG_0_MAX_PARM_STR_DEFAULT NULL
+
+#define ATC_ECMEASCFG_1_RSRP_VAL_MIN          (-388)
+#define ATC_ECMEASCFG_1_RSRP_VAL_MAX          388
+#define ATC_ECMEASCFG_1_RSRP_VAL_DEF          0
+
+#define ATC_ECMEASCFG_1_RSRQ_VAL_MIN          (-124)
+#define ATC_ECMEASCFG_1_RSRQ_VAL_MAX          124
+#define ATC_ECMEASCFG_1_RSRQ_VAL_DEF          0
+
+/* AT+ECSTATUS */
+#define ATC_ECSTATUS_0_MAX_PARM_STR_LEN              16
+#define ATC_ECSTATUS_0_MAX_PARM_STR_DEFAULT          NULL
+
+
+/* AT+ECRMFPLMN */
+#define ATC_ECRMFPLMN_0_VAL_MIN                 0
+#define ATC_ECRMFPLMN_0_VAL_MAX                 2
+#define ATC_ECRMFPLMN_0_VAL_DEFAULT             0
+
+/*AT+ECBCINFO*/
+#define ATC_ECBCINFO_0_VAL_MIN                  0
+#define ATC_ECBCINFO_0_VAL_MAX                  3
+#define ATC_ECBCINFO_0_VAL_DEFAULT              0
+
+#define ATC_ECBCINFO_1_VAL_MIN                  4
+#define ATC_ECBCINFO_1_VAL_MAX                  300     /*timeout, MAX: 5 mins*/
+#define ATC_ECBCINFO_1_VAL_DEFAULT              8       /*default: 8s*/
+
+#define ATC_ECBCINFO_2_VAL_MIN                  0
+#define ATC_ECBCINFO_2_VAL_MAX                  1       /*save_for_later*/
+#define ATC_ECBCINFO_2_VAL_DEFAULT              0       /*not need to save*/
+
+#define ATC_ECBCINFO_3_VAL_MIN                  1       /*max_cell_number*/
+#define ATC_ECBCINFO_3_VAL_MAX                  21      /*max_cell_number, 1 serving cell + 20 neighber cell */
+#define ATC_ECBCINFO_3_VAL_DEFAULT              21
+
+#define ATC_ECBCINFO_4_VAL_MIN                  0       /*report mode, 0 - report in AT response */
+#define ATC_ECBCINFO_4_VAL_MAX                  1       /*report mode, 1 - report in URC response */
+#define ATC_ECBCINFO_4_VAL_DEFAULT              0
+
+#define ATC_ECBCINFO_5_FREQLIST_STR_DEFAULT     NULL
+#define ATC_ECBCINFO_5_FREQLIST_STR_MAX_LEN     100
+
+#define ATC_ECBCINFO_6_BANDLIST_STR_DEFAULT     NULL
+#define ATC_ECBCINFO_6_BANDLIST_STR_MAX_LEN     100
+
+
+/* AT+CMAR */
+#define ATC_CMAR_0_VAL_MIN                   0
+#define ATC_CMAR_0_VAL_MAX                   2
+#define ATC_CMAR_0_VAL_DEFAULT               0
+
+/* AT+CMOLR */
+#define ATC_CMOLR_0_ENABLE_VAL_MIN                      0
+#define ATC_CMOLR_0_ENABLE_VAL_MAX                      3
+#define ATC_CMOLR_0_ENABLE_VAL_DEFAULT                  0
+#define ATC_CMOLR_1_METHOD_VAL_MIN                      0
+#define ATC_CMOLR_1_METHOD_VAL_MAX                      6
+#define ATC_CMOLR_1_METHOD_VAL_DEFAULT                  0
+#define ATC_CMOLR_2_HORACCSET_VAL_MIN                   0
+#define ATC_CMOLR_2_HORACCSET_VAL_MAX                   1
+#define ATC_CMOLR_2_HORACCSET_VAL_DEFAULT               0
+#define ATC_CMOLR_3_HORACC_VAL_MIN                      0
+#define ATC_CMOLR_3_HORACC_VAL_MAX                      127
+#define ATC_CMOLR_3_HORACC_VAL_DEFAULT                  0
+#define ATC_CMOLR_4_VERREQ_VAL_MIN                      0
+#define ATC_CMOLR_4_VERREQ_VAL_MAX                      1
+#define ATC_CMOLR_4_VERREQ_VAL_DEFAULT                  0
+#define ATC_CMOLR_5_VERACCSET_VAL_MIN                   0
+#define ATC_CMOLR_5_VERACCSET_VAL_MAX                   1
+#define ATC_CMOLR_5_VERACCSET_VAL_DEFAULT               0
+#define ATC_CMOLR_6_VERACC_VAL_MIN                      0
+#define ATC_CMOLR_6_VERACC_VAL_MAX                      127
+#define ATC_CMOLR_6_VERACC_VAL_DEFAULT                  0
+#define ATC_CMOLR_7_VELREQ_VAL_MIN                      0
+#define ATC_CMOLR_7_VELREQ_VAL_MAX                      4
+#define ATC_CMOLR_7_VELREQ_VAL_DEFAULT                  0
+#define ATC_CMOLR_8_REQMODE_VAL_MIN                     0
+#define ATC_CMOLR_8_REQMODE_VAL_MAX                     1
+#define ATC_CMOLR_8_REQMODE_VAL_DEFAULT                 0
+#define ATC_CMOLR_9_TIMEOUT_VAL_MIN                     0
+#define ATC_CMOLR_9_TIMEOUT_VAL_MAX                     65535
+#define ATC_CMOLR_9_TIMEOUT_VAL_DEFAULT                 0
+#define ATC_CMOLR_10_INTERVAL_VAL_MIN                   0
+#define ATC_CMOLR_10_INTERVAL_VAL_MAX                   65535
+#define ATC_CMOLR_10_INTERVAL_VAL_DEFAULT               0
+#define ATC_CMOLR_11_SHAPEREQ_VAL_MIN                   1
+#define ATC_CMOLR_11_SHAPEREQ_VAL_MAX                   64
+#define ATC_CMOLR_11_SHAPEREQ_VAL_DEFAULT               0
+#define ATC_CMOLR_12_PLANE_VAL_MIN                      0
+#define ATC_CMOLR_12_PLANE_VAL_MAX                      1
+#define ATC_CMOLR_12_PLANE_VAL_DEFAULT                  0
+#define ATC_CMOLR_13_NMEAREQ_STR_DEFAULT                NULL
+#define ATC_CMOLR_13_NMEAREQ_STR_MAX_LEN                16
+#define ATC_CMOLR_14_THIRDPARTYADDR_STR_DEFAULT         NULL
+#define ATC_CMOLR_14_THIRDPARTYADDR_STR_MAX_LEN         16
+
+/* AT+CMTLR */
+#define ATC_CMTLR_0_VAL_MIN                     0
+#define ATC_CMTLR_0_VAL_MAX                     3
+#define ATC_CMTLR_0_VAL_DEFAULT                 0
+
+/* AT+CMTLRA */
+#define ATC_CMTLRA_0_VAL_MIN                    0
+#define ATC_CMTLRA_0_VAL_MAX                    1
+#define ATC_CMTLRA_0_VAL_DEFAULT                0
+#define ATC_CMTLRA_1_VAL_MIN                    0
+#define ATC_CMTLRA_1_VAL_MAX                    255
+#define ATC_CMTLRA_1_VAL_DEFAULT                0
+
+/*AT+ECSTATIS*/
+#define ATC_ESTATIS_0_VAL_MIN                   0
+#define ATC_ESTATIS_0_VAL_MAX                   600
+#define ATC_ESTATIS_0_VAL_DEFAULT               0
+
+/*AT+ECCGSN*/
+#define ATC_ECCGSN_MAX_PARM_STR_LEN             8
+#define ATC_ECCGSN_MAX_PARM_STR_DEFAULT         NULL
+
+/*AT+ECNETDEVMAC*/
+#define ATC_ECMAC_MAX_PARM_STR_LEN             32
+#define ATC_ECMAC_MAX_PARM_STR_DEFAULT         NULL
+
+#define ATC_ECMAC_LOCAL_MAC_LEN                  6
+#define ATC_ECMAC_PEER_MAC_LEN                   6
+#define ATC_ECMAC_LOCAL_MAC_BUFF_LEN             32
+#define ATC_ECMAC_PEER_MAC_BUFF_LEN              32
+
+#define ATC_ECMAC_MAC_LOCK_STR_DEF             "Lock"
+#define ATC_ECMAC_MAC_UNLOCK_STR_DEF           "unLock"
+
+
+/* AT+ECPSTEST */
+#define ATC_ECPSTEST_MAX_PARM_STR_LEN           16
+#define ATC_ECPSTEST_MAX_PARM_STR_DEFAULT       NULL
+
+/* AT+ECPOWERCLASS */
+#define ATC_ECPOWERCLASS_1_VAL_MIN              0
+#define ATC_ECPOWERCLASS_1_VAL_MAX              85
+#define ATC_ECPOWERCLASS_1_VAL_DEFAULT          0
+
+#define ATC_ECPOWERCLASS_2_VAL_MIN              3
+#define ATC_ECPOWERCLASS_2_VAL_MAX              6
+#define ATC_ECPOWERCLASS_2_VAL_DEFAULT          3
+
+/* AT+ECEVENTSTATIS */
+#define ATC_ECEVENTSTATIS_1_VAL_MIN             0
+#define ATC_ECEVENTSTATIS_1_VAL_MAX             2
+#define ATC_ECEVENTSTATIS_1_VAL_DEFAULT         0
+
+/* AT+ECNASTCFG */
+#define ATC_ECNASTCFG_0_VAL_MIN                 0
+#define ATC_ECNASTCFG_0_VAL_MAX                 2
+#define ATC_ECNASTCFG_0_VAL_DEF                 (ATC_ECNASTCFG_0_VAL_MIN)
+
+#define ATC_ECNASTCFG_1_VAL_MIN                 0
+#define ATC_ECNASTCFG_1_VAL_MAX                 0xFFFFF
+#define ATC_ECNASTCFG_1_VAL_DEF                 0
+
+#define ATC_ECNASTCFG_2_VAL_MIN                 0
+#define ATC_ECNASTCFG_2_VAL_MAX                 255
+#define ATC_ECNASTCFG_2_VAL_DEF                 0
+
+/* AT+ECWIFISCAN */
+#define ATC_ECWIFISCAN_0_TIME_VAL_MIN            4000
+#define ATC_ECWIFISCAN_0_TIME_VAL_MAX            255000
+#define ATC_ECWIFISCAN_0_TIME_VAL_DEF            12000
+
+#define ATC_ECWIFISCAN_1_ROUND_VAL_MIN           1
+#define ATC_ECWIFISCAN_1_ROUND_VAL_MAX           3
+#define ATC_ECWIFISCAN_1_ROUND_VAL_DEF           1
+
+#define ATC_ECWIFISCAN_2_MAXBSSIDNUM_VAL_MIN     4
+#define ATC_ECWIFISCAN_2_MAXBSSIDNUM_VAL_MAX     40
+#define ATC_ECWIFISCAN_2_MAXBSSIDNUM_VAL_DEF     5
+
+#define ATC_ECWIFISCAN_3_SCANTIMEOUT_VAL_MIN     1
+#define ATC_ECWIFISCAN_3_SCANTIMEOUT_VAL_MAX     255
+#define ATC_ECWIFISCAN_3_SCANTIMEOUT_VAL_DEF     5
+
+#define ATC_ECWIFISCAN_4_PRIORITY_VAL_MIN        0   //data preferred
+#define ATC_ECWIFISCAN_4_PRIORITY_VAL_MAX        1   //wifiscan preferred
+#define ATC_ECWIFISCAN_4_PRIORITY_VAL_DEF        0
+
+#define ATC_ECWIFISCAN_5_CHANNELTIMEOUT_VAL_MIN  100
+#define ATC_ECWIFISCAN_5_CHANNELTIMEOUT_VAL_MAX  280
+#define ATC_ECWIFISCAN_5_CHANNELTIMEOUT_VAL_DEF  280
+
+#define ATC_ECWIFISCAN_6_CHANNELCOUNT_VAL_MIN    1
+#define ATC_ECWIFISCAN_6_CHANNELCOUNT_VAL_MAX    14
+#define ATC_ECWIFISCAN_6_CHANNELCOUNT_VAL_DEF    1
+
+#define ATC_ECWIFISCAN_7_CHANNELID_VAL_MIN       1
+#define ATC_ECWIFISCAN_7_CHANNELID_VAL_MAX       14
+#define ATC_ECWIFISCAN_7_CHANNELID_VAL_DEF       0
+
+#define ATC_ECWIFISCAN_CHANNELID_MAX_NUM         14
+
+#define ATC_ECWIFISCAN_8_BSSID_STR_MAX_LEN       20  //the length of WIFI BSSID (MAC address) is 17, such as: "aa:bb:cc:dd:ee:ff"
+#define ATC_ECWIFISCAN_8_BSSID_STR_DEF_VAL       NULL
+
+/* AT+ECBARCELL */
+#define ATC_ECBARCELL_0_EARFCN_VAL_MIN          (1)
+#define ATC_ECBARCELL_0_EARFCN_VAL_MAX          (262143)    //support maxEarfcn2
+#define ATC_ECBARCELL_0_EARFCN_VAL_DEF          (0)
+
+#define ATC_ECBARCELL_1_PCI_VAL_MIN             (0)
+#define ATC_ECBARCELL_1_PCI_VAL_MAX             (503)       //physcellid (0..503)
+#define ATC_ECBARCELL_1_PCI_VAL_DEF             (0)
+
+#define ATC_ECBARCELL_2_BAR_TIME_VAL_MIN        (0)         //unbar cell
+#define ATC_ECBARCELL_2_BAR_TIME_VAL_MAX        (65535)     //bar cell inifinity
+#define ATC_ECBARCELL_2_BAR_TIME_VAL_DEF        (0)
+
+/* AT+ECJDC */
+#define ATC_ECJDC_0_MODE_VAL_MIN                (0)         //Jamming detection mode.
+#define ATC_ECJDC_0_MODE_VAL_MAX                (1)
+#define ATC_ECJDC_0_MODE_VAL_DEF                (0)
+
+#define ATC_ECJDC_1_RSSI_THR_VAL_MIN            (-90)       //RSSI Threashold.
+#define ATC_ECJDC_1_RSSI_THR_VAL_MAX            (-30)
+#define ATC_ECJDC_1_RSSI_THR_VAL_DEF            (-40)
+
+#define ATC_ECJDC_2_RSRP_THR_VAL_MIN            (-140)      //RSRP Threashold.
+#define ATC_ECJDC_2_RSRP_THR_VAL_MAX            (-44)
+#define ATC_ECJDC_2_RSRP_THR_VAL_DEF            (-105)
+
+#define ATC_ECJDC_3_RSRQ_THR_VAL_MIN            (-20)       //RSRQ Threashold.
+#define ATC_ECJDC_3_RSRQ_THR_VAL_MAX            (0)
+#define ATC_ECJDC_3_RSRQ_THR_VAL_DEF            (-15)
+
+#define ATC_ECJDC_4_T_DETECT_VAL_MIN            (0)         //Tdetection.
+#define ATC_ECJDC_4_T_DETECT_VAL_MAX            (10)
+#define ATC_ECJDC_4_T_DETECT_VAL_DEF            (3)
+
+#define ATC_ECJDC_5_RPT_INTERVAL_VAL_MIN        (0)       //Report Interval.
+#define ATC_ECJDC_5_RPT_INTERVAL_VAL_MAX        (60)
+#define ATC_ECJDC_5_RPT_INTERVAL_VAL_DEF        (0)
+
+/* AT+ECLOGDUMP */
+#define ATC_ECLOGDUMP_0_MODE_VAL_MIN            (0)
+#define ATC_ECLOGDUMP_0_MODE_VAL_MAX            (2)
+#define ATC_ECLOGDUMP_0_MODE_VAL_DEF            (0)
+
+
+CmsRetId  devCFUN(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECBAND(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECFREQ(const AtCmdInputContext *pAtCmdReq);
+//CmsRetId  devCGSN(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECCGSN(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECCGSNLOCK(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECNETDEVMAC(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECCFG(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECMEASCFG(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECRMFPLMN(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECBLOCKPLMNLIST(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devCMAR(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devCMOLR(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devCMTLR(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devCMTLRA(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECSTATUS(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECSTATIS(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECBCINFO(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECWIFISCAN(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECPSTEST(const AtCmdInputContext *pAtCmdReq);
+//CmsRetId  devECPOWERCLASS(const AtCmdInputContext *pAtCmdReq);
+//CmsRetId  devECEVENTSTATIS(const AtCmdInputContext *pAtCmdReq);
+//extern void atCmdResetSystem(uint8_t atCid, uint32_t delayMs);
+CmsRetId  devECBARCELL(const AtCmdInputContext *pAtCmdReq);
+
+CmsRetId  devECNASTCFG(const AtCmdInputContext *pAtCmdReq);
+CmsRetId  devECJDC(const AtCmdInputContext *pAtCmdReq);
+
+#if defined FEATURE_EXCEPTION_FLASH_DUMP_ENABLE
+CmsRetId  devECLOGDUMP(const AtCmdInputContext *pAtCmdReq);
+#endif
+
+#endif
+

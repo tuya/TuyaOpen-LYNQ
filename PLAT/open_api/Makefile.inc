@@ -1,0 +1,63 @@
+ifeq ($(MBTK_OPENCPU_SUPPORT), y)
+
+OPENAPI_DIR := $(TOP)/PLAT/open_api
+OPENAPI_REL_DIR := PLAT/open_api
+
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/inc \
+              -I $(TOP)/PLAT/os/freertos/CMSIS/inc \
+              -I $(OPENAPI_DIR)/inc \
+              -I $(OPENAPI_DIR)/src
+
+ifeq ($(MBTK_OPENCPU_AT),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_AT
+endif
+
+ifeq ($(MBTK_OPENCPU_SMS),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_SMS
+endif
+
+ifeq ($(MBTK_OPENCPU_TCP),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_TCP
+endif
+
+ifeq ($(MBTK_OPENCPU_GPS_SUPPORT),y)
+CFLAGS += -DMBTK_OPENCPU_GPS_SUPPORT
+endif
+
+ifeq ($(DRIVER_ADC_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_ADC
+endif
+
+ifeq ($(DRIVER_SPI_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_SPI
+endif
+
+ifeq ($(DRIVER_I2C_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_I2C
+endif
+
+ifeq ($(THIRDPARTY_MQTT_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_MQTT
+endif
+
+ifeq ($(THIRDPARTY_CTWING1_5_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_LWM2M
+endif
+
+ifeq ($(THIRDPARTY_MBEDTLS_ENABLE),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_SSL
+endif
+
+ifeq ($(MBTK_OPENCPU_CALL),y)
+CFLAGS += -DMBTK_OPENCPU_SUPPORT_CALL
+endif
+ifeq ($(TOOLCHAIN),GCC)
+
+$(BUILDDIR)/lib/libopenapi.a: $(OPENAPI_OBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) -cr $@ $^
+
+endif
+
+endif ##MBTK_OPENCPU_SUPPORT##

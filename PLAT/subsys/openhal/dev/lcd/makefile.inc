@@ -1,0 +1,56 @@
+SUBSYS_SCR_DIR := $(TOP)/PLAT/subsys/openhal/dev/lcd
+CFLAGS_INC += -I $(SUBSYS_SCR_DIR)
+
+ifeq ($(BUILD_HAL_SCREEN),y)
+CFLAGS += -DFEATURE_HAL_SCREEN_ENABLE
+CFLAGS_INC += -I $(SUBSYS_SCR_DIR)/drivers
+
+SUBSYS_SCR_FILES := $(SUBSYS_SCR_DIR)/api_scr.c
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/hal_screen.c
+ifeq ($(BUILTIN_SCR_CO5300), y)
+CFLAGS += -DHAL_SCR_CO5300_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/co5300/co5300.c
+endif
+ifeq ($(BUILTIN_SCR_ST7789), y)
+CFLAGS += -DHAL_SCR_ST7789_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/st7789/st7789.c
+endif
+ifeq ($(BUILTIN_SCR_ST7735), y)
+CFLAGS += -DHAL_SCR_ST7735_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/st7735/st7735.c
+endif
+ifeq ($(BUILTIN_SCR_JD9850), y)
+CFLAGS += -DHAL_SCR_JD9850_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/jd9850/jd9850.c
+endif
+ifeq ($(BUILTIN_SCR_JD9855), y)
+CFLAGS += -DHAL_SCR_JD9855_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/jd9855/jd9855.c
+endif
+ifeq ($(BUILTIN_SCR_JD9853), y)
+CFLAGS += -DHAL_SCR_JD9853_BUILTIN
+SUBSYS_SCR_FILES += $(SUBSYS_SCR_DIR)/drivers/jd9853/jd9853.c
+endif
+SCR_EXCLUDE_FILES := $(SUBSYS_SCR_DIR)/drivers/test.c
+
+SUBSYS_SCR_CFILES = $(filter-out $(SCR_EXCLUDE_FILES), $(SUBSYS_SCR_FILES))
+SUBSYS_SCR_COBJSTEMP := $(patsubst %.c, %.o, $(SUBSYS_SCR_CFILES))
+SUBSYS_SCR_COBJSTEMP := $(subst $(SUBSYS_SCR_DIR), PLAT/subsys/openhal/dev/lcd, $(SUBSYS_SCR_COBJSTEMP))
+SUBSYS_SCR_COBJS := $(addprefix $(BUILDDIR)/, $(SUBSYS_SCR_COBJSTEMP))
+SUBSYS_SCR_PPFILES := $(patsubst %.o, %.pp, $(SUBSYS_SCR_COBJS))
+CUSTLIBPPFILES += $(SUBSYS_SCR_PPFILES)
+
+ifneq ($(MAKECMDGOALS), build-unilog)
+-include $(SUBSYS_SCR_COBJS:.o=.d)
+endif
+-include $(SUBSYS_SCR_COBJS:.o=.dd)
+
+ifeq ($(TOOLCHAIN),GCC)
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/gcc
+lib-y += libscreen.a
+$(BUILDDIR)/lib/libscreen.a: $(SUBSYS_SCR_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) -cr $@ $^
+endif
+endif

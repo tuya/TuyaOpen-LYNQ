@@ -1,0 +1,2 @@
+drv_id,type,int_mode,mclk_freq,reso,spi_endian_mode,spi_wire_num,spi_rx_seq,spi_cpol,spi_cpha,spi_ddr_mode,spi_word_id_seq,spi_y_only,spi_row_scale_ratio,spi_col_scale_ratio,spi_scale_bytes,spi_dummy_allowed,ext_pwr_gpio,rst_gpio,rst_level,i2c_port,i2c_speed,brief
+1,"GC032A",1,1,1,0,1,0,0,0,False,0,False,1,1,3,False,16,20,1,0,1,Camera Device
