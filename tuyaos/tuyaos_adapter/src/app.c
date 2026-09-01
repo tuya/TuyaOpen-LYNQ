@@ -177,8 +177,10 @@ static void app_init(void *arg)
     extern void ex_flash_demo(void);
     ex_flash_demo();
 #else
-    extern int main(void);
-    main();
+    /* TuyaOpen apps start here: tuya_main.c spawns the application thread
+     * from tuya_app_main(), there is no main() on an RTOS build. */
+    extern void tuya_app_main(void);
+    tuya_app_main();
 #endif
 }
 

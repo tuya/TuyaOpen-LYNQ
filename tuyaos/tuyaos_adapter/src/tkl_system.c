@@ -62,7 +62,9 @@ VOID_T tkl_system_exit_critical(UINT_T irq_mask)
  * @param[in] range
  * @return 随机值
  */
-int tkl_system_get_random(const unsigned int range)
+/* uint32_t, not unsigned int: they are distinct types in this toolchain and
+ * tkl_system.h declares the uint32_t form. */
+int tkl_system_get_random(const uint32_t range)
 {
     static bool seed_flag = false;
 	if(seed_flag == false) {
