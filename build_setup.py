@@ -33,11 +33,13 @@ TOOLCHAIN_PATH = os.path.join(os.path.dirname(PLATFORM_ROOT), "tools",
 
 # The two module variants this platform ships, keyed by their normalised chip
 # name. The values mirror the exports at the top of the matching vendor script,
-# which is the only place they are otherwise written down.
+# which is the only place they are otherwise written down. Those scripts are
+# generated from the OEM GccBuild_L511G_Y7P*.sh so the feature switches stay
+# the ones the vendor validated.
 VARIANTS = {
     "l511gy7pvm": {
         "chip": "L511G_Y7PVM",
-        "script": "build_g_pvm.sh",
+        "script": "build_tuyaopen_L511G_Y7PVM.sh",
         "build_pro_board": "EC718P_Y7PM",
         "build_pro_chip": "L511C_Y7",
         "build_pro_name": "L511G_Y7PM",
@@ -45,14 +47,14 @@ VARIANTS = {
     },
     "l511gy7pm": {
         "chip": "L511G_Y7PM",
-        "script": "build_g_pm.sh",
+        "script": "build_tuyaopen_L511G_Y7PM.sh",
         "build_pro_board": "EC718P_Y7PM",
         "build_pro_chip": "L511C_Y7",
         "build_pro_name": "L511G_Y7PM",
         "build_pro_target": "L511G_Y7PM",
     },
 }
-DEFAULT_CHIP = "L511G_Y7PVM"
+DEFAULT_CHIP = "L511G_Y7PM"
 
 
 def normalize_chip(chip):

@@ -107,7 +107,7 @@ def collect_output(variant, param):
 
     # Keep the elf around under the app's name: tos.py's crash decoding and
     # addr2line both want it.
-    elf = os.path.join(src_dir, "ap_tuyaos_adapter.elf")
+    elf = os.path.join(src_dir, "ap_tuyaopen.elf")
     if os.path.isfile(elf):
         shutil.copy2(elf, os.path.join(
             out_dir, f"{app_name}_{app_ver}.elf"))

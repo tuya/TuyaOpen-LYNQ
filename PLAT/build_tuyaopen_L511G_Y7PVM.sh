@@ -1,9 +1,13 @@
 #!/bin/bash
+# Generated from GccBuild_L511G_Y7PVM.sh -- see platform/L511G/README-build.md.
+# Only difference from the OEM script: PROJECT_NAME is the tuyaopen application
+# project, GCCLIB_PATH comes from the environment, PLAT/tools execute bits are
+# restored, and a `clean` argument is accepted. Feature switches are the OEM's.
 echo $PATH
 clear
 
 export BUILD_ENV=linux
-export PROJECT_NAME=app_demo
+export PROJECT_NAME=tuyaopen
 export BOARD_NAME=ec7xx_ref_1h00
 export CHIP_NAME=ec7xx
 export CHIP_TYPE=ec718pm
@@ -22,18 +26,19 @@ export LTO_ENABLE=false
 export GLO_ENABLE=true
 export PWR_TEST=false
 export BUILD_HEADBIN=false
-# Use the toolchain platform_prepare.py installed, unless one is exported.
 export GCCLIB_PATH=${GCCLIB_PATH:-$(realpath "../../tools/gcc-arm-none-eabi-10-2020-q4-major")}
-export COMDBLIB_PATH="./prebuild/PLAT/lib/gcc/$CHIP_TYPE/ims" 
+export COMDBLIB_PATH="./prebuild/PLAT/lib/gcc/$CHIP_TYPE/ims"
 export CPBIN_SUBPATH=audio
 export AUDIO_ENABLE=true
 export PKG_MAPDEF=pkg_718pm_mapdef
 export PKG_PRODUCT="EC718PM_GLO_PRD"
 export OUTPUT_NAME=$BOARD_NAME"_"$CHIP_TYPE
+export CHIP_TYPE_MBTK=ec718pvm
 export JOBNUMBER=j8
 export FOTA_SIGN=no_sign
 export REF_MODE=no_ref
 export CODEC_TYPE=ES8311
+export IMS_ENABLE=true
 
 # -------------------------------------------------------
 # mbtk opencpu platform config
@@ -41,7 +46,7 @@ export CODEC_TYPE=ES8311
 export BUILD_PRO_BOARD=EC718P_Y7PM
 export BUILD_PRO_CHIP=L511C_Y7
 export BUILD_PRO_NAME=L511G_Y7PM
-export BUILD_PRO_TARGET=L511G_Y7PM
+export BUILD_PRO_TARGET=L511G_Y7PVM
 
 
 
@@ -74,6 +79,15 @@ fi
 
 if [ ! -e "gccout" ]; then
 mkdir gccout
+fi
+
+# `tee` opens the build log before make runs, so its directory has to exist.
+mkdir -p ./gccout/$OUTPUT_NAME/$CORE_NAME
+
+# The OEM package ships as a zip, so fcelf / LogPrePass / ecsecure can arrive
+# without their execute bit.
+if [ -d "./tools" ]; then
+	find ./tools -type f -exec sh -c 'file "$1" 2>/dev/null | grep -q "ELF.*executable" && chmod +x "$1"' _ {} \;
 fi
 
 if [ "$GLO_ENABLE" == "true" ]; then
@@ -141,6 +155,25 @@ echo "##                                                                   ##"
 echo "#######################################################################"
 exit 1
 }
+
+
+clean()
+{
+	make -$JOBNUMBER clean-gccall TYPE=$CHIP_TYPE TARGET=$BOARD_NAME PROJECT=$PROJECT_NAME CORE=$CORE_NAME
+	rm -rf ./gccout/*
+	echo "clean all done ok..."
+	exit 0
+}
+
+# build_example.py runs this script with `clean` for `tos.py clean`.
+if [ "$1" = "clean" ]
+then
+	clean
+elif [ $# -ge 1 ]
+then
+	echo "unknown command $@"
+	exit 1
+fi
 
 starttime=$(date "+%Y/%m/%d %H:%M:%S")
 echo "Start time:" $starttime

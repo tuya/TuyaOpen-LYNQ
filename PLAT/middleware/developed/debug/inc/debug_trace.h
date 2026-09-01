@@ -230,6 +230,9 @@ typedef enum
     /*
      * !!! for customer SDK development, please add here !!!!
     */
+    /* TuyaOpen's own logs, routed here by tkl_log_output(); the log database
+     * takes the module name from this enumerator. */
+    UNILOG_TuyaOpen = 0,
     UNILOG_CUST_MOD_MAX = 127
 }UniLogCustModIdType_e;
 
