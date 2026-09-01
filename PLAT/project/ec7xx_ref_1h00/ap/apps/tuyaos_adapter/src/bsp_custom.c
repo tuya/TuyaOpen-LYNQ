@@ -1193,6 +1193,7 @@ void simcard_hotplug_ctl(bool enable)
         NVIC_DisableIRQ(PadWakeup2_IRQn);
     }
 }
+extern int agpio_irq_callback(uint32_t pad_num);
 extern void simcard_plug_handle(bool state);
 static bool sim_insert_level = true;
 void set_sim_insert_level(bool state)
@@ -1234,7 +1235,6 @@ void Pad2_WakeupIntHandler(void)
 // #endif
 }
 
-extern int agpio_irq_callback(uint32_t pad_num);
 void Pad3_WakeupIntHandler(void)
 {
     if(slpManExtIntPreProcess(PadWakeup3_IRQn)==false)

@@ -80,11 +80,14 @@ SUBSYS_TTS_ENABLE = n
 MBTK_OPENCPU_ZBAR = n
 
 #referencing customer third-party libraries
-# PREBUILDLIBS += ../lib/libtest.a
 
 #---------------------------------------------------------------------------------
 
+# ../inc carries this project's own mode_config.h; RTE_Device.h and
+# bsp_custom.h come from the tuyaos_adapter project, which is where the
+# Tuya-adapted versions for this module live.
 CFLAGS_INC        += -I ../inc \
+                     -I ../../tuyaos_adapter/inc \
                      -I $(TOP)/FIRMWARE/SRC/CAT1/Common/Inc \
                      -I $(TOP)/PLAT/driver/chip/$(CHIP)/ap/src/usb
 
@@ -98,13 +101,20 @@ ifneq ($(wildcard $(TUYA_BASE_PATH)/tuya_iot_config.h),)
 CFLAGS_DEFS += -include tuya_iot_config.h
 endif
 
-# this project's own sources: the application entry, the board glue and the
-# audio raw data the OEM audio subsystem expects
+# this project's own sources: just the application entry
 APP_DIR         := $(TOP)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/src
 APP_REL_DIR     := PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/src
 APP_SRCS        := $(wildcard $(APP_DIR)/*.c)
 obj-y           := $(patsubst %.c, %.o, $(APP_SRCS))
 obj-y           := $(subst $(APP_DIR),$(APP_REL_DIR),$(obj-y))
+
+# The board glue and the audio tone data are the tuyaos_adapter project's, not
+# copies of it: same module, same pinout, and rawData.c is 2.5MB the repository
+# should hold once. Makefile.rules resolves sources through `vpath %.c $(TOP)`
+# and BUILDDIR is per-PROJECT, so these build into this project's own tree.
+ADAPTER_SRC_DIR := PLAT/project/$(TARGET)/$(CORE)/apps/tuyaos_adapter/src
+obj-y           += $(ADAPTER_SRC_DIR)/bsp_custom.o \
+                   $(ADAPTER_SRC_DIR)/rawData.o
 
 # The TKL implementation lives in the platform's own tuyaos/ directory. Of the
 # tkl_init_* glue only the parts this module has a driver for are built: it is a
@@ -129,11 +139,6 @@ include $(TOP)/PLAT/tools/scripts/Makefile.rules
 ifneq ($(wildcard $(TUYA_BASE_PATH)/tuya_iot_config.h),)
 $(BUILDDIR)/mem_map.txt: $(TUYA_BASE_PATH)/tuya_iot_config.h
 endif
-
-# Let the unilog pre-pass see this project's objects.
-TUYA_OBJS       := $(addprefix $(BUILDDIR)/, $(obj-y))
-TUYA_PPFILES    := $(patsubst %.o, %.pp, $(TUYA_OBJS))
-PPFILES         += $(TUYA_PPFILES)
 
 # TuyaOpen's own archives, produced by cmake+ninja before this build runs.
 LIBS += ${TUYA_LIB_DIR}/libtuyaos.a
