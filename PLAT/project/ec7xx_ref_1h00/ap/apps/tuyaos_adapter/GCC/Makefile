@@ -3,16 +3,11 @@ AVAILABLE_TARGETS = ec7xx_ref_1h00
 TOOLCHAIN         = GCC
 BINNAME           = ap_$(PROJECT)
 TOP               := ../../../../../../..
-# TuyaOpen root is two levels above the platform directory ($(TOP)).
-TUYA_OPEN_PATH    := $(TOP)/../..
-TUYA_BASE_PATH    := $(TUYA_OPEN_PATH)/src/common/include
-TKL_INC_PATH      := $(TOP)/tuyaos/tuyaos_adapter/include \
-                     $(TUYA_BASE_PATH) \
-                     $(wildcard ${TUYA_APP_KCONFIG_DIR})
+TUYA_BASE_PATH   := $(TOP)/../../../include/base/include
+TKL_INC_PATH     := $(TOP)/../../../adapter
 
 #platform configuration, customers should not modify this file
 include $(TOP)/PLAT/mbtk/target/$(BUILD_PRO_TARGET)/Makefile.inc
-
 
 ifeq ($(EXCEPTION_FLASH_DUMP_ENABLE), y)
 CFLAGS_DEFS += -DFEATURE_EXCEPTION_FLASH_DUMP_ENABLE
@@ -86,9 +81,13 @@ CFLAGS_INC        += -I ../inc \
                      -I $(TOP)/FIRMWARE/SRC/CAT1/Common/Inc \
                      -I $(TOP)/PLAT/driver/chip/$(CHIP)/ap/src/usb
 
-# Every directory under the adapter's include tree is a header directory
-# (tkl_*.h sit in per-peripheral subdirectories), so add them all.
-TUYA_INC := $(addprefix -I , $(shell find $(TKL_INC_PATH) -type d))
+TUYA_INC := -I$(TUYA_BASE_PATH)
+ifeq ($(wildcard $(TKL_INC_PATH)),)
+$(info Directory $(TKL_INC_PATH) does not exist)
+else
+$(info Directory $(TKL_INC_PATH) exists)
+TUYA_INC += $(addprefix -I , $(shell find $(TKL_INC_PATH) -maxdepth 3 -name "include" -type d))
+endif
 CFLAGS_INC += ${TUYA_INC}
 
 # Use TuyaOS .config (EXF_FLASH_SIZE, etc.) when generating mem_map.txt and building adapter
@@ -102,22 +101,7 @@ ADAPTER_SRCS = $(wildcard $(ADAPTER_DIR)/*.c)
 obj-y := $(patsubst %.c, %.o, $(ADAPTER_SRCS))
 obj-y := $(subst $(ADAPTER_DIR),$(ADAPTER_REL_DIR),$(obj-y))
 
-# The TKL implementation lives in the platform's own tuyaos/ directory. Of the
-# tkl_init_* glue only the parts this module actually has a driver for are
-# built: it is a cellular module, so wifi and wired are left out.
-# src/ml is left out: its ml_internal.h includes an ml.h that the OEM package
-# does not ship.
-TKL_SRC_PATH := $(TOP)/tuyaos/tuyaos_adapter/src \
-                $(TOP)/tuyaos/tuyaos_adapter/include/utilities/src
-TKL_SRCS := $(foreach dir,$(TKL_SRC_PATH),$(wildcard $(dir)/*.c))
-TKL_INIT_DIR := $(TOP)/tuyaos/tuyaos_adapter/include/init/src
-TKL_SRCS += $(TKL_INIT_DIR)/tkl_init_common.c \
-            $(TKL_INIT_DIR)/tkl_init_system.c \
-            $(TKL_INIT_DIR)/tkl_init_network.c \
-            $(TKL_INIT_DIR)/tkl_init_cellular.c
-TKL_OBJ := $(patsubst %.c, %.o, $(TKL_SRCS))
-TKL_OBJ := $(subst $(TOP)/,,$(TKL_OBJ))
-obj-y += $(TKL_OBJ)
+include $(TOP)/../tuyaos/ecplat.mk
 #---------------------------------------------------------------------------------
 include $(TOP)/PLAT/tools/scripts/Makefile.rules
 
@@ -130,8 +114,7 @@ ADAPTER_OBJS     := $(addprefix $(BUILDDIR)/, $(obj-y))
 ADAPTER_PPFILES  := $(patsubst %.o, %.pp, $(ADAPTER_OBJS))
 PPFILES += $(ADAPTER_PPFILES)
 
-LIBS += ${TUYA_LIB_DIR}/libtuyaos.a
-LIBS += ${TUYA_LIB_DIR}/libtuyaapp.a
+LIBS += $(TOP)/../../../output/TuyaOS/libs/libtuyaos.a
 $(BUILDDIR)/lib/libtuyaos_adapter.a: $(ADAPTER_OBJS)
 #	@echo $(ADAPTER_OBJS)
 	@mkdir -p $(dir $@)

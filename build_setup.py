@@ -153,13 +153,13 @@ def add_exec_bit(path):
 def restore_exec_bits():
     '''
     The OEM package is distributed as a zip, so the host tools (fcelf,
-    LogPrePass, ecsecure, ...) and the build scripts can arrive without their
-    execute bit. Mark the scripts, plus every ELF under PLAT/tools, runnable.
-    '''
-    for name in sorted(os.listdir(PLAT_ROOT)):
-        if name.endswith(".sh"):
-            add_exec_bit(os.path.join(PLAT_ROOT, name))
+    LogPrePass, ecsecure, ...) can arrive without their execute bit. Mark every
+    ELF under PLAT/tools runnable.
 
+    The .sh files are deliberately left alone: everything runs them as
+    `bash <script>`, so the execute bit buys nothing and chmod-ing vendor files
+    on every build only produces diffs to puzzle over at SDK sync time.
+    '''
     tools_root = os.path.join(PLAT_ROOT, "tools")
     for root, _dirs, files in os.walk(tools_root):
         for name in files:

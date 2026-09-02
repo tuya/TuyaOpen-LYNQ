@@ -3,6 +3,8 @@ echo $PATH
 clear
 
 export BUILD_ENV=linux
+# Overridden by build_tuyaopen_*.sh; keep the ${VAR:-...} form on a
+# vendor SDK sync -- see README-build.md.
 export PROJECT_NAME=${PROJECT_NAME:-app_demo}
 export BOARD_NAME=ec7xx_ref_1h00
 export CHIP_NAME=ec7xx
@@ -22,7 +24,9 @@ export LTO_ENABLE=false
 export GLO_ENABLE=true
 export PWR_TEST=false
 export BUILD_HEADBIN=false
-# Use the toolchain platform_prepare.py installed, unless one is exported.
+# Overridden by build_example.py, which exports the toolchain
+# platform_prepare.py downloaded; keep the ${VAR:-...} form on a
+# vendor SDK sync -- see README-build.md.
 export GCCLIB_PATH=${GCCLIB_PATH:-$(realpath "../../tools/gcc-arm-none-eabi-10-2020-q4-major")}
 export COMDBLIB_PATH="./prebuild/PLAT/lib/gcc/$CHIP_TYPE/ims"
 export CPBIN_SUBPATH=audio
@@ -76,15 +80,6 @@ fi
 
 if [ ! -e "gccout" ]; then
 mkdir gccout
-fi
-
-# `tee` opens the build log before make runs, so its directory has to exist.
-mkdir -p ./gccout/$OUTPUT_NAME/$CORE_NAME
-
-# The OEM package ships as a zip, so fcelf / LogPrePass / ecsecure can arrive
-# without their execute bit.
-if [ -d "./tools" ]; then
-	find ./tools -type f -exec sh -c 'file "$1" 2>/dev/null | grep -q "ELF.*executable" && chmod +x "$1"' _ {} \;
 fi
 
 if [ "$GLO_ENABLE" == "true" ]; then
