@@ -1,0 +1,6 @@
+PLAT/gccout/
+PLAT/L511G_Y7PVM_download/
+PLAT/L511G_Y7PM_download/
+PLAT/middleware/developed/build_config.inc
+PLAT/tools/comdb_cust_lib.txt
+__pycache__/

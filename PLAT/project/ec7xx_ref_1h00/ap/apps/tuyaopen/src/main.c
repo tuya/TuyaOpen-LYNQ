@@ -19,8 +19,6 @@
 #include "vlog.h"
 #include "ol_fs_api.h"
 #include "ol_fs_ex_api.h"
-#include "ol_spi_api.h"
-#include "ex_storage.h"
 
 
 
@@ -103,6 +101,12 @@ static void __set_module_name_from_rf(const char *rf_customer_md)
     }
 }
 
+/* Both live in libdriver_private.a and the package ships no header for
+ * them; declare them here rather than calling through an implicit int(). */
+extern void ShareInfoWakeupCP4Version(void);
+extern void ShareInfoAPGetRfCustomerPrjNameInfo(UINT8 **rfCustomerMd, UINT8 **rfPaMd,
+                                                UINT8 **rfAsmMd, UINT8 **rfCalcTime);
+
 void check_RF_version(void)
 {
     UINT8 *pRfCustomerMd = PNULL, *pRfPaMd = PNULL, *pRfAsmMd = PNULL, *pRfCalcTime = PNULL;
@@ -113,7 +117,13 @@ void check_RF_version(void)
 
     ShareInfoAPGetRfCustomerPrjNameInfo(&pRfCustomerMd, &pRfPaMd, &pRfAsmMd, &pRfCalcTime);
     memset(rfCustomerMd, 0, sizeof(rfCustomerMd));
-    memcpy(rfCustomerMd, pRfCustomerMd, 32);
+    if (PNULL == pRfCustomerMd) {
+        /* CP not up yet, or no RF info stored: keep going, the module name
+         * is informational. */
+        LOGE("rf customer info not available");
+        return;
+    }
+    memcpy(rfCustomerMd, pRfCustomerMd, sizeof(rfCustomerMd) - 1);
 
     LOGI("rfCustomerMd: %s", rfCustomerMd);
     __set_module_name_from_rf((const char *)rfCustomerMd);
@@ -135,6 +145,10 @@ static void app_init(void *arg)
     LastResetState_e ap_state;
     LastResetState_e cp_state;
     slpManSlpState_t slpstate;
+
+    /* First thing the application logs: seeing this tells you the AP got
+     * this far and that the log database matches the firmware. */
+    LOGD("app_init enter");
     osDelay(500);
 
     check_RF_version();
@@ -148,24 +162,11 @@ static void app_init(void *arg)
     slpstate = slpManGetLastSlpState();
     LOGD("Check last sleep state = %d",slpstate);
 
-    // ol_set_dump_flag(OL_DUMP_PRINT_RESET);
+    ol_set_dump_flag(OL_DUMP_PRINT_RESET);
 	// ol_set_dump_flag(OL_DUMP_FLASH_EPAT_LOOP);
 
-    char *list_buf = malloc(1024);
-    if(list_buf) {
-        // LOGD("list_buf = %d",list_buf);
-        memset(list_buf, 0, 1024);
-        ol_fs_list(list_buf, 1024, FS_TYPE_INTERNAL);
-
-        LOGD("list_buf = %s",list_buf);
-        char *token = strtok(list_buf, "\r\n");
-        while (token != NULL) {
-            LOGD("ol_fs_list: %s", token);
-            token = strtok(NULL, "\n");
-        }
-        free(list_buf);
-    }
-    
+    /* The Tuya KV database lives in this filesystem, and the region is small
+     * enough that a full one shows up as write failures -- worth one line. */
 	int t_size = ol_fs_get_totalspacesize(FS_TYPE_INTERNAL);
     int u_size = ol_fs_get_usedspacesize(FS_TYPE_INTERNAL);
     int f_size = ol_fs_get_freespacesize(FS_TYPE_INTERNAL);
@@ -173,13 +174,10 @@ static void app_init(void *arg)
     LOGD("FreeHeapSize:%d", xPortGetFreeHeapSize());
     LOGD("Build time %s %s", __DATE__, __TIME__);
 
-#if 0
-    extern void ex_flash_demo(void);
-    ex_flash_demo();
-#else
-    extern int main(void);
-    main();
-#endif
+    /* TuyaOpen apps start here: tuya_main.c spawns the application thread
+     * from tuya_app_main(), there is no main() on an RTOS build. */
+    extern void tuya_app_main(void);
+    tuya_app_main();
 }
 
 /**

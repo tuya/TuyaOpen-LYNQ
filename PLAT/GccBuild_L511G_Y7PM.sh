@@ -3,7 +3,9 @@ echo $PATH
 clear
 
 export BUILD_ENV=linux
-export PROJECT_NAME=app_demo
+# Overridden by build_tuyaopen_*.sh; keep the ${VAR:-...} form on a
+# vendor SDK sync -- see README-build.md.
+export PROJECT_NAME=${PROJECT_NAME:-app_demo}
 export BOARD_NAME=ec7xx_ref_1h00
 export CHIP_NAME=ec7xx
 export CHIP_TYPE=ec718pm
@@ -22,7 +24,10 @@ export LTO_ENABLE=false
 export GLO_ENABLE=true
 export PWR_TEST=false
 export BUILD_HEADBIN=false
-export GCCLIB_PATH="$HOME/gcc"
+# Overridden by build_example.py, which exports the toolchain
+# platform_prepare.py downloaded; keep the ${VAR:-...} form on a
+# vendor SDK sync -- see README-build.md.
+export GCCLIB_PATH=${GCCLIB_PATH:-$(realpath "../../tools/gcc-arm-none-eabi-10-2020-q4-major")}
 export COMDBLIB_PATH="./prebuild/PLAT/lib/gcc/$CHIP_TYPE/ims"
 export CPBIN_SUBPATH=audio
 export AUDIO_ENABLE=true
