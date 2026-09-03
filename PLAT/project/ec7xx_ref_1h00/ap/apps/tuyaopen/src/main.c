@@ -193,12 +193,15 @@ void main_entry(void)
 
     //IO voltage default is 1.8V
     //Modify the IO voltage to 3.3V or other voltage define in IOVoltageSel_t as follows
-    #if defined(PMU_AON_GPIO_LEVEL) && (PMU_AON_GPIO_LEVEL == 1)
+    // #if defined(PMU_AON_GPIO_LEVEL) && (PMU_AON_GPIO_LEVEL == 1)
+    // slpManAONIOVoltSet(IOVOLT_3_30V);
+    // #endif
+    // #if defined(PMU_NORMAL_GPIO_LEVEL) && (PMU_NORMAL_GPIO_LEVEL == 1)
+    // slpManNormalIOVoltSet(IOVOLT_3_30V);
+    // #endif
+
     slpManAONIOVoltSet(IOVOLT_3_30V);
-    #endif
-    #if defined(PMU_NORMAL_GPIO_LEVEL) && (PMU_NORMAL_GPIO_LEVEL == 1)
     slpManNormalIOVoltSet(IOVOLT_3_30V);
-    #endif
 
     osKernelInitialize();
     registerAppEntry(app_init, NULL);

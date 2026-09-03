@@ -64,6 +64,13 @@ typedef enum {
     TKL_AO_MAX,
 } TKL_AO_CHN_E; // audio output channel
 
+// The `card` argument of the ai/ao calls. This module has one card, the
+// on-board codec; the enum exists because TuyaOpen's TDD audio layer names it.
+typedef enum {
+    TKL_AUDIO_TYPE_BOARD = 0,
+    TKL_AUDIO_TYPE_MAX,
+} TKL_AUDIO_TYPE_E;
+
 typedef struct {
     uint8_t platform_dai_type;         // 0--IIS类型的AUDIO 1--DAC类型的AUDIO
     uint8_t platform_dai_port;         // 选择哪个DAC ADC 或者 IIS
@@ -104,6 +111,7 @@ typedef struct {
     int32_t spk_volume_offset; // spk volume offset, for adapting different speakers,The default value is 0,[0,100]
     int32_t spk_gpio;          // spk amplifier pin number, <0, no amplifier
     int32_t spk_gpio_polarity; // pin polarity, 0 high enable, 1 low enable
+    TKL_AUDIO_SAMPLE_E spk_sample; // playback sample rate; 0 means "same as sample"
     void *padta;
     TKL_FRAME_PUT_CB put_cb;
 } TKL_AUDIO_CONFIG_T; // audio config
@@ -279,6 +287,19 @@ OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, void *handle, TKL_A
  * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
  */
 OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, void *handle);
+
+/**
+ * @brief discard whatever playback is still queued
+ *
+ * The "stop talking now" path, as opposed to tkl_ao_stop, which waits for the
+ * queue to drain. TuyaOpen's TDD audio layer calls this for TDD_AUDIO_CMD_PLAY_STOP.
+ *
+ * @param[in] card: card number
+ * @param[in] chn: channel number
+ *
+ * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
+ */
+OPERATE_RET tkl_ao_clear_buffer(int32_t card, TKL_AO_CHN_E chn);
 
 /**
  * @brief ao uninit

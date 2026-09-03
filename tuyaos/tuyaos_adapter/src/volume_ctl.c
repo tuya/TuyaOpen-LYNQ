@@ -20,23 +20,39 @@ typedef struct
 static volume_ctl_struct volume_controls[VOLUME_TYPE_MAX] = {{0xff, false}, {0xff, false}, {0xff, false}};
 static volume_ctl_struct mic_controls[MIC_TYPE_MAX] = {{0xff, false}, {0xff, false}};     
 static VOLUME_TYPE_E current_volume_type = VOLUME_TYPE_AUDIO;
-static int pa_pin_num = 0xff;
+
+/*
+ * Which pin enables the external speaker amplifier, or < 0 for "this board has
+ * none". The prebuilt codec driver asks through pad_hook() as soon as the codec
+ * powers up -- including a capture-only build -- so defaulting to a pin means
+ * enabling an amplifier for a board that may not have one, on a pad that is
+ * something else entirely (on L511G_Y7PM pad 21 is MAIN_DCD). A board that does
+ * drive an amplifier names the pad in CONFIG_BOARD_SPEAKER_PA_PIN, or hands it
+ * over at playback setup through tkl_audio_pa_pin_set().
+ */
+#if defined(BOARD_SPEAKER_PA_PIN)
+static int pa_pin_num = BOARD_SPEAKER_PA_PIN;
+#else
+static int pa_pin_num = -1;
+#endif
 
 extern int ol_setVolume(int);    
 extern int ol_getVolume(int *);
 extern int ol_setMicVolume(int);
 extern int ol_getMicVolume(int *);
 
-//TODO 初始化 PA控制脚，并返回PA控制脚的编号
+// 初始化 PA控制脚，并返回PA控制脚的编号；板子没有功放时返回 -1，不动任何管脚
 int pad_hook(void)
 {
-    if(pa_pin_num == 0xff) {
-        pa_pin_num = 21;                        // 默认使用 PA21 控制 PA
+    if(pa_pin_num < 0) {
+        LOGI("no speaker amplifier declared, leaving the PA pin alone");
+        return -1;
     }
     TUYA_GPIO_BASE_CFG_T cfg = {0};
     cfg.mode = -1;                              // tkl_gpio_init 会设置成 pull_auto
     cfg.direct = TUYA_GPIO_OUTPUT;
     tkl_gpio_init(pa_pin_num, &cfg);
+    LOGI("speaker amplifier on pad %d", pa_pin_num);
     return pa_pin_num;
 }
 

@@ -173,6 +173,10 @@ static void audio_read_handler(char *buffer, uint32_t size)
             if (user_audio_read_handler) {
                 memset(&audio_frame, 0, sizeof(audio_frame));
                 audio_frame.buf_size = audio_read_size;
+                /* used_size is what consumers read to size the frame -- TuyaOpen's
+                 * TDD audio layer passes exactly this to its mic callback. Leaving
+                 * it at 0 handed every listener an empty frame. */
+                audio_frame.used_size = audio_read_size;
                 audio_frame.codectype = TKL_CODEC_AUDIO_PCM;
                 audio_frame.datebits =  TKL_AUDIO_DATABITS_16;
                 audio_frame.sample = tkl_record_params.samplerate == SAMPLERATE_8K ? TKL_AUDIO_SAMPLE_8K : TKL_AUDIO_SAMPLE_16K;
@@ -186,9 +190,53 @@ static void audio_read_handler(char *buffer, uint32_t size)
     }
 }
 
+/*
+ * The media subsystem, brought up the way the OEM audio demo does it
+ * (subMediaInit == audioInit + recordInit), but waited for instead of slept on.
+ *
+ * Both services create their message queue from inside their own thread, which
+ * runs at osPriorityBelowNormal7 -- below every caller here. Until that queue
+ * exists ol_audioRecord() quietly drops the request and still returns osOK
+ * (see record.c: `status` starts as osOK and is only assigned inside the
+ * `gRecordQueue != NULL` branch), so a record that never starts looks exactly
+ * like one that did. The OEM demo papers over this with osDelay(1000); polling
+ * the queue costs nothing when the thread is already up and fails loudly when
+ * it never comes.
+ */
+extern osMessageQueueId_t gRecordQueue;
+
+#define TKL_AUDIO_SUBSYS_WAIT_MS   10
+#define TKL_AUDIO_SUBSYS_WAIT_MAX  200 /* 2 s */
+
+static uint8_t tkl_audio_subsys_state = 0;
+
+static OPERATE_RET tkl_audio_subsys_init(void)
+{
+    int waited = 0;
+
+    if (tkl_audio_subsys_state) {
+        return OPRT_OK;
+    }
+
+    audioInit();
+    recordInit();
+
+    while (NULL == gRecordQueue) {
+        tkl_system_sleep(TKL_AUDIO_SUBSYS_WAIT_MS);
+        if (++waited > TKL_AUDIO_SUBSYS_WAIT_MAX) {
+            LOGE("record service did not start (gRecordQueue still null)");
+            return OPRT_COM_ERROR;
+        }
+    }
+
+    tkl_audio_subsys_state = 1;
+    LOGI("media subsys ready after %d ms", waited * TKL_AUDIO_SUBSYS_WAIT_MS);
+    return OPRT_OK;
+}
+
 /**
 * @brief ai init
-* 
+*
 * @param[in] pconfig: audio config
 * @param[in] count: count of pconfig
 *
@@ -205,6 +253,10 @@ OPERATE_RET tkl_ai_init(TKL_AUDIO_CONFIG_T *pconfig, INT32_T count)
     if(pconfig->sample != TKL_AUDIO_SAMPLE_8K && pconfig->sample != TKL_AUDIO_SAMPLE_16K) {
         return OPRT_NOT_SUPPORTED;
     }
+    if (OPRT_OK != tkl_audio_subsys_init()) {
+        return OPRT_COM_ERROR;
+    }
+
     memset(&tkl_record_params, 0, sizeof(tkl_record_params));
     tkl_record_params.codec = AUDIO_RECORD_CODEC_PCM;
     tkl_record_params.samplerate = pconfig->sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;
@@ -229,12 +281,11 @@ OPERATE_RET tkl_ai_start(INT32_T card, TKL_AI_CHN_E chn)
         return OPRT_OK;
     }
     
-    if (recordInit() < 0) {
-        LOGE("recordInit failed");
+    if (OPRT_OK != tkl_audio_subsys_init()) {
         return OPRT_COM_ERROR;
     }
-    
-    if (ol_audioRecord(tkl_record_params, audio_read_handler) < 0) {
+
+    if (ol_audioRecord(tkl_record_params, audio_read_handler) != osOK) {
         LOGE("ol_audioRecord failed");
         return OPRT_COM_ERROR;
     }
@@ -318,16 +369,21 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, INT32_T count, VOID **handl
     if(NULL == pconfig) {
         return OPRT_INVALID_PARM;
     }
-    if(pconfig->codectype != TKL_CODEC_AUDIO_PCM) {                                                                                                     
+    if(pconfig->codectype != TKL_CODEC_AUDIO_PCM) {
         return OPRT_NOT_SUPPORTED;
     }
-    if(pconfig->sample != TKL_AUDIO_SAMPLE_8K && pconfig->sample != TKL_AUDIO_SAMPLE_16K) {
+    /* Playback may run at its own rate; 0 means "whatever capture uses". */
+    TKL_AUDIO_SAMPLE_E spk_sample = pconfig->spk_sample ? pconfig->spk_sample : pconfig->sample;
+    if(spk_sample != TKL_AUDIO_SAMPLE_8K && spk_sample != TKL_AUDIO_SAMPLE_16K) {
         return OPRT_NOT_SUPPORTED;
+    }
+    if (OPRT_OK != tkl_audio_subsys_init()) {
+        return OPRT_COM_ERROR;
     }
 
     memset(&tkl_ao_params, 0, sizeof(tkl_ao_params));
     tkl_ao_params.field.bitWidth = 0;                   //默认16bit
-    tkl_ao_params.field.samplerate = pconfig->sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;                  
+    tkl_ao_params.field.samplerate = spk_sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;
     tkl_ao_params.field.envType = MED_DATA_ENV_TYPE_LOCAL;
 
     AUDIO_MUTEX_LOCK_INIT();
@@ -484,6 +540,38 @@ OPERATE_RET tkl_ao_stop(INT32_T card, TKL_AO_CHN_E chn, VOID *handle)
 #endif
     tkl_ao_state = 0;
     LOGI("tkl_ao_stop %d", tkl_ao_state);
+    return OPRT_OK;
+}
+
+/**
+* @brief ao clear buffer
+*
+* Throw away what is still queued, instead of playing it out: this is the
+* interrupt path (TuyaOpen's TDD_AUDIO_CMD_PLAY_STOP), the opposite of
+* tkl_ao_stop, which deliberately waits for the cache to drain. Playback stays
+* started -- medDataHandleStop keeps the ring buffer, and the next
+* tkl_ao_put_frame restarts the data handle.
+*
+* @param[in] card: card number
+* @param[in] chn: channel number
+*
+* @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
+*/
+OPERATE_RET tkl_ao_clear_buffer(INT32_T card, TKL_AO_CHN_E chn)
+{
+    if (!tkl_ao_state) {
+        return OPRT_OK;
+    }
+#if AUDIO_PLAY_ORIGINAL_MODE_ENABLE
+    audPcmPlayStop();
+#else
+    AUDIO_MUTEX_LOCK();
+    if (medDataHandleStateGet() == MED_DATA_HDL_STA_START) {
+        medDataHandleStop();
+    }
+    AUDIO_MUTEX_UNLOCK();
+#endif
+    LOGI("tkl_ao_clear_buffer");
     return OPRT_OK;
 }
 
