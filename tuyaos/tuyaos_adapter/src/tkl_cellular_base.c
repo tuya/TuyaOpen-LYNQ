@@ -589,7 +589,7 @@ EXIT:
  * @return TRUE正常，FALSE异常
  */
 
-BOOL_T tkl_cellular_base_rf_calibrated(VOID_T)
+BOOL_T tkl_cellular_base_rf_calibrated(void)
 {
     return TRUE;
 }
@@ -600,12 +600,12 @@ BOOL_T tkl_cellular_base_enable_sim_detect(uint8_t simid, BOOL_T enable)
     return TRUE;
 }
 
-int8_t tkl_cellular_base_get_default_simid(VOID)
+int8_t tkl_cellular_base_get_default_simid(void)
 {
     return 0;
 }
 
-OPERATE_RET tkl_cellular_base_ioctl(int cmd, VOID* argv)
+OPERATE_RET tkl_cellular_base_ioctl(int cmd, void* argv)
 {
     LOGI("base ioctl, cmd: %d", cmd);
     OPERATE_RET ret = OPRT_OK;
@@ -696,7 +696,7 @@ void tuya_cniot_get_sysfw_info(char fw_name[64], char fw_ver[11])
     sprintf(fw_ver, "%d.%d.%d", ver[0], ver[1], ver[2]);
 }
 
-VOID tuya_cniot_init(VOID)
+void tuya_cniot_init(void)
 {
     char fw_name[64];
     char fw_ver[11];

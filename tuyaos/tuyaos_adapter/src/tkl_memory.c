@@ -44,7 +44,7 @@ static void __heap_init(void)
 *
 * @return the memory address malloced
 */
-VOID_T *tkl_system_malloc(size_t size)
+void *tkl_system_malloc(size_t size)
 {
     if (!s_heap_handle) {
         __heap_init();
@@ -60,12 +60,12 @@ VOID_T *tkl_system_malloc(size_t size)
 //     return ptr;
 }
 
-VOID_T *tkl_system_psram_malloc(size_t size)
+void *tkl_system_psram_malloc(size_t size)
 {
     return tkl_system_malloc(size);
 }
 
-VOID_T tkl_system_psram_free(VOID_T* ptr)
+void tkl_system_psram_free(void* ptr)
 {
     tkl_system_free(ptr);
 }
@@ -77,9 +77,9 @@ VOID_T tkl_system_psram_free(VOID_T* ptr)
 *
 * @note This API is used to free memory of system.
 *
-* @return VOID_T
+* @return void
 */
-VOID_T tkl_system_free(VOID_T* ptr)
+void tkl_system_free(void* ptr)
 {
     if (ptr) {
         // free(ptr);
@@ -95,7 +95,7 @@ VOID_T tkl_system_free(VOID_T* ptr)
  *
  * @return the memory address calloced
  */
-VOID_T *tkl_system_calloc(size_t nitems, size_t size)
+void *tkl_system_calloc(size_t nitems, size_t size)
 {
     // void * ptr = calloc(nitems, size);
     void *ptr = tuya_mem_heap_calloc(s_heap_handle, nitems * size);
@@ -110,9 +110,9 @@ VOID_T *tkl_system_calloc(size_t nitems, size_t size)
  * @param[in]       nitems      source memory address
  * @param[in]       size        the size after re-allocate
  *
- * @return VOID_T
+ * @return void
  */
-VOID_T *tkl_system_realloc(VOID_T* ptr, size_t size)
+void *tkl_system_realloc(void* ptr, size_t size)
 {
     // return realloc(ptr, size);
     return tuya_mem_heap_realloc(s_heap_handle, ptr, size);
@@ -125,7 +125,7 @@ VOID_T *tkl_system_realloc(VOID_T* ptr, size_t size)
 *
 * @return heap size
 */
-int tkl_system_get_free_heap_size(VOID_T)
+int tkl_system_get_free_heap_size(void)
 {
     // return (int)xPortGetFreeHeapSize();
     return tuya_mem_heap_available(s_heap_handle);

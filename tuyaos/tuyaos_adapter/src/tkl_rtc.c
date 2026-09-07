@@ -12,7 +12,7 @@
  *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-TUYA_WEAK_ATTRIBUTE OPERATE_RET tkl_rtc_init(VOID_T)
+TUYA_WEAK_ATTRIBUTE OPERATE_RET tkl_rtc_init(void)
 {
     return OPRT_OK;
 }
@@ -22,7 +22,7 @@ TUYA_WEAK_ATTRIBUTE OPERATE_RET tkl_rtc_init(VOID_T)
  * @param[in] none
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-TUYA_WEAK_ATTRIBUTE OPERATE_RET tkl_rtc_deinit(VOID_T)
+TUYA_WEAK_ATTRIBUTE OPERATE_RET tkl_rtc_deinit(void)
 {
     return OPRT_OK;
 }

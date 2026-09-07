@@ -300,7 +300,7 @@ TUYA_ERRNO tkl_net_connect(CONST int fd, CONST TUYA_IP_ADDR_T addr,
  * @param[in]      len
  * @return  0: success  Other: fail
  */
-TUYA_ERRNO tkl_net_connect_raw(CONST int fd, VOID *p_socket_addr, CONST int len)
+TUYA_ERRNO tkl_net_connect_raw(CONST int fd, void *p_socket_addr, CONST int len)
 {
     return connect(fd, (struct sockaddr *)p_socket_addr, len);
 }
@@ -392,7 +392,7 @@ TUYA_ERRNO tkl_net_accept(CONST int fd, TUYA_IP_ADDR_T *addr, uint16_t *port)
  * @param[in]      nbytes
  * @return  nbytes has sended
  */
-TUYA_ERRNO tkl_net_send(CONST int fd, CONST VOID *buf, CONST uint32_t nbytes)
+TUYA_ERRNO tkl_net_send(CONST int fd, CONST void *buf, CONST uint32_t nbytes)
 {
     if((fd < 0) || (buf == NULL) || (nbytes == 0)){
         LOGE("tkl_net_send, invalid param, fd/%d, buf/%p, nbytes/%u", fd, buf, nbytes);
@@ -412,7 +412,7 @@ TUYA_ERRNO tkl_net_send(CONST int fd, CONST VOID *buf, CONST uint32_t nbytes)
  * @param[in]      port
  * @return  nbytes has sended
  */
-TUYA_ERRNO tkl_net_send_to(CONST int fd, CONST VOID *buf, CONST uint32_t nbytes, CONST TUYA_IP_ADDR_T addr,CONST uint16_t port)
+TUYA_ERRNO tkl_net_send_to(CONST int fd, CONST void *buf, CONST uint32_t nbytes, CONST TUYA_IP_ADDR_T addr,CONST uint16_t port)
 {
     unsigned short tmp_port = port;
     TUYA_IP_ADDR_T tmp_addr = addr;
@@ -438,7 +438,7 @@ TUYA_ERRNO tkl_net_send_to(CONST int fd, CONST VOID *buf, CONST uint32_t nbytes,
  * @param[in]         nbytes
  * @return  nbytes has received
  */
-TUYA_ERRNO tkl_net_recv(CONST int fd, VOID *buf, CONST uint32_t nbytes)
+TUYA_ERRNO tkl_net_recv(CONST int fd, void *buf, CONST uint32_t nbytes)
 {
     if ((fd < 0) || (buf == NULL) || (nbytes == 0)) {
         LOGE("tkl_net_recv, invalid param, fd/%d, buf/%p, nbytes/%u", fd, buf, nbytes);
@@ -456,7 +456,7 @@ TUYA_ERRNO tkl_net_recv(CONST int fd, VOID *buf, CONST uint32_t nbytes)
  * @param[in]            nd_size
  * @return  nbytes has received
  */
-int tkl_net_recv_nd_size(CONST int fd, VOID *buf, CONST uint32_t buf_size, CONST uint32_t nd_size)
+int tkl_net_recv_nd_size(CONST int fd, void *buf, CONST uint32_t buf_size, CONST uint32_t nd_size)
 {
     if ((fd < 0) || (NULL == buf) || (buf_size == 0) ||
        (nd_size == 0) || (buf_size < nd_size)) {
@@ -496,7 +496,7 @@ int tkl_net_recv_nd_size(CONST int fd, VOID *buf, CONST uint32_t buf_size, CONST
  * @param[inout]         port
  * @return  nbytes has received
  */
-TUYA_ERRNO tkl_net_recvfrom(CONST int fd, VOID *buf, CONST uint32_t nbytes, TUYA_IP_ADDR_T *addr, uint16_t *port)
+TUYA_ERRNO tkl_net_recvfrom(CONST int fd, void *buf, CONST uint32_t nbytes, TUYA_IP_ADDR_T *addr, uint16_t *port)
 {
     int ret = 0;
     struct sockaddr_in sock_addr;
@@ -685,7 +685,7 @@ OPERATE_RET tkl_net_get_socket_ip(CONST int fd, TUYA_IP_ADDR_T *addr)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_net_setsockopt(CONST int fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, CONST VOID_T *optval, CONST int optlen)
+OPERATE_RET tkl_net_setsockopt(CONST int fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, CONST void *optval, CONST int optlen)
 {
     return setsockopt((int)fd, (int)level, (int)optname, optval, (int)optlen);
 }
@@ -703,9 +703,9 @@ OPERATE_RET tkl_net_setsockopt(CONST int fd, CONST TUYA_OPT_LEVEL level, CONST T
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_net_getsockopt(CONST int fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, VOID_T *optval, int *optlen)
+OPERATE_RET tkl_net_getsockopt(CONST int fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, void *optval, int *optlen)
 {
-    if (0 != getsockopt((int)fd, (int)level, (int)optname, (VOID*)optval, (socklen_t*)optlen)) {
+    if (0 != getsockopt((int)fd, (int)level, (int)optname, (void*)optval, (socklen_t*)optlen)) {
         return OPRT_COM_ERROR;
     }
 

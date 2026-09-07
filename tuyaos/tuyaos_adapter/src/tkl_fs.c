@@ -378,7 +378,7 @@ int tkl_fclose(TUYA_FILE file)
 *
 * @return the bytes read from file
 */
-int tkl_fread(VOID_T* buf, int bytes, TUYA_FILE file)
+int tkl_fread(void* buf, int bytes, TUYA_FILE file)
 {
     return ol_fs_read(buf, (uint32_t)bytes, (OLFILE)file);
 }
@@ -394,7 +394,7 @@ int tkl_fread(VOID_T* buf, int bytes, TUYA_FILE file)
 *
 * @return the bytes write to file
 */
-int tkl_fwrite(VOID_T* buf, int bytes, TUYA_FILE file)
+int tkl_fwrite(void* buf, int bytes, TUYA_FILE file)
 {
     int ret = 0;
     int writelen = 0;

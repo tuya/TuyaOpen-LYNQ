@@ -79,7 +79,7 @@ typedef struct {
     BOOL_T enable;
 } TUYA_CELL_USB_CTRL;
 
-typedef void (*TKL_GENERAL_CALLBACK)(int event, VOID *args);
+typedef void (*TKL_GENERAL_CALLBACK)(int event, void *args);
 
 /**
  * @brief Control cellular AP LOG output

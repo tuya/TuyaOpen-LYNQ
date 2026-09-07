@@ -128,7 +128,7 @@ OPERATE_RET tkl_cellular_comm_get_rssi(uint8_t sim_id, int *rssi)
 }
 
 // 模组进行自检
-OPERATE_RET tkl_cellular_comm_selfcheck(SELFTEST_TYPE type, VOID *pdata)
+OPERATE_RET tkl_cellular_comm_selfcheck(SELFTEST_TYPE type, void *pdata)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -240,7 +240,7 @@ OPERATE_RET tkl_cellular_comm_get_module(char module[32])
 }
 
 //平台支持的系统备份功能
-OPERATE_RET tkl_cellular_comm_sysbackup(VOID)
+OPERATE_RET tkl_cellular_comm_sysbackup(void)
 {
     return OPRT_NOT_SUPPORTED;
 }

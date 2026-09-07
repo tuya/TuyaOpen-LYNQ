@@ -161,7 +161,7 @@ static OPERATE_RET encode_pdu_msg(TUYA_CELLULAR_SMS_SEND_T *sms_msg, uint8_t *pd
 
     if (sms_msg->sms_encode != to_chset) {
         int out_bytes = 0;
-        VOID *converted = mlConvertStr(sms_msg->msg, (int)sms_msg->msg_len, sms_msg->sms_encode, to_chset, &out_bytes);
+        void *converted = mlConvertStr(sms_msg->msg, (int)sms_msg->msg_len, sms_msg->sms_encode, to_chset, &out_bytes);
         if (converted != NULL) {
             size_t msg_cap = sizeof(sms_msg->msg);
 
@@ -366,7 +366,7 @@ OPERATE_RET tkl_cellular_sms_mute(BOOL_T mute)
  *      - NULL: invalid parameters
  *      - output string
  */
-VOID *tkl_cellular_sms_convert_str(CONST VOID *from, int from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, int *to_size)
+void *tkl_cellular_sms_convert_str(CONST void *from, int from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, int *to_size)
 {
     return NULL;
 }

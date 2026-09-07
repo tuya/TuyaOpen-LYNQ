@@ -58,7 +58,7 @@ static int strip_ansi(char *s, int len)
 *
 * @return
 */
-VOID_T tkl_log_output(CONST char *format, ...)
+void tkl_log_output(CONST char *format, ...)
 {
 	va_list ap;
 	int len;
@@ -99,13 +99,13 @@ VOID_T tkl_log_output(CONST char *format, ...)
 /**
 * @brief Close log port
 *
-* @param VOID
+* @param void
 *
 * @note This API is used for closing log port.
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_log_close(VOID_T)
+OPERATE_RET tkl_log_close(void)
 {
     return OPRT_OK;
 }
@@ -113,13 +113,13 @@ OPERATE_RET tkl_log_close(VOID_T)
 /**
 * @brief Open log port
 *
-* @param VOID
+* @param void
 *
 * @note This API is used for openning log port.
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_log_open(VOID_T)
+OPERATE_RET tkl_log_open(void)
 {
     return OPRT_OK;
 }

@@ -1731,14 +1731,6 @@ typedef int TUYA_ERRNO;
  * own types header is where they belong. Every one is guarded, and defined
  * exactly as in src/tuya_ai_service/port/include/tuya_ai_types.h, so a
  * translation unit pulling in both sees identical definitions. */
-#ifndef VOID
-#define VOID void
-#endif
-
-#ifndef VOID_T
-#define VOID_T void
-#endif
-
 #ifndef CONST
 #define CONST const
 #endif

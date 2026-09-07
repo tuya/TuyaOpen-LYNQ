@@ -24,7 +24,7 @@ OPERATE_RET tkl_thread_create(TKL_THREAD_HANDLE* thread,
                               uint32_t stack_size,
                               uint32_t priority,
                               CONST THREAD_FUNC_T func,
-                              VOID_T* CONST arg)
+                              void* CONST arg)
 {	
 	osThreadAttr_t attr;
 	memset(&attr, 0, sizeof(attr));
@@ -56,7 +56,7 @@ OPERATE_RET tkl_thread_create_in_psram(TKL_THREAD_HANDLE* thread,
                               uint32_t stack_size,
                               uint32_t priority,
                               CONST THREAD_FUNC_T func,
-                              VOID_T* CONST arg)
+                              void* CONST arg)
 {
     return tkl_thread_create(thread, name, stack_size, priority, func, arg);
 }

@@ -12,7 +12,7 @@ typedef struct {
 	bool	irq_flag;
 	bool 	init_flag;				//初始化标志
 	TUYA_GPIO_IRQ_CB cb;
-	VOID_T* arg;
+	void* arg;
 	TUYA_GPIO_BASE_CFG_T cfg;
 } gpio_map_t;
 
@@ -727,7 +727,7 @@ void tkl_gpio_test(void)
 	}
 }
 
-static void test_gpio_irq_cb(VOID_T *args)
+static void test_gpio_irq_cb(void *args)
 {
 	int pin = (int)args;
 	static int cnt  = 0;

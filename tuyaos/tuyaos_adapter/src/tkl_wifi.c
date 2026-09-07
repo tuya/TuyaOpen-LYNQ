@@ -149,7 +149,7 @@ int tkl_wifi_set_lp_mode(const BOOL_T en, const unsigned char dtim)
  * @param[in]       none
  * @return  true: rf param exist  Other: fail
  */
-BOOL_T tkl_wifi_set_rf_calibrated(VOID_T)
+BOOL_T tkl_wifi_set_rf_calibrated(void)
 {
     return OPRT_OK;
 }
@@ -175,7 +175,7 @@ OPERATE_RET tkl_wifi_station_connect(CONST int8_t* ssid, CONST int8_t* passwd)
     return 0;
 }
 
-OPERATE_RET tkl_wifi_station_disconnect(VOID_T)
+OPERATE_RET tkl_wifi_station_disconnect(void)
 {
     return 0;
 }
@@ -308,7 +308,7 @@ OPERATE_RET tkl_wifi_start_ap(CONST WF_AP_CFG_IF_S* cfg)
     return 0;
 }
 
-OPERATE_RET tkl_wifi_stop_ap(VOID_T)
+OPERATE_RET tkl_wifi_stop_ap(void)
 {
     return 0;
 }

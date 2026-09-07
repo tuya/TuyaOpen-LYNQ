@@ -267,14 +267,14 @@ OPERATE_RET tkl_uart_deinit(TUYA_UART_NUM_E port_id)
 	return OPRT_OK;
 }
 
-int tkl_uart_write(TUYA_UART_NUM_E port_id, VOID_T* buff, uint16_t len)
+int tkl_uart_write(TUYA_UART_NUM_E port_id, void* buff, uint16_t len)
 {
 	LOGD("uart send port %d %d len:%d", port_id, uart_dev[port_id].port, len);
 	int ret = ol_uart_send(uart_dev[port_id].port, (uint8_t*)buff, len);
 	return (0 == ret) ? len : 0;
 }
 
-VOID_T tkl_uart_rx_irq_cb_reg(TUYA_UART_NUM_E port_id, TUYA_UART_IRQ_CB rx_cb)
+void tkl_uart_rx_irq_cb_reg(TUYA_UART_NUM_E port_id, TUYA_UART_IRQ_CB rx_cb)
 {	
 	if (port_id < UART_DEV_NUM) {
 		uart_dev[port_id].ty_cb = rx_cb;
@@ -283,13 +283,13 @@ VOID_T tkl_uart_rx_irq_cb_reg(TUYA_UART_NUM_E port_id, TUYA_UART_IRQ_CB rx_cb)
 	}
 }
 
-VOID_T tkl_uart_tx_irq_cb_reg(TUYA_UART_NUM_E port_id, TUYA_UART_IRQ_CB tx_cb)
+void tkl_uart_tx_irq_cb_reg(TUYA_UART_NUM_E port_id, TUYA_UART_IRQ_CB tx_cb)
 {
 	LOGE("uart %d tx irq cb register not support", port_id);
     return ;
 }
 
-int tkl_uart_read(TUYA_UART_NUM_E port_id, VOID_T* buff, uint16_t len)
+int tkl_uart_read(TUYA_UART_NUM_E port_id, void* buff, uint16_t len)
 {
 	uint32_t read_len = 0;
 
@@ -324,7 +324,7 @@ OPERATE_RET tkl_uart_wait_for_data(TUYA_UART_NUM_E port_id, int timeout_ms)
 	return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_uart_ioctl(TUYA_UART_NUM_E port_id, uint32_t cmd, VOID_T* arg)
+OPERATE_RET tkl_uart_ioctl(TUYA_UART_NUM_E port_id, uint32_t cmd, void* arg)
 {
 	if (port_id >= UART_DEV_NUM) {
 		LOGE("uart ioctl failed, illegal port: %u", port_id);

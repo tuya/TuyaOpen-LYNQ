@@ -90,7 +90,7 @@ typedef enum {
  * @param[in] event  what happened, see TKL_AUDIO_PLAYER_EVENT_E
  * @param[in] cb_ctx the context handed to the play call
  */
-typedef VOID (*TKL_AUDIO_PLAYER_CB)(TKL_AUDIO_PLAYER_EVENT_E event,
+typedef void (*TKL_AUDIO_PLAYER_CB)(TKL_AUDIO_PLAYER_EVENT_E event,
                                     void * cb_ctx);
 
 /**
@@ -100,7 +100,7 @@ typedef struct {
     /* fill buff with at most size bytes, return the byte count or < 0 */
     int (*get_data)(void * play_ctx, uint8_t * buff, uint32_t size);
     /* stream playing finished */
-    VOID (*finish)(void * play_ctx);
+    void (*finish)(void * play_ctx);
 } TKL_AUDIO_PLAY_OPS_T;
 
 /**
@@ -139,21 +139,21 @@ OPERATE_RET tkl_cellular_player_start(TKL_AUDIO_PLAYER_TYPE_E type,
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_pause(VOID);
+OPERATE_RET tkl_cellular_player_pause(void);
 
 /**
  * @brief resume the paused audio
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_resume(VOID);
+OPERATE_RET tkl_cellular_player_resume(void);
 
 /**
  * @brief stop the audio being played
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_stop(VOID);
+OPERATE_RET tkl_cellular_player_stop(void);
 
 /**
  * @brief set the playing volume
@@ -274,7 +274,7 @@ OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_stop_stream(VOID);
+OPERATE_RET tkl_cellular_player_stop_stream(void);
 
 #ifdef __cplusplus
 }

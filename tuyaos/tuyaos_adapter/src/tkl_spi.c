@@ -146,7 +146,7 @@ OPERATE_RET tkl_spi_deinit(TUYA_SPI_NUM_E port)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* receive_buf, uint32_t length)
+OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, void* send_buf, void* receive_buf, uint32_t length)
 {
     if (port > SPI_DEV_NUM || length == 0 || (send_buf == NULL && receive_buf == NULL)) { 
         return OPRT_INVALID_PARM;
@@ -209,12 +209,12 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* rece
     return ret;
 }
 
-OPERATE_RET tkl_spi_send(TUYA_SPI_NUM_E port, VOID_T *data, uint32_t size)
+OPERATE_RET tkl_spi_send(TUYA_SPI_NUM_E port, void *data, uint32_t size)
 {
     return tkl_spi_transfer(port, data, NULL, size);
 }
 
-OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, VOID_T *data, uint32_t size)
+OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, void *data, uint32_t size)
 {
     if (port >= SPI_DEV_NUM || data == NULL || size == 0) {
         return OPRT_INVALID_PARM;
@@ -236,7 +236,7 @@ OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, VOID_T *data, uint32_t size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_spi_transfer_with_length(TUYA_SPI_NUM_E port, VOID_T* send_buf, uint32_t send_len, VOID_T* receive_buf, uint32_t receive_len)
+OPERATE_RET tkl_spi_transfer_with_length(TUYA_SPI_NUM_E port, void* send_buf, uint32_t send_len, void* receive_buf, uint32_t receive_len)
 {
     if (send_len != receive_len) {
         return OPRT_INVALID_PARM;
@@ -283,12 +283,12 @@ int32_t tkl_spi_get_data_count(TUYA_SPI_NUM_E port)
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, uint32_t cmd, VOID *args)
+OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, uint32_t cmd, void *args)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-uint32_t tkl_spi_get_max_dma_data_length(VOID_T)
+uint32_t tkl_spi_get_max_dma_data_length(void)
 {
     return (200 * 1024);
 }

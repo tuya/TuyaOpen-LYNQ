@@ -281,7 +281,7 @@ OPERATE_RET tkl_ai_stop(int32_t card, TKL_AI_CHN_E chn)
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ai_uninit(VOID)
+OPERATE_RET tkl_ai_uninit(void)
 {
     return OPRT_OK;
 }
@@ -313,7 +313,7 @@ OPERATE_RET tkl_ai_get_vol(int32_t card, TKL_AI_CHN_E chn, int32_t *vol)
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, VOID **handle)
+OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, void **handle)
 {
     if(NULL == pconfig) {
         return OPRT_INVALID_PARM;
@@ -363,7 +363,7 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, VOID **handl
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_start(int32_t card, TKL_AO_CHN_E chn, VOID *handle)
+OPERATE_RET tkl_ao_start(int32_t card, TKL_AO_CHN_E chn, void *handle)
 {
     if (tkl_ao_state) {
         return OPRT_OK;
@@ -397,7 +397,7 @@ OPERATE_RET tkl_ao_start(int32_t card, TKL_AO_CHN_E chn, VOID *handle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, VOID *handle, TKL_AUDIO_FRAME_INFO_T *pframe)
+OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, void *handle, TKL_AUDIO_FRAME_INFO_T *pframe)
 {
     ASSERT(NULL != pframe);
     ASSERT(NULL != pframe->pbuf);
@@ -464,7 +464,7 @@ OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, VOID *handle, TKL_A
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */ 
-OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, VOID *handle)
+OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, void *handle)
 {
     LOGI("tkl_ao_stop %d", tkl_ao_state);
     if(!tkl_ao_state)
@@ -525,7 +525,7 @@ OPERATE_RET tkl_ao_clear_buffer(int32_t card, TKL_AO_CHN_E chn)
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_uninit(VOID *handle)
+OPERATE_RET tkl_ao_uninit(void *handle)
 {
 #if TKL_AUDIO_SEMAPHORE_EN    
     if (tkl_audio_play_sem) {
@@ -547,7 +547,7 @@ OPERATE_RET tkl_ao_uninit(VOID *handle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_set_vol(int32_t card, TKL_AO_CHN_E chn, VOID *handle, int32_t vol)
+OPERATE_RET tkl_ao_set_vol(int32_t card, TKL_AO_CHN_E chn, void *handle, int32_t vol)
 {
     return codec_volume_set(VOLUME_TYPE_AUDIO, vol);
 }
@@ -561,7 +561,7 @@ OPERATE_RET tkl_ao_set_vol(int32_t card, TKL_AO_CHN_E chn, VOID *handle, int32_t
 *
 * @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
 */
-OPERATE_RET tkl_ao_get_vol(int32_t card, TKL_AO_CHN_E chn, VOID *handle, int32_t *vol)
+OPERATE_RET tkl_ao_get_vol(int32_t card, TKL_AO_CHN_E chn, void *handle, int32_t *vol)
 {
     return codec_volume_get(VOLUME_TYPE_AUDIO, vol);
 }

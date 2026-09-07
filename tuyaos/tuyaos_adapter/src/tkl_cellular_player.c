@@ -35,7 +35,7 @@ OPERATE_RET tkl_cellular_player_start(TKL_AUDIO_PLAYER_TYPE_E type,
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_pause(VOID)
+OPERATE_RET tkl_cellular_player_pause(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -45,7 +45,7 @@ OPERATE_RET tkl_cellular_player_pause(VOID)
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_resume(VOID)
+OPERATE_RET tkl_cellular_player_resume(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -55,7 +55,7 @@ OPERATE_RET tkl_cellular_player_resume(VOID)
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_stop(VOID)
+OPERATE_RET tkl_cellular_player_stop(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -200,7 +200,7 @@ OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_stop_stream(VOID)
+OPERATE_RET tkl_cellular_player_stop_stream(void)
 {
     LOGE("tkl_cellular_player_stop_stream not support!");
     return OPRT_NOT_SUPPORTED;

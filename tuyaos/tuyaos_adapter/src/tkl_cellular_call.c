@@ -196,7 +196,7 @@ OPERATE_RET tkl_cellular_call_play_tone(TUYA_TONE_TYPE_E tone, int duration)
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_call_stop_tone(VOID)
+OPERATE_RET tkl_cellular_call_stop_tone(void)
 {
     return OPRT_NOT_SUPPORTED;
 }

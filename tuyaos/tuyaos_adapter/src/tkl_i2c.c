@@ -195,7 +195,7 @@ OPERATE_RET tkl_i2c_irq_disable(TUYA_I2C_NUM_E port)
  * @param[in] xfer_pending: xfer_pending: TRUE : not send stop condition, FALSE : send stop condition.
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_i2c_master_send(TUYA_I2C_NUM_E port, uint16_t dev_addr, CONST VOID_T *data, uint32_t size, BOOL_T xfer_pending)
+OPERATE_RET tkl_i2c_master_send(TUYA_I2C_NUM_E port, uint16_t dev_addr, CONST void *data, uint32_t size, BOOL_T xfer_pending)
 {
     if (port >= I2C_DEV_NUM) {
         LOGE("invalid port %d", port);
@@ -226,7 +226,7 @@ OPERATE_RET tkl_i2c_master_send(TUYA_I2C_NUM_E port, uint16_t dev_addr, CONST VO
  * @param[in] xfer_pending: TRUE : not send stop condition, FALSE : send stop condition.
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_i2c_master_receive(TUYA_I2C_NUM_E port, uint16_t dev_addr, VOID *data, uint32_t size, BOOL_T xfer_pending)
+OPERATE_RET tkl_i2c_master_receive(TUYA_I2C_NUM_E port, uint16_t dev_addr, void *data, uint32_t size, BOOL_T xfer_pending)
 {
     if (port >= I2C_DEV_NUM) {
         LOGE("invalid port %d", port);
@@ -270,7 +270,7 @@ OPERATE_RET tkl_i2c_set_slave_addr(TUYA_I2C_NUM_E port, uint16_t dev_addr)
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
 
-OPERATE_RET tkl_i2c_slave_send(TUYA_I2C_NUM_E port, CONST VOID *data, uint32_t size)
+OPERATE_RET tkl_i2c_slave_send(TUYA_I2C_NUM_E port, CONST void *data, uint32_t size)
 {
     LOGE("tkl_i2c_slave_send not support");
     return OPRT_NOT_SUPPORTED;
@@ -285,7 +285,7 @@ OPERATE_RET tkl_i2c_slave_send(TUYA_I2C_NUM_E port, CONST VOID *data, uint32_t s
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
 
-OPERATE_RET tkl_i2c_slave_receive(TUYA_I2C_NUM_E port, VOID *data, uint32_t size)
+OPERATE_RET tkl_i2c_slave_receive(TUYA_I2C_NUM_E port, void *data, uint32_t size)
 {
     LOGE("tkl_i2c_slave_receive not support");
     return OPRT_NOT_SUPPORTED;
@@ -341,7 +341,7 @@ int32_t tkl_i2c_get_data_count(TUYA_I2C_NUM_E port)
  * @param[in]       args    args associated with the command
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_i2c_ioctl(TUYA_I2C_NUM_E port, uint32_t cmd,  VOID *args)
+OPERATE_RET tkl_i2c_ioctl(TUYA_I2C_NUM_E port, uint32_t cmd,  void *args)
 {
     LOGE("tkl_i2c_ioctl not support");
     return OPRT_NOT_SUPPORTED;

@@ -44,7 +44,7 @@ uint32_t tkl_adc_ref_voltage_get(TUYA_ADC_NUM_E port_num)
     return OPRT_NOT_SUPPORTED;
 }
 
-int32_t tkl_adc_temperature_get(VOID_T)
+int32_t tkl_adc_temperature_get(void)
 {
     return OPRT_NOT_SUPPORTED;
 }

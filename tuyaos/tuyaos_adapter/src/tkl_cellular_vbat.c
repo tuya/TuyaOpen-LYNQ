@@ -66,7 +66,7 @@ OPERATE_RET tkl_cellular_vbat_set_charge_current(uint32_t current)
  *
  * @return 充电器状态，查看 @TKL_CELLULAR_VBAT_CHG_STATE_E定义
  */
-TKL_CELLULAR_VBAT_CHG_STATE_E tkl_cellular_vbat_get_charger_state(VOID)
+TKL_CELLULAR_VBAT_CHG_STATE_E tkl_cellular_vbat_get_charger_state(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
