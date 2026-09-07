@@ -173,6 +173,7 @@ static void audio_read_handler(char *buffer, uint32_t size)
             if (user_audio_read_handler) {
                 memset(&audio_frame, 0, sizeof(audio_frame));
                 audio_frame.buf_size = audio_read_size;
+                audio_frame.used_size = audio_read_size;
                 audio_frame.codectype = TKL_CODEC_AUDIO_PCM;
                 audio_frame.datebits =  TKL_AUDIO_DATABITS_16;
                 audio_frame.sample = tkl_record_params.samplerate == SAMPLERATE_8K ? TKL_AUDIO_SAMPLE_8K : TKL_AUDIO_SAMPLE_16K;
@@ -185,6 +186,12 @@ static void audio_read_handler(char *buffer, uint32_t size)
         ASSERT(0);
     }
 }
+
+/* recordInit() creates gRecordQueue asynchronously. */
+extern osMessageQueueId_t gRecordQueue;
+
+#define TKL_RECORD_QUEUE_WAIT_MS  10
+#define TKL_RECORD_QUEUE_WAIT_MAX 200 /* 2 s */
 
 /**
 * @brief ai init
@@ -233,8 +240,16 @@ OPERATE_RET tkl_ai_start(int32_t card, TKL_AI_CHN_E chn)
         LOGE("recordInit failed");
         return OPRT_COM_ERROR;
     }
-    
-    if (ol_audioRecord(tkl_record_params, audio_read_handler) < 0) {
+
+    for (int waited = 0; NULL == gRecordQueue; ++waited) {
+        if (waited >= TKL_RECORD_QUEUE_WAIT_MAX) {
+            LOGE("record service did not start");
+            return OPRT_COM_ERROR;
+        }
+        tkl_system_sleep(TKL_RECORD_QUEUE_WAIT_MS);
+    }
+
+    if (ol_audioRecord(tkl_record_params, audio_read_handler) != osOK) {
         LOGE("ol_audioRecord failed");
         return OPRT_COM_ERROR;
     }
