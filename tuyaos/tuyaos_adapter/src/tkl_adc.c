@@ -18,7 +18,7 @@ OPERATE_RET tkl_adc_init(TUYA_ADC_NUM_E port_num, TUYA_ADC_BASE_CFG_T* cfg)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_adc_read_data(TUYA_ADC_NUM_E port_num, INT32_T* buff, UINT16_T len)
+OPERATE_RET tkl_adc_read_data(TUYA_ADC_NUM_E port_num, int32_t* buff, uint16_t len)
 {
     LOGE("adc read data not supported");
     return OPRT_NOT_SUPPORTED;
@@ -34,28 +34,28 @@ OPERATE_RET tkl_adc_deinit(TUYA_ADC_NUM_E port_num)
     return OPRT_OK;
 }
 
-UINT8_T tkl_adc_width_get(TUYA_ADC_NUM_E port_num)
+uint8_t tkl_adc_width_get(TUYA_ADC_NUM_E port_num)
 {
     return 0;
 }
 
-UINT32_T tkl_adc_ref_voltage_get(TUYA_ADC_NUM_E port_num)
+uint32_t tkl_adc_ref_voltage_get(TUYA_ADC_NUM_E port_num)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-INT32_T tkl_adc_temperature_get(VOID_T)
+int32_t tkl_adc_temperature_get(VOID_T)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_adc_read_single_channel(TUYA_ADC_NUM_E port_num, UINT8_T ch_id,
-                                        INT32_T* data)
+OPERATE_RET tkl_adc_read_single_channel(TUYA_ADC_NUM_E port_num, uint8_t ch_id,
+                                        int32_t* data)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_adc_read_voltage(TUYA_ADC_NUM_E port_num, INT32_T* buff, UINT16_T len)
+OPERATE_RET tkl_adc_read_voltage(TUYA_ADC_NUM_E port_num, int32_t* buff, uint16_t len)
 {
 	UINT32 uV;
     if (port_num >= ADC_CHN_MAX || NULL == buff || 0 == len) {
@@ -66,7 +66,7 @@ OPERATE_RET tkl_adc_read_voltage(TUYA_ADC_NUM_E port_num, INT32_T* buff, UINT16_
     ol_adc_id_enum id = (port_num - TUYA_ADC_NUM_0) + OL_ADC_0;
     for (uint16_t i = 0; i < len; i++) {
         uV = ol_adc_get_vol(id);
-		buff[i] = (INT32_T)(uV / 1000);
+		buff[i] = (int32_t)(uV / 1000);
     }
     return OPRT_OK;
 }
@@ -75,7 +75,7 @@ OPERATE_RET tkl_adc_read_voltage(TUYA_ADC_NUM_E port_num, INT32_T* buff, UINT16_
 
 #if 0
 #include "tkl_system.h"
-extern OPERATE_RET tkl_cellular_vbat_get_voltage(UINT_T* voltage);
+extern OPERATE_RET tkl_cellular_vbat_get_voltage(uint32_t* voltage);
 void tkl_adc_test(void)
 {
     int ret = 0;

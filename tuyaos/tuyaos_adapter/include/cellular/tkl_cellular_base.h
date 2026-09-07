@@ -115,10 +115,10 @@ typedef void (*TKL_REGISTION_NOTIFY)(uint8_t sim_id,
  * csq 0..31 as returned by the modem, snr and rsrp in dB / dBm, rsrq in
  * dB with half-step resolution. Reconstructed from the implementation. */
 typedef struct {
-    UINT8_T csq;
-    INT_T snr;
-    INT_T rsrp;
-    FLOAT_T rsrq;
+    uint8_t csq;
+    int snr;
+    int rsrp;
+    float rsrq;
 } cellular_signal_quality_t;
 
 /**
@@ -246,7 +246,7 @@ OPERATE_RET tkl_cellular_base_get_sinr(uint8_t sim_id,int *sinr,int *bit_error);
  * @param timeout Search for neighboring base station information timeout (generally takes about 4 seconds)
  * @return 0 success, others failure
  */
-OPERATE_RET tkl_cellular_base_get_lbs(uint8_t sim_id,TKL_LBS_INFO_T *lbs,BOOL_T neighbour,INT_T timeout);
+OPERATE_RET tkl_cellular_base_get_lbs(uint8_t sim_id,TKL_LBS_INFO_T *lbs,BOOL_T neighbour,int timeout);
 
 /**
  * @brief Get the RF calibration status of the current device

@@ -44,7 +44,7 @@ OPERATE_RET tkl_flash_deinit(void)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_flash_read(UINT32_T addr, UCHAR_T *dst, UINT32_T size)
+OPERATE_RET tkl_flash_read(uint32_t addr, uint8_t *dst, uint32_t size)
 {
     if (!ext_flash_inited) {
         if(tkl_flash_init())
@@ -62,7 +62,7 @@ OPERATE_RET tkl_flash_read(UINT32_T addr, UCHAR_T *dst, UINT32_T size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_flash_write(UINT32_T addr, CONST UCHAR_T *src, UINT32_T size)
+OPERATE_RET tkl_flash_write(uint32_t addr, CONST uint8_t *src, uint32_t size)
 {
     if (!ext_flash_inited) {
         if(tkl_flash_init())
@@ -80,7 +80,7 @@ OPERATE_RET tkl_flash_write(UINT32_T addr, CONST UCHAR_T *src, UINT32_T size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_flash_erase(UINT32_T addr, UINT32_T size)
+OPERATE_RET tkl_flash_erase(uint32_t addr, uint32_t size)
 {
     if (!ext_flash_inited) {
         if(tkl_flash_init())
@@ -95,12 +95,12 @@ OPERATE_RET tkl_flash_erase(UINT32_T addr, UINT32_T size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_flash_lock(UINT32_T addr, UINT32_T size)
+OPERATE_RET tkl_flash_lock(uint32_t addr, uint32_t size)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_flash_unlock(UINT32_T addr, UINT32_T size)
+OPERATE_RET tkl_flash_unlock(uint32_t addr, uint32_t size)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -127,8 +127,8 @@ OPERATE_RET tkl_flash_get_one_type_info(TUYA_FLASH_TYPE_E type, TUYA_FLASH_BASE_
 void tkl_ext_flash_test(void)
 {
     OPERATE_RET ret;
-    UCHAR_T write_buf[TEST_SIZE];
-    UCHAR_T read_buf[TEST_SIZE];
+    uint8_t write_buf[TEST_SIZE];
+    uint8_t read_buf[TEST_SIZE];
     int i;
     int pass = 1;
 
@@ -161,7 +161,7 @@ void tkl_ext_flash_test(void)
     }
     if (pass) LOGD("[3] *** ERASE VERIFY OK ***");
 
-    for (i = 0; i < TEST_SIZE; i++) write_buf[i] = (UCHAR_T)(i & 0xFF);
+    for (i = 0; i < TEST_SIZE; i++) write_buf[i] = (uint8_t)(i & 0xFF);
     LOGD("[4] tkl_flash_write %d bytes...", TEST_SIZE);
     ret = tkl_flash_write(TEST_ADDR, write_buf, TEST_SIZE);
     if (ret != OPRT_OK) {

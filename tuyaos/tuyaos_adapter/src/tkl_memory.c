@@ -44,7 +44,7 @@ static void __heap_init(void)
 *
 * @return the memory address malloced
 */
-VOID_T *tkl_system_malloc(SIZE_T size)
+VOID_T *tkl_system_malloc(size_t size)
 {
     if (!s_heap_handle) {
         __heap_init();
@@ -60,7 +60,7 @@ VOID_T *tkl_system_malloc(SIZE_T size)
 //     return ptr;
 }
 
-VOID_T *tkl_system_psram_malloc(SIZE_T size)
+VOID_T *tkl_system_psram_malloc(size_t size)
 {
     return tkl_system_malloc(size);
 }
@@ -125,9 +125,9 @@ VOID_T *tkl_system_realloc(VOID_T* ptr, size_t size)
 *
 * @return heap size
 */
-INT_T tkl_system_get_free_heap_size(VOID_T)
+int tkl_system_get_free_heap_size(VOID_T)
 {
-    // return (INT_T)xPortGetFreeHeapSize();
+    // return (int)xPortGetFreeHeapSize();
     return tuya_mem_heap_available(s_heap_handle);
 }
 

@@ -13,7 +13,7 @@ static void tkl_cellular_comm_rrc_release_timer_cb(void *arg)
 }
 
 //设置RRC connect切换到idle的延迟时间
-OPERATE_RET tkl_cellular_comm_set_rrc_release_time(UINT_T time)
+OPERATE_RET tkl_cellular_comm_set_rrc_release_time(uint32_t time)
 {
     if(time < 4 || time > 20) {
         return OPRT_INVALID_PARM;
@@ -34,7 +34,7 @@ OPERATE_RET tkl_cellular_comm_set_rrc_release_time(UINT_T time)
 }
 
 //获取RRC connect切换到idle的延迟时间
-OPERATE_RET tkl_cellular_comm_get_rrc_release_time(UINT_T *time)
+OPERATE_RET tkl_cellular_comm_get_rrc_release_time(uint32_t *time)
 {
     *time = rrc_release_time_value;
     return OPRT_OK;

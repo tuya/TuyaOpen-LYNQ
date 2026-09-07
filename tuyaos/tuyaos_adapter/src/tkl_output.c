@@ -58,7 +58,7 @@ static int strip_ansi(char *s, int len)
 *
 * @return
 */
-VOID_T tkl_log_output(CONST CHAR_T *format, ...)
+VOID_T tkl_log_output(CONST char *format, ...)
 {
 	va_list ap;
 	int len;

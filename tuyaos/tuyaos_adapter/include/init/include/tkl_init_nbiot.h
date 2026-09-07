@@ -34,7 +34,7 @@ typedef struct {
     // psm
     OPERATE_RET (*psm_plat_config)(void);
     OPERATE_RET (*psm_sleep_notify_reg)(TKL_NB_PSM_NOTIFY_CB_T cb);
-    OPERATE_RET (*psm_create_sleeplock)(const PCHAR_T lock_name, uint8_t *handle);
+    OPERATE_RET (*psm_create_sleeplock)(const char * lock_name, uint8_t *handle);
     OPERATE_RET (*psm_acquire_sleeplock)(uint8_t handle);
     OPERATE_RET (*psm_release_sleeplock)(uint8_t handle);
     void (*psm_force_sleep)(void);
@@ -56,24 +56,24 @@ typedef struct {
     OPERATE_RET (*ril_get_t3412)(uint32_t *t3412);
     OPERATE_RET (*ril_set_t3412)(uint32_t req_time);
     OPERATE_RET (*ril_set_t3324)(uint32_t req_time);
-    OPERATE_RET (*ril_set_apn)(PCHAR_T apn_name, PCHAR_T pdp_type);
-    OPERATE_RET (*ril_get_apn)(PCHAR_T apn);
+    OPERATE_RET (*ril_set_apn)(char * apn_name, char * pdp_type);
+    OPERATE_RET (*ril_get_apn)(char * apn);
     OPERATE_RET (*ril_get_rssi)(int *out_rssi);
-    OPERATE_RET (*ril_get_imsi)(PCHAR_T imsi);
-    OPERATE_RET (*ril_get_iccid)(PCHAR_T iccid);
+    OPERATE_RET (*ril_get_imsi)(char * imsi);
+    OPERATE_RET (*ril_get_iccid)(char * iccid);
     OPERATE_RET (*ril_get_plmn_info)(TKL_RIL_PLMN_T *plmn_info);
     OPERATE_RET (*ril_set_cfun)(uint8_t val);
     OPERATE_RET (*ril_get_cfun)(int *val);
     OPERATE_RET (*ril_get_rf_flag)(int *flag);
-    OPERATE_RET (*ril_set_imei)(PCHAR_T imei);
-    OPERATE_RET (*ril_get_imei)(PCHAR_T buf, uint8_t len);
+    OPERATE_RET (*ril_set_imei)(char * imei);
+    OPERATE_RET (*ril_get_imei)(char * buf, uint8_t len);
     OPERATE_RET (*ril_release_rrc)(void);
     OPERATE_RET (*ril_set_area_attach_info)(TKL_RIL_ATTACH_INFO_T *operator);
-    OPERATE_RET (*ril_set_band)(PCHAR_T band_array_str);
-    OPERATE_RET (*ril_get_band)(PCHAR_T pbuf, uint8_t len);
+    OPERATE_RET (*ril_set_band)(char * band_array_str);
+    OPERATE_RET (*ril_get_band)(char * pbuf, uint8_t len);
     OPERATE_RET (*ril_psm_mode_enable)(uint8_t enable);
     OPERATE_RET (*ril_edrx_mode_enable)(uint8_t enable);
-    OPERATE_RET (*ril_get_serving_cellid)(PCHAR_T pbuf, uint8_t len);
+    OPERATE_RET (*ril_get_serving_cellid)(char * pbuf, uint8_t len);
     OPERATE_RET (*ril_get_neightbor_cellid)(TKL_RIL_NEIGHBOR_CELL_INFO_T **pbuf, int *out_num);
     // misc
     OPERATE_RET (*misc_chip_type)(TKL_MISC_CHIP_TYPE_E *out_type);

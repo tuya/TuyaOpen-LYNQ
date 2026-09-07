@@ -17,7 +17,7 @@ typedef struct {
 } gpio_map_t;
 
 #define GPIO_NUM_MAX    sizeof(pinMap)/sizeof(gpio_map_t)
-extern bool tkl_cellular_get_sim_hotplug_status(UINT8_T sim_id);
+extern bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id);
 
 static gpio_map_t pinMap[] = {
 	{5,  0, 0, false, false, 0, 0}, 			//GPIO1 		-> GPIO20			//ok,wakeup3

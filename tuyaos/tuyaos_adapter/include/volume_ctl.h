@@ -20,17 +20,17 @@ typedef enum
 }MIC_TYPE_E;
 
 // 设置speak音量，范围0~100
-OPERATE_RET codec_volume_set(VOLUME_TYPE_E type, INT_T vol);
+OPERATE_RET codec_volume_set(VOLUME_TYPE_E type, int vol);
 // 获取speak音量，范围0~100
-OPERATE_RET codec_volume_get(VOLUME_TYPE_E type, INT_T *vol);
+OPERATE_RET codec_volume_get(VOLUME_TYPE_E type, int *vol);
 // 设置speak静音状态
 OPERATE_RET codec_volume_set_mute(VOLUME_TYPE_E type, BOOL_T mute);
 // 获取speak静音状态
 OPERATE_RET codec_volume_get_mute(VOLUME_TYPE_E type, BOOL_T *mute);
 // 设置麦克风音量，范围0~100
-OPERATE_RET codec_mic_set_volume(MIC_TYPE_E type, INT_T vol);
+OPERATE_RET codec_mic_set_volume(MIC_TYPE_E type, int vol);
 // 获取麦克风音量，范围0~100
-OPERATE_RET codec_mic_get_volume(MIC_TYPE_E type, INT_T *vol);
+OPERATE_RET codec_mic_get_volume(MIC_TYPE_E type, int *vol);
 // 设置是否闭麦
 OPERATE_RET codec_mic_set_mute(MIC_TYPE_E type, BOOL_T mute);
 // 获取是否闭麦

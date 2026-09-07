@@ -20,9 +20,9 @@
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
 OPERATE_RET tkl_thread_create(TKL_THREAD_HANDLE* thread,
-                              CONST CHAR_T* name,
-                              UINT_T stack_size,
-                              UINT_T priority,
+                              CONST char* name,
+                              uint32_t stack_size,
+                              uint32_t priority,
                               CONST THREAD_FUNC_T func,
                               VOID_T* CONST arg)
 {	
@@ -52,9 +52,9 @@ OPERATE_RET tkl_thread_create(TKL_THREAD_HANDLE* thread,
 }
 
 OPERATE_RET tkl_thread_create_in_psram(TKL_THREAD_HANDLE* thread,
-                              CONST CHAR_T* name,
-                              UINT_T stack_size,
-                              UINT_T priority,
+                              CONST char* name,
+                              uint32_t stack_size,
+                              uint32_t priority,
                               CONST THREAD_FUNC_T func,
                               VOID_T* CONST arg)
 {
@@ -91,7 +91,7 @@ OPERATE_RET tkl_thread_release(CONST TKL_THREAD_HANDLE thread)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_get_watermark(CONST TKL_THREAD_HANDLE thread, UINT_T* watermark)
+OPERATE_RET tkl_thread_get_watermark(CONST TKL_THREAD_HANDLE thread, uint32_t* watermark)
 {
     *watermark = osThreadGetStackSpace(thread);
     return OPRT_OK;
@@ -125,7 +125,7 @@ OPERATE_RET tkl_thread_get_id(TKL_THREAD_HANDLE *thread)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_set_self_name(CONST CHAR_T* name)
+OPERATE_RET tkl_thread_set_self_name(CONST char* name)
 {
 	LOGE("thread set self name not support, name: %s", name);
     return OPRT_NOT_SUPPORTED;
@@ -171,7 +171,7 @@ OPERATE_RET tkl_thread_is_self(TKL_THREAD_HANDLE thread, BOOL_T* is_self)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_get_priority(TKL_THREAD_HANDLE thread, INT_T *priority)
+OPERATE_RET tkl_thread_get_priority(TKL_THREAD_HANDLE thread, int *priority)
 {
     LOGE("thread get priority not support!");
     return OPRT_NOT_SUPPORTED;
@@ -187,7 +187,7 @@ OPERATE_RET tkl_thread_get_priority(TKL_THREAD_HANDLE thread, INT_T *priority)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_set_priority(TKL_THREAD_HANDLE thread, INT_T priority)
+OPERATE_RET tkl_thread_set_priority(TKL_THREAD_HANDLE thread, int priority)
 {
 	osPriority_t osprio;
 	osStatus_t status;

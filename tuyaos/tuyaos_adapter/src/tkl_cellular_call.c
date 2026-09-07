@@ -34,7 +34,7 @@ static void set_call_state(CELLULAR_CALL_STATE_E state)
  *
  * @return 1 服务可用 0 服务不可用
  */
-OPERATE_RET tkl_cellular_call_service_available(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_call_service_available(uint8_t sim_id)
 {
     return OPRT_OK;
 }
@@ -47,7 +47,7 @@ OPERATE_RET tkl_cellular_call_service_available(UINT8_T sim_id)
  *
  * @return  0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_call_get_status(UINT8_T sim_id, CELLULAR_CALL_STATE_E *state)
+OPERATE_RET tkl_cellular_call_get_status(uint8_t sim_id, CELLULAR_CALL_STATE_E *state)
 {
     if(state == NULL) {
         return OPRT_INVALID_PARM;
@@ -64,7 +64,7 @@ OPERATE_RET tkl_cellular_call_get_status(UINT8_T sim_id, CELLULAR_CALL_STATE_E *
  *
  * @return  0 发起呼叫成功 其它 失败
  */
-OPERATE_RET tkl_cellular_call(UINT8_T sim_id, CHAR_T callNum[TKL_CELLULAR_CALLNUM_LEN_MAX])
+OPERATE_RET tkl_cellular_call(uint8_t sim_id, char callNum[TKL_CELLULAR_CALLNUM_LEN_MAX])
 {   
     if(CELLULAR_CALL_STATE_IDLE != g_cellular_call_state)
         return OPRT_COM_ERROR;
@@ -85,7 +85,7 @@ OPERATE_RET tkl_cellular_call(UINT8_T sim_id, CHAR_T callNum[TKL_CELLULAR_CALLNU
  *
  * @return   0 应答成功 其它 失败
  */
-OPERATE_RET tkl_cellular_call_answer(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_call_answer(uint8_t sim_id)
 {
     if(CELLULAR_CALL_STATE_RINGING != g_cellular_call_state)
         return OPRT_COM_ERROR;
@@ -107,7 +107,7 @@ OPERATE_RET tkl_cellular_call_answer(UINT8_T sim_id)
  *
  * @return  0 挂机成功 其它 失败
  */
-OPERATE_RET tkl_cellular_call_hungup(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_call_hungup(uint8_t sim_id)
 {
     if(CELLULAR_CALL_STATE_IDLE == g_cellular_call_state)
         return OPRT_COM_ERROR;
@@ -149,7 +149,7 @@ OPERATE_RET tkl_cellular_call_set_callin_mute(BOOL_T mute)
  * @param vol 铃声音量（0~100）
  * @return 0 设置成功 其它 设置失败
  */
-OPERATE_RET tkl_cellular_call_set_callin_vol(INT_T vol)
+OPERATE_RET tkl_cellular_call_set_callin_vol(int vol)
 {
     return codec_volume_set(VOLUME_TYPE_TONE, vol);
 }
@@ -159,7 +159,7 @@ OPERATE_RET tkl_cellular_call_set_callin_vol(INT_T vol)
  * @param vol 铃声音量（0~100）
  * @return 0 设置成功 其它 设置失败 
  */
-OPERATE_RET tkl_cellular_call_get_callin_vol(PINT_T vol)
+OPERATE_RET tkl_cellular_call_get_callin_vol(int * vol)
 {
     return codec_volume_get(VOLUME_TYPE_TONE, vol);
 }
@@ -171,7 +171,7 @@ OPERATE_RET tkl_cellular_call_get_callin_vol(PINT_T vol)
  *
  * @return 0 设置成功 其它 设置失败
  */
-OPERATE_RET tkl_cellular_call_set_volte(UINT8_T sim_id, BOOL_T enable)
+OPERATE_RET tkl_cellular_call_set_volte(uint8_t sim_id, BOOL_T enable)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -184,7 +184,7 @@ OPERATE_RET tkl_cellular_call_set_volte(UINT8_T sim_id, BOOL_T enable)
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_call_play_tone(TUYA_TONE_TYPE_E tone, INT_T duration)
+OPERATE_RET tkl_cellular_call_play_tone(TUYA_TONE_TYPE_E tone, int duration)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -216,7 +216,7 @@ OPERATE_RET tkl_cellular_call_stop_tone(VOID)
  *    OPRT_TIMEOUT 获取信号量超时
  *    OPRT_BASE_OS_ADAPTER_REG_NULL_ERROR 函数未适配
  */
-OPERATE_RET tkl_cellular_call_dtmf2voice(TUYA_TONE_TYPE_E dtmfTone, UINT_T duration)
+OPERATE_RET tkl_cellular_call_dtmf2voice(TUYA_TONE_TYPE_E dtmfTone, uint32_t duration)
 {
 	return OPRT_NOT_SUPPORTED;
 }
@@ -228,7 +228,7 @@ OPERATE_RET tkl_cellular_call_dtmf2voice(TUYA_TONE_TYPE_E dtmfTone, UINT_T durat
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_call_set_voice_vol(INT_T vol)
+OPERATE_RET tkl_cellular_call_set_voice_vol(int vol)
 {
     return codec_volume_set(VOLUME_TYPE_CALL, vol);
 }
@@ -240,7 +240,7 @@ OPERATE_RET tkl_cellular_call_set_voice_vol(INT_T vol)
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_call_get_voice_vol(PINT_T vol)
+OPERATE_RET tkl_cellular_call_get_voice_vol(int * vol)
 {
     return codec_volume_get(VOLUME_TYPE_CALL, vol);
 }
@@ -296,17 +296,17 @@ OPERATE_RET tkl_cellular_call_ctrl_KTDetect(BOOL_T enable)
 }
 
 // 设置录音模式麦克风增益
-OPERATE_RET tkl_cellular_call_set_mic_gain(INT_T gain)
+OPERATE_RET tkl_cellular_call_set_mic_gain(int gain)
 {
     return codec_mic_set_volume(MIC_TYPE_CALL, gain);
 }
 
-OPERATE_RET tkl_cellular_call_get_mic_gain(INT_T *gain)
+OPERATE_RET tkl_cellular_call_get_mic_gain(int *gain)
 {
     return codec_mic_get_volume(MIC_TYPE_CALL, gain);
 }
 
-OPERATE_RET tkl_cellular_ctrl_call_sideton_gain(BOOL_T set,INOUT INT_T *gain)
+OPERATE_RET tkl_cellular_ctrl_call_sideton_gain(BOOL_T set,INOUT int *gain)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -340,7 +340,7 @@ static void call_urc(int event_id,void *msg)
                 return ;
             }
             strncpy(callNum,num_start+1,num_end-num_start-1);
-            call_event_func(TUYA_CALL_IND_CALLIN, 0, (CHAR_T *)callNum);
+            call_event_func(TUYA_CALL_IND_CALLIN, 0, (char *)callNum);
         }
         break;
         case VCALL_COLP:

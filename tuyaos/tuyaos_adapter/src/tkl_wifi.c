@@ -10,7 +10,7 @@
  * @param[in]       chan        the channel to set
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_cur_channel(CONST UCHAR_T chan)
+OPERATE_RET tkl_wifi_set_cur_channel(CONST uint8_t chan)
 {
     // Set chan when current channel and the requested channel are not equal
     return OPRT_OK;
@@ -22,7 +22,7 @@ OPERATE_RET tkl_wifi_set_cur_channel(CONST UCHAR_T chan)
  * @param[out]      chan        the channel wifi works
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_get_cur_channel(UCHAR_T* chan)
+OPERATE_RET tkl_wifi_get_cur_channel(uint8_t* chan)
 {
     return OPRT_OK;
 }
@@ -113,7 +113,7 @@ OPERATE_RET tkl_wifi_set_country_code(CONST COUNTRY_CODE_E ccode)
  * @param[in]       len         length of buffer
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_send_mgnt(CONST UCHAR_T* buf, CONST UINT_T len)
+OPERATE_RET tkl_wifi_send_mgnt(CONST uint8_t* buf, CONST uint32_t len)
 {
     return OPRT_OK;
 }
@@ -170,7 +170,7 @@ int tkl_wifi_get_bssid(unsigned char* mac)
     return 0;
 }
 
-OPERATE_RET tkl_wifi_station_connect(CONST SCHAR_T* ssid, CONST SCHAR_T* passwd)
+OPERATE_RET tkl_wifi_station_connect(CONST int8_t* ssid, CONST int8_t* passwd)
 {
     return 0;
 }
@@ -204,7 +204,7 @@ static bool is_bssid_valid_for_location(const uint8_t *m) {
     return true;
 }
 
-OPERATE_RET tkl_wifi_all_ap_scan(AP_IF_S** ap_ary, UINT_T* num)
+OPERATE_RET tkl_wifi_all_ap_scan(AP_IF_S** ap_ary, uint32_t* num)
 {
 	SetWifiScanParams wifiscanreq = {0};
     GetWifiScanInfo *pWifiScanInfo = NULL;
@@ -319,13 +319,13 @@ OPERATE_RET tkl_wifi_get_connected_ap_info(FAST_WF_CONNECTED_AP_INFO_T**
     return 0;
 }
 
-OPERATE_RET tkl_wifi_scan_ap(CONST SCHAR_T* ssid, AP_IF_S** ap_ary, UINT_T* num)
+OPERATE_RET tkl_wifi_scan_ap(CONST int8_t* ssid, AP_IF_S** ap_ary, uint32_t* num)
 {
 	LOGI("tkl_wifi_scan_ap call");
     return tkl_wifi_all_ap_scan(ap_ary, num);
 }
 
-OPERATE_RET tkl_wifi_station_get_conn_ap_rssi(SCHAR_T* rssi)
+OPERATE_RET tkl_wifi_station_get_conn_ap_rssi(int8_t* rssi)
 {
     return 0;
 }

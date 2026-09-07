@@ -8,7 +8,7 @@
 
 typedef struct {
 	osTimerId_t id;
-	UINT_T us;
+	uint32_t us;
 } timer_dev_t;
 
 static timer_dev_t s_timer_dev[TUYA_TIMER_NUM_MAX] = {0};
@@ -43,7 +43,7 @@ OPERATE_RET tkl_timer_init(TUYA_TIMER_NUM_E timer_id,
 	return OPRT_OK;
 }
 
-OPERATE_RET tkl_timer_start(TUYA_TIMER_NUM_E timer_id, UINT_T us)
+OPERATE_RET tkl_timer_start(TUYA_TIMER_NUM_E timer_id, uint32_t us)
 {
 	if (timer_id >= TUYA_TIMER_NUM_MAX || 0 == us) {
 		LOGE("timer start failed, invalid param, timer_id: %d, us: %u", timer_id, us);
@@ -121,7 +121,7 @@ OPERATE_RET tkl_timer_deinit(TUYA_TIMER_NUM_E timer_id)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_timer_get(TUYA_TIMER_NUM_E timer_id, UINT_T* us)
+OPERATE_RET tkl_timer_get(TUYA_TIMER_NUM_E timer_id, uint32_t* us)
 {	
 	if (timer_id >= TUYA_TIMER_NUM_MAX || !us) {
 		LOGE("timer get failed, invalid param, timer_id: %d, us: %p", timer_id, us);

@@ -15,8 +15,8 @@
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
 OPERATE_RET tkl_semaphore_create_init(TKL_SEM_HANDLE *pHandle,
-                                          CONST UINT_T semCnt,
-                                          CONST UINT_T sem_max)
+                                          CONST uint32_t semCnt,
+                                          CONST uint32_t sem_max)
 {	
 	if (!pHandle) {
 		LOGE("create semaphore failed, pHandle null");
@@ -48,7 +48,7 @@ OPERATE_RET tkl_semaphore_create_init(TKL_SEM_HANDLE *pHandle,
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_semaphore_wait(CONST TKL_SEM_HANDLE handle, UINT_T timeout)
+OPERATE_RET tkl_semaphore_wait(CONST TKL_SEM_HANDLE handle, uint32_t timeout)
 {	
 	if (!handle) {
 		LOGE("semaphore wait failed, invalid handle");
