@@ -90,17 +90,17 @@ typedef enum {
  * @param[in] event  what happened, see TKL_AUDIO_PLAYER_EVENT_E
  * @param[in] cb_ctx the context handed to the play call
  */
-typedef VOID (*TKL_AUDIO_PLAYER_CB)(TKL_AUDIO_PLAYER_EVENT_E event,
-                                    PVOID_T cb_ctx);
+typedef void (*TKL_AUDIO_PLAYER_CB)(TKL_AUDIO_PLAYER_EVENT_E event,
+                                    void * cb_ctx);
 
 /**
  * @brief stream playing operations, supplied by the caller
  */
 typedef struct {
     /* fill buff with at most size bytes, return the byte count or < 0 */
-    INT_T (*get_data)(PVOID_T play_ctx, PBYTE_T buff, UINT_T size);
+    int (*get_data)(void * play_ctx, uint8_t * buff, uint32_t size);
     /* stream playing finished */
-    VOID (*finish)(PVOID_T play_ctx);
+    void (*finish)(void * play_ctx);
 } TKL_AUDIO_PLAY_OPS_T;
 
 /**
@@ -108,9 +108,9 @@ typedef struct {
  */
 typedef struct {
     TKL_AUDIO_STREAM_FORMAT_E format;
-    UINT_T sample_rate;
-    UINT_T channels;
-    UINT_T bits_per_sample;
+    uint32_t sample_rate;
+    uint32_t channels;
+    uint32_t bits_per_sample;
 } TKL_AUDIO_FRAME_T;
 
 /***********************************************************
@@ -131,29 +131,29 @@ typedef struct {
  */
 OPERATE_RET tkl_cellular_player_start(TKL_AUDIO_PLAYER_TYPE_E type,
                                       TKL_AUDIO_STREAM_FORMAT_E format,
-                                      PCHAR_T file_path,
-                                      TKL_AUDIO_PLAYER_CB cb, PVOID_T cb_ctx);
+                                      char * file_path,
+                                      TKL_AUDIO_PLAYER_CB cb, void * cb_ctx);
 
 /**
  * @brief pause the audio being played
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_pause(VOID);
+OPERATE_RET tkl_cellular_player_pause(void);
 
 /**
  * @brief resume the paused audio
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_resume(VOID);
+OPERATE_RET tkl_cellular_player_resume(void);
 
 /**
  * @brief stop the audio being played
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_stop(VOID);
+OPERATE_RET tkl_cellular_player_stop(void);
 
 /**
  * @brief set the playing volume
@@ -162,7 +162,7 @@ OPERATE_RET tkl_cellular_player_stop(VOID);
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_set_vol(INT_T vol);
+OPERATE_RET tkl_cellular_player_set_vol(int vol);
 
 /**
  * @brief get the playing volume
@@ -171,7 +171,7 @@ OPERATE_RET tkl_cellular_player_set_vol(INT_T vol);
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_get_vol(PINT_T vol);
+OPERATE_RET tkl_cellular_player_get_vol(int * vol);
 
 /**
  * @brief mute or unmute the player
@@ -205,9 +205,9 @@ OPERATE_RET tkl_cellular_player_get_mute(PBOOL_T mute);
  */
 OPERATE_RET tkl_cellular_player_mem_start(TKL_AUDIO_PLAYER_TYPE_E type,
                                           TKL_AUDIO_STREAM_FORMAT_E format,
-                                          PBYTE_T buff, UINT_T size,
+                                          uint8_t * buff, uint32_t size,
                                           TKL_AUDIO_PLAYER_CB cb,
-                                          PVOID_T cb_ctx);
+                                          void * cb_ctx);
 
 /**
  * @brief select the audio output channel
@@ -265,16 +265,16 @@ OPERATE_RET tkl_cellular_player_get_status(TKL_AUDIO_PLAYER_STATUS_E *status);
  * @return OPRT_OK on success. Others on error.
  */
 OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
-                                             CONST TKL_AUDIO_PLAY_OPS_T *playOps,
-                                             PVOID_T playCtx,
-                                             CONST TKL_AUDIO_FRAME_T *frame);
+                                             const TKL_AUDIO_PLAY_OPS_T *playOps,
+                                             void * playCtx,
+                                             const TKL_AUDIO_FRAME_T *frame);
 
 /**
  * @brief stop the stream being played
  *
  * @return OPRT_OK on success. Others on error.
  */
-OPERATE_RET tkl_cellular_player_stop_stream(VOID);
+OPERATE_RET tkl_cellular_player_stop_stream(void);
 
 #ifdef __cplusplus
 }

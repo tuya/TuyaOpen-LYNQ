@@ -153,7 +153,7 @@ OPERATE_RET tkl_storage_get_part_list(char *dev_name, TKL_STORAGE_PART_INFO_T *l
  * @return OPERATE_RET 0 on success. A negative error code on error.
  */
 OPERATE_RET tkl_storage_make_part(char *part_name, char *part_type, char *fs_type, BOOL_T isadd, uint32_t part_index,
-                                  LONG_T start, LONG_T end);
+                                  int32_t start, int32_t end);
 
 /**
  * @brief partiton format, build filesystem

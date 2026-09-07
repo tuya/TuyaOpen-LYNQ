@@ -12,12 +12,12 @@ typedef struct {
 	bool	irq_flag;
 	bool 	init_flag;				//初始化标志
 	TUYA_GPIO_IRQ_CB cb;
-	VOID_T* arg;
+	void* arg;
 	TUYA_GPIO_BASE_CFG_T cfg;
 } gpio_map_t;
 
 #define GPIO_NUM_MAX    sizeof(pinMap)/sizeof(gpio_map_t)
-extern bool tkl_cellular_get_sim_hotplug_status(UINT8_T sim_id);
+extern bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id);
 
 static gpio_map_t pinMap[] = {
 	{5,  0, 0, false, false, 0, 0}, 			//GPIO1 		-> GPIO20			//ok,wakeup3
@@ -313,7 +313,7 @@ OPERATE_RET tkl_gpio_read(TUYA_GPIO_NUM_E pin_id, TUYA_GPIO_LEVEL_E *level)
     return OPRT_OK;
 }
 
-static OPERATE_RET agpio_irq_init(gpio_map_t *map, CONST TUYA_GPIO_IRQ_T *cfg)
+static OPERATE_RET agpio_irq_init(gpio_map_t *map, const TUYA_GPIO_IRQ_T *cfg)
 {
 	APmuWakeupPadSettings_t wakeupPadSetting;
 	memset(&wakeupPadSetting, 0, sizeof(APmuWakeupPadSettings_t));
@@ -388,7 +388,7 @@ int agpio_irq_callback(uint32_t pad_num)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, CONST TUYA_GPIO_IRQ_T *cfg)
+OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_IRQ_T *cfg)
 {
 	gpio_map_t *map = get_pinmap(pin_id);
 	if(map == NULL || NULL == cfg) {
@@ -727,7 +727,7 @@ void tkl_gpio_test(void)
 	}
 }
 
-static void test_gpio_irq_cb(VOID_T *args)
+static void test_gpio_irq_cb(void *args)
 {
 	int pin = (int)args;
 	static int cnt  = 0;

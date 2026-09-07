@@ -137,7 +137,7 @@ int decode_pdu_msg(ol_sms_info* msg)
 	}
 
 	char* ptr = (char*)(msg->msg.msg_data);
-	UINT8_T* pdu = (UINT8_T*)malloc(len / 2);
+	uint8_t* pdu = (uint8_t*)malloc(len / 2);
 	if (!pdu) {
 		LOGE("malloc buf failed");
 		return -3;

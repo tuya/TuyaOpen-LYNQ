@@ -79,7 +79,7 @@ typedef struct {
     BOOL_T enable;
 } TUYA_CELL_USB_CTRL;
 
-typedef void (*TKL_GENERAL_CALLBACK)(INT_T event, VOID *args);
+typedef void (*TKL_GENERAL_CALLBACK)(int event, void *args);
 
 /**
  * @brief Control cellular AP LOG output
@@ -136,14 +136,14 @@ OPERATE_RET tkl_cellular_comm_get_rssi(uint8_t sim_id,int *rssi);
  * @param epoch_sec Pointer used to store the Unix timestamp. After successful function execution, the variable pointed to by this pointer will be set to the current Unix timestamp (in seconds)
  * @return OPERATE_RET type, 0 indicates success, other values indicate failure
  */
-OPERATE_RET tkl_cellular_comm_get_epoch_time(INT64_T *epoch_sec);
+OPERATE_RET tkl_cellular_comm_get_epoch_time(int64_t *epoch_sec);
 
 /**
  * @brief Get the cumulative time since system power-on, unit ms
  * @param up_ms Pointer used to store the cumulative power-on time
  * @return OPERATE_RET type, 0 indicates success, other values indicate failure
  */
-OPERATE_RET tkl_cellular_comm_get_poweron_time(INT64_T *up_ms);
+OPERATE_RET tkl_cellular_comm_get_poweron_time(int64_t *up_ms);
 
 /**
  * @brief Get the local time of the cellular device based on the time synchronized with the base station

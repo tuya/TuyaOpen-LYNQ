@@ -44,7 +44,7 @@ static TUYA_PWM_BASE_CFG_T pwm_cfg[PWM_NUM] = {0};
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_init(TUYA_PWM_NUM_E ch_id, CONST TUYA_PWM_BASE_CFG_T *cfg)
+OPERATE_RET tkl_pwm_init(TUYA_PWM_NUM_E ch_id, const TUYA_PWM_BASE_CFG_T *cfg)
 {
     if (ch_id >= PWM_NUM) {
         LOGE("tkl_pwm_init failed, invalid ch_id(%d)", ch_id);
@@ -164,7 +164,7 @@ OPERATE_RET tkl_pwm_stop(TUYA_PWM_NUM_E ch_id)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_multichannel_start(TUYA_PWM_NUM_E *ch_id, UINT8_T num)
+OPERATE_RET tkl_pwm_multichannel_start(TUYA_PWM_NUM_E *ch_id, uint8_t num)
 {
     LOGE("tkl_pwm_multichannel_start not support");
     return OPRT_NOT_SUPPORTED;
@@ -178,7 +178,7 @@ OPERATE_RET tkl_pwm_multichannel_start(TUYA_PWM_NUM_E *ch_id, UINT8_T num)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_multichannel_stop(TUYA_PWM_NUM_E *ch_id, UINT8_T num)
+OPERATE_RET tkl_pwm_multichannel_stop(TUYA_PWM_NUM_E *ch_id, uint8_t num)
 {
     LOGE("tkl_pwm_multichannel_stop not support");
     return OPRT_NOT_SUPPORTED;
@@ -192,7 +192,7 @@ OPERATE_RET tkl_pwm_multichannel_stop(TUYA_PWM_NUM_E *ch_id, UINT8_T num)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_duty_set(TUYA_PWM_NUM_E ch_id, UINT32_T duty)
+OPERATE_RET tkl_pwm_duty_set(TUYA_PWM_NUM_E ch_id, uint32_t duty)
 {
     if (ch_id >= PWM_NUM) {
         LOGE("tkl_pwm_duty_set failed, invalid ch_id(%d)", ch_id);
@@ -224,7 +224,7 @@ OPERATE_RET tkl_pwm_duty_set(TUYA_PWM_NUM_E ch_id, UINT32_T duty)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_frequency_set(TUYA_PWM_NUM_E ch_id, UINT32_T frequency)
+OPERATE_RET tkl_pwm_frequency_set(TUYA_PWM_NUM_E ch_id, uint32_t frequency)
 {
     if (ch_id >= PWM_NUM) {
         LOGE("tkl_pwm_frequency_set failed, invalid ch_id(%d)", ch_id);
@@ -261,7 +261,7 @@ OPERATE_RET tkl_pwm_polarity_set(TUYA_PWM_NUM_E ch_id, TUYA_PWM_POLARITY_E polar
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_info_set(TUYA_PWM_NUM_E ch_id, CONST TUYA_PWM_BASE_CFG_T *info)
+OPERATE_RET tkl_pwm_info_set(TUYA_PWM_NUM_E ch_id, const TUYA_PWM_BASE_CFG_T *info)
 {
     if (ch_id >= PWM_NUM) {
         LOGE("tkl_pwm_info_set failed, invalid ch_id(%d)", ch_id);
@@ -311,7 +311,7 @@ OPERATE_RET tkl_pwm_info_get(TUYA_PWM_NUM_E ch_id, TUYA_PWM_BASE_CFG_T *info)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_pwm_cap_start(TUYA_PWM_NUM_E ch_id, CONST TUYA_PWM_CAP_IRQ_T *cfg)
+OPERATE_RET tkl_pwm_cap_start(TUYA_PWM_NUM_E ch_id, const TUYA_PWM_CAP_IRQ_T *cfg)
 {
     LOGE("tkl_pwm_cap_start not support");
     return OPRT_NOT_SUPPORTED;

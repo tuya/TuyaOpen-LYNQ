@@ -15,8 +15,8 @@
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
 OPERATE_RET tkl_semaphore_create_init(TKL_SEM_HANDLE *pHandle,
-                                          CONST UINT_T semCnt,
-                                          CONST UINT_T sem_max)
+                                          const uint32_t semCnt,
+                                          const uint32_t sem_max)
 {	
 	if (!pHandle) {
 		LOGE("create semaphore failed, pHandle null");
@@ -48,7 +48,7 @@ OPERATE_RET tkl_semaphore_create_init(TKL_SEM_HANDLE *pHandle,
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_semaphore_wait(CONST TKL_SEM_HANDLE handle, UINT_T timeout)
+OPERATE_RET tkl_semaphore_wait(const TKL_SEM_HANDLE handle, uint32_t timeout)
 {	
 	if (!handle) {
 		LOGE("semaphore wait failed, invalid handle");
@@ -75,7 +75,7 @@ OPERATE_RET tkl_semaphore_wait(CONST TKL_SEM_HANDLE handle, UINT_T timeout)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_semaphore_post(CONST TKL_SEM_HANDLE handle)
+OPERATE_RET tkl_semaphore_post(const TKL_SEM_HANDLE handle)
 {
 	if (!handle) {
 		LOGE("semaphore post failed, invalid handle");
@@ -95,7 +95,7 @@ OPERATE_RET tkl_semaphore_post(CONST TKL_SEM_HANDLE handle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_semaphore_release(CONST TKL_SEM_HANDLE handle)
+OPERATE_RET tkl_semaphore_release(const TKL_SEM_HANDLE handle)
 {	
 	if (!handle) {
 		LOGE("semaphore release failed, invalid handle");

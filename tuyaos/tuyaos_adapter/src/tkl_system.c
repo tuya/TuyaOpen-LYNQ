@@ -14,7 +14,7 @@ extern void ol_power_reset(void);
 *
 * @return none
 */
-VOID_T tkl_system_reset(VOID_T)
+void tkl_system_reset(void)
 {
 	LOGD("system reset");
 	tkl_system_sleep(500);
@@ -28,7 +28,7 @@ VOID_T tkl_system_reset(VOID_T)
 *
 * @return system tick count
 */
-SYS_TICK_T tkl_system_get_tick_count(VOID_T)
+SYS_TICK_T tkl_system_get_tick_count(void)
 {
     return osKernelGetTickCount();
 }
@@ -40,18 +40,18 @@ SYS_TICK_T tkl_system_get_tick_count(VOID_T)
 *
 * @return system millisecond
 */
-SYS_TIME_T tkl_system_get_millisecond(VOID_T)
+SYS_TIME_T tkl_system_get_millisecond(void)
 {
     return TICKS_TO_MILLISECONDS(osKernelGetTickCount());
 }
 
-UINT_T tkl_system_enter_critical(VOID_T)
+uint32_t tkl_system_enter_critical(void)
 {
 	int32_t ret = osKernelLock();
     return (ret <= 0) ? 0 : ret;
 }
 
-VOID_T tkl_system_exit_critical(UINT_T irq_mask)
+void tkl_system_exit_critical(uint32_t irq_mask)
 {
     osKernelUnlock();
 }
@@ -83,7 +83,7 @@ int tkl_system_get_random(const uint32_t range)
 *
 * @return reset reason
 */
-TUYA_RESET_REASON_E tkl_system_get_reset_reason(CHAR_T** describe)
+TUYA_RESET_REASON_E tkl_system_get_reset_reason(char** describe)
 {	
 	LastResetState_e ap_state, cp_state;
 	ResetStateGet(&ap_state, &cp_state);
@@ -128,7 +128,7 @@ TUYA_RESET_REASON_E tkl_system_get_reset_reason(CHAR_T** describe)
 *
 * @return none
 */
-VOID_T tkl_system_sleep(UINT_T num_ms)
+void tkl_system_sleep(uint32_t num_ms)
 {
     osDelay(num_ms);
 }
@@ -140,14 +140,14 @@ VOID_T tkl_system_sleep(UINT_T num_ms)
 *
 * @note This API is used for system sleep.
 *
-* @return VOID
+* @return void
 */
-VOID_T tkl_system_delay(UINT_T num_ms)
+void tkl_system_delay(uint32_t num_ms)
 {
     osDelay(num_ms);
 }
 
-OPERATE_RET tkl_system_get_cpu_info(TUYA_CPU_INFO_T **cpu_ary, INT_T *cpu_cnt)
+OPERATE_RET tkl_system_get_cpu_info(TUYA_CPU_INFO_T **cpu_ary, int *cpu_cnt)
 {
     return OPRT_OK;
 }
@@ -158,9 +158,9 @@ OPERATE_RET tkl_system_get_cpu_info(TUYA_CPU_INFO_T **cpu_ary, INT_T *cpu_cnt)
  * @param[inout] len in: buffer capacity; out: bytes written
  * @return OPRT_NOT_SUPPORTED not supported on this platform
  */
-OPERATE_RET tkl_system_get_hw_unique_id(UINT8_T *id, UINT8_T *len)
+OPERATE_RET tkl_system_get_hw_unique_id(uint8_t *id, uint8_t *len)
 {
-    (VOID_T)id;
-    (VOID_T)len;
+    (void)id;
+    (void)len;
     return OPRT_NOT_SUPPORTED;
 }

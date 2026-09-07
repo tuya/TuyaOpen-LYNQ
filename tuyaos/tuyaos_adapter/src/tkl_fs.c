@@ -61,14 +61,14 @@ static fs_storage_type_t get_storage_type(const char* path)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_fs_mkdir(CONST CHAR_T* path)
+int tkl_fs_mkdir(const char* path)
 {
     if(!is_ext_path(path)) {
         return OPRT_OK;
     }
 
     LOGD("mkdir %s", path);
-    INT_T ret = ol_fs_mkdir(path, FS_TYPE_EXTERNAL);
+    int ret = ol_fs_mkdir(path, FS_TYPE_EXTERNAL);
     if(ret) {
         LOGE("mkidr %s failed %d",path, ret);
     }
@@ -84,7 +84,7 @@ INT_T tkl_fs_mkdir(CONST CHAR_T* path)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_fs_remove(CONST CHAR_T* path)
+int tkl_fs_remove(const char* path)
 {
     if (NULL == path) {
         LOGE("tkl_fs_remove, path null");
@@ -106,7 +106,7 @@ INT_T tkl_fs_remove(CONST CHAR_T* path)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_fs_mode(CONST CHAR_T* path, UINT_T* mode)
+int tkl_fs_mode(const char* path, uint32_t* mode)
 {
     LOGD("tkl_fs_mode not support: %s", path);
     return OPRT_NOT_SUPPORTED;
@@ -122,7 +122,7 @@ INT_T tkl_fs_mode(CONST CHAR_T* path, UINT_T* mode)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_fs_is_exist(CONST CHAR_T* path, BOOL_T* is_exist)
+int tkl_fs_is_exist(const char* path, BOOL_T* is_exist)
 {
     OLFILE fp = NULL;
 
@@ -153,7 +153,7 @@ INT_T tkl_fs_is_exist(CONST CHAR_T* path, BOOL_T* is_exist)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_fs_rename(CONST CHAR_T* path_old, CONST CHAR_T* path_new)
+int tkl_fs_rename(const char* path_old, const char* path_new)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -168,7 +168,7 @@ INT_T tkl_fs_rename(CONST CHAR_T* path_old, CONST CHAR_T* path_new)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_open(CONST CHAR_T* path, TUYA_DIR* dir)
+int tkl_dir_open(const char* path, TUYA_DIR* dir)
 {
     if(dir == NULL) {
         return OPRT_INVALID_PARM;
@@ -189,7 +189,7 @@ INT_T tkl_dir_open(CONST CHAR_T* path, TUYA_DIR* dir)
     }
 
     ctx->is_ext_fs_flag = true;
-    INT_T ret = (INT_T)ol_fs_ex_opendir(&ctx->dir, path);
+    int ret = (int)ol_fs_ex_opendir(&ctx->dir, path);
     if(ret != 0) {
         LOGE("tkl_dir_open opendir %s failed, ret=%d", path, ret);
         tkl_system_free(ctx);
@@ -209,16 +209,16 @@ INT_T tkl_dir_open(CONST CHAR_T* path, TUYA_DIR* dir)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_close(TUYA_DIR dir)
+int tkl_dir_close(TUYA_DIR dir)
 {
     if(dir == NULL) {
         return OPRT_INVALID_PARM;
     }
 
-    INT_T ret = OPRT_OK;
+    int ret = OPRT_OK;
     TKL_DIR_CTX_S* ctx = (TKL_DIR_CTX_S*)dir;
     if(ctx->is_ext_fs_flag) {
-        ret = (INT_T)ol_fs_ex_closedir(&ctx->dir);
+        ret = (int)ol_fs_ex_closedir(&ctx->dir);
         if(ret != 0) {
             LOGE("tkl_dir_close failed, ret=%d", ret);
         }
@@ -238,7 +238,7 @@ INT_T tkl_dir_close(TUYA_DIR dir)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_read(TUYA_DIR dir, TUYA_FILEINFO* info)
+int tkl_dir_read(TUYA_DIR dir, TUYA_FILEINFO* info)
 {
     if((dir == NULL) || (info == NULL)) {
         return OPRT_INVALID_PARM;
@@ -251,7 +251,7 @@ INT_T tkl_dir_read(TUYA_DIR dir, TUYA_FILEINFO* info)
     }
 
     memset(&ctx->info, 0, sizeof(struct lfs_info));
-    INT_T ret = (INT_T)ol_fs_ex_readdir(&ctx->dir, &ctx->info);
+    int ret = (int)ol_fs_ex_readdir(&ctx->dir, &ctx->info);
     *info = (TUYA_FILEINFO)&ctx->info;
     if(ret < 0 && ret != OL_LFS_ERR_EOF) {
         LOGE("dir read failed %d", ret);
@@ -271,14 +271,14 @@ INT_T tkl_dir_read(TUYA_DIR dir, TUYA_FILEINFO* info)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_name(TUYA_FILEINFO info, CONST CHAR_T** name)
+int tkl_dir_name(TUYA_FILEINFO info, const char** name)
 {
     if((info == NULL) || (name == NULL)) {                                                                                                                             
         return OPRT_INVALID_PARM;                                                                                                                                      
     }                                                                                                                                                                  
                                                                                                                                                                        
     struct lfs_info* pinfo = (struct lfs_info*)info;                                                                                                                   
-    *name = (CONST CHAR_T*)pinfo->name;                                                                                                                              
+    *name = (const char*)pinfo->name;                                                                                                                              
     return OPRT_OK;  
 }
 
@@ -292,7 +292,7 @@ INT_T tkl_dir_name(TUYA_FILEINFO info, CONST CHAR_T** name)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_is_directory(TUYA_FILEINFO info, BOOL_T* is_dir)
+int tkl_dir_is_directory(TUYA_FILEINFO info, BOOL_T* is_dir)
 {
     if((info == NULL) || (is_dir == NULL)) {
         return OPRT_INVALID_PARM;
@@ -313,7 +313,7 @@ INT_T tkl_dir_is_directory(TUYA_FILEINFO info, BOOL_T* is_dir)
 *
 * @return 0 on success. Others on failed
 */
-INT_T tkl_dir_is_regular(TUYA_FILEINFO info, BOOL_T* is_regular)
+int tkl_dir_is_regular(TUYA_FILEINFO info, BOOL_T* is_regular)
 {
     if((info == NULL) || (is_regular == NULL)) {
         return OPRT_INVALID_PARM;
@@ -334,7 +334,7 @@ INT_T tkl_dir_is_regular(TUYA_FILEINFO info, BOOL_T* is_regular)
 *
 * @return the file handle, NULL means failed
 */
-TUYA_FILE tkl_fopen(CONST CHAR_T* path, CONST CHAR_T* mode)
+TUYA_FILE tkl_fopen(const char* path, const char* mode)
 {
     if (NULL == path) {
         LOGE("tkl_fopen failed, path null");
@@ -361,7 +361,7 @@ TUYA_FILE tkl_fopen(CONST CHAR_T* path, CONST CHAR_T* mode)
 *
 * @return 0 on success. EOF on failed
 */
-INT_T tkl_fclose(TUYA_FILE file)
+int tkl_fclose(TUYA_FILE file)
 {
     int ret = ol_fs_close((OLFILE)file);
     return (0 == ret) ? OPRT_OK : OPRT_COM_ERROR;
@@ -378,9 +378,9 @@ INT_T tkl_fclose(TUYA_FILE file)
 *
 * @return the bytes read from file
 */
-INT_T tkl_fread(VOID_T* buf, INT_T bytes, TUYA_FILE file)
+int tkl_fread(void* buf, int bytes, TUYA_FILE file)
 {
-    return ol_fs_read(buf, (UINT32_T)bytes, (OLFILE)file);
+    return ol_fs_read(buf, (uint32_t)bytes, (OLFILE)file);
 }
 
 /**
@@ -394,7 +394,7 @@ INT_T tkl_fread(VOID_T* buf, INT_T bytes, TUYA_FILE file)
 *
 * @return the bytes write to file
 */
-INT_T tkl_fwrite(VOID_T* buf, INT_T bytes, TUYA_FILE file)
+int tkl_fwrite(void* buf, int bytes, TUYA_FILE file)
 {
     int ret = 0;
     int writelen = 0;
@@ -402,7 +402,7 @@ INT_T tkl_fwrite(VOID_T* buf, INT_T bytes, TUYA_FILE file)
     while (writelen < bytes) {
         len = bytes - writelen;
         len = len > 16384 ? 16384 : len;
-        ret = ol_fs_write(((char *)buf)+writelen, (UINT32_T)len, (OLFILE)file);
+        ret = ol_fs_write(((char *)buf)+writelen, (uint32_t)len, (OLFILE)file);
         if (ret != len) {
             break;
         }
@@ -421,7 +421,7 @@ INT_T tkl_fwrite(VOID_T* buf, INT_T bytes, TUYA_FILE file)
 *
 * @return 0 on success. others on failed
 */
-INT_T tkl_fsync(INT_T fd)
+int tkl_fsync(int fd)
 {
     TUYA_FILE file = (TUYA_FILE)fd;
     return tkl_fflush(file);
@@ -438,7 +438,7 @@ INT_T tkl_fsync(INT_T fd)
 *
 * @return the content get from file, NULL means failed
 */
-CHAR_T* tkl_fgets(CHAR_T* buf, INT_T len, TUYA_FILE file)
+char* tkl_fgets(char* buf, int len, TUYA_FILE file)
 {
     LOGD("tkl_fgets not support");
     return NULL;
@@ -453,7 +453,7 @@ CHAR_T* tkl_fgets(CHAR_T* buf, INT_T len, TUYA_FILE file)
 *
 * @return 0 on not eof, others on eof
 */
-INT_T tkl_feof(TUYA_FILE file)
+int tkl_feof(TUYA_FILE file)
 {
     if (ol_fs_tell((OLFILE)file) == ol_fs_size((OLFILE)file))
         return 0;
@@ -471,9 +471,9 @@ INT_T tkl_feof(TUYA_FILE file)
 *
 * @return 0 on success, others on failed
 */
-INT_T tkl_fseek(TUYA_FILE file, INT64_T offs, INT_T whence)
+int tkl_fseek(TUYA_FILE file, int64_t offs, int whence)
 {
-    return ol_fs_seek((OLFILE)file, (INT32_T)offs, whence);
+    return ol_fs_seek((OLFILE)file, (int32_t)offs, whence);
 }
 
 /**
@@ -485,7 +485,7 @@ INT_T tkl_fseek(TUYA_FILE file, INT64_T offs, INT_T whence)
 *
 * @return the current offset of the file
 */
-INT64_T tkl_ftell(TUYA_FILE file)
+int64_t tkl_ftell(TUYA_FILE file)
 {
     return ol_fs_tell((OLFILE)file);
 }
@@ -499,7 +499,7 @@ INT64_T tkl_ftell(TUYA_FILE file)
 *
 * @return the sizeof of file
 */
-INT_T tkl_fgetsize(CONST CHAR_T* filepath)
+int tkl_fgetsize(const char* filepath)
 {
     TUYA_FILE fp = tkl_fopen(filepath, "r");
     if (!fp) {
@@ -523,10 +523,10 @@ INT_T tkl_fgetsize(CONST CHAR_T* filepath)
 *
 * @return 0 success,-1 failed
 */
-INT_T tkl_faccess(CONST CHAR_T* filepath, INT_T mode)
+int tkl_faccess(const char* filepath, int mode)
 {
     BOOL_T exist;
-    INT_T ret = tkl_fs_is_exist(filepath, &exist);
+    int ret = tkl_fs_is_exist(filepath, &exist);
     LOGD("tkl_faccess: %s, ret/%d, exist/%d", filepath, ret, exist);
     if (ret || FALSE == exist) {
         return -1;
@@ -544,7 +544,7 @@ INT_T tkl_faccess(CONST CHAR_T* filepath, INT_T mode)
 *
 * @return as an unsigned char cast to a int ,or EOF on end of file or error
 */
-INT_T tkl_fgetc(TUYA_FILE file)
+int tkl_fgetc(TUYA_FILE file)
 {
     unsigned char ch;
     ssize_t ret = tkl_fread(&ch, 1, file);
@@ -564,7 +564,7 @@ INT_T tkl_fgetc(TUYA_FILE file)
 *
 * @return 0 success,-1 failed
 */
-INT_T tkl_fflush(TUYA_FILE file)
+int tkl_fflush(TUYA_FILE file)
 {
     return ol_fs_flush((OLFILE)file);
 }
@@ -578,7 +578,7 @@ INT_T tkl_fflush(TUYA_FILE file)
 *
 * @return the file fd
 */
-INT_T tkl_fileno(TUYA_FILE file)
+int tkl_fileno(TUYA_FILE file)
 {
     int fd = (int)file;
     LOGD("tkl_fileno, %d", fd);
@@ -596,7 +596,7 @@ INT_T tkl_fileno(TUYA_FILE file)
 *
 * @return 0 success,-1 failed
 */
-INT_T tkl_ftruncate(INT_T fd, UINT64_T length)
+int tkl_ftruncate(int fd, uint64_t length)
 {
     TUYA_FILE fp = (TUYA_FILE)fd;
     ty_fs* hd = (ty_fs*)fp;
@@ -652,10 +652,10 @@ void tkl_ext_fs_list_v2(const char *dirpath)
 {
     TUYA_DIR dir = NULL;
     TUYA_FILEINFO info = NULL;
-    CONST CHAR_T *name = NULL;
+    const char *name = NULL;
     BOOL_T is_dir = FALSE;
     BOOL_T is_reg = FALSE;
-    CHAR_T path[64];
+    char path[64];
 
     if (tkl_dir_open(dirpath, &dir) != OPRT_OK || dir == NULL) {
         LOGE("opendir %s failed", dirpath);

@@ -75,12 +75,12 @@ typedef int bool_t;
 #ifndef BIT
 #define BIT(nr) (1UL << (nr))
 #endif
-#define MAKEWORD(a, b) ((WORD_T)(((uint8_t)(a)) | ((WORD_T)((uint8_t)(b))) << 8))
-#define MAKELONG(a, b) ((LONG_T)(((WORD_T)(a)) | ((DWORD_T)((WORD_T)(b))) << 16))
-#define LOWORD(l)      ((WORD_T)(l))
-#define HIWORD(l)      ((WORD_T)(((DWORD_T)(l) >> 16) & 0xFFFF))
+#define MAKEWORD(a, b) ((uint16_t)(((uint8_t)(a)) | ((uint16_t)((uint8_t)(b))) << 8))
+#define MAKELONG(a, b) ((int32_t)(((uint16_t)(a)) | ((uint32_t)((uint16_t)(b))) << 16))
+#define LOWORD(l)      ((uint16_t)(l))
+#define HIWORD(l)      ((uint16_t)(((uint32_t)(l) >> 16) & 0xFFFF))
 #define LOBYTE(w)      ((uint8_t)(w))
-#define HIBYTE(w)      ((uint8_t)(((WORD_T)(w) >> 8) & 0xFF))
+#define HIBYTE(w)      ((uint8_t)(((uint16_t)(w) >> 8) & 0xFF))
 
 #define WORD_SWAP(X)    (((X << 8) | (X >> 8))&0xFFFF)
 #define DWORD_SWAP(X)   ( (((X)&0xff)<<24) + \
@@ -1731,83 +1731,7 @@ typedef int TUYA_ERRNO;
  * own types header is where they belong. Every one is guarded, and defined
  * exactly as in src/tuya_ai_service/port/include/tuya_ai_types.h, so a
  * translation unit pulling in both sees identical definitions. */
-#ifndef VOID
-#define VOID void
-#endif
 
-#ifndef VOID_T
-#define VOID_T void
-#endif
-
-#ifndef CONST
-#define CONST const
-#endif
-
-#ifndef STATIC
-#define STATIC static
-#endif
-
-#ifndef IN
-#define IN
-#endif
-
-#ifndef OUT
-#define OUT
-#endif
-
-#ifndef INOUT
-#define INOUT
-#endif
-
-#ifndef TUYAOS_COMPAT_TYPES_DEFINED
-#define TUYAOS_COMPAT_TYPES_DEFINED
-typedef long long DLONG_T;
-typedef DLONG_T *PDLONG_T;
-typedef float FLOAT_T;
-typedef FLOAT_T *PFLOAT_T;
-typedef signed int INT_T;
-typedef int *PINT_T;
-typedef void *PVOID_T;
-typedef char CHAR_T;
-typedef char *PCHAR_T;
-typedef signed char SCHAR_T;
-typedef unsigned char UCHAR_T;
-typedef short SHORT_T;
-typedef unsigned short USHORT_T;
-typedef short *PSHORT_T;
-typedef long LONG_T;
-typedef unsigned long ULONG_T;
-typedef long *PLONG_T;
-typedef unsigned char BYTE_T;
-typedef BYTE_T *PBYTE_T;
-typedef uint32_t UINT_T;
-typedef uint32_t *PUINT_T;
-typedef int64_t INT64_T;
-typedef INT64_T *PINT64_T;
-typedef uint64_t UINT64_T;
-typedef UINT64_T *PUINT64_T;
-typedef uint32_t UINT32_T;
-typedef uint32_t *PUINT32_T;
-/* int32_t is long int in this toolchain's stdint.h, so alias the stdint
- * types rather than the plain int the OEM sources would otherwise clash
- * with. */
-typedef int32_t INT32_T;
-typedef int32_t *PINT32_T;
-typedef short INT16_T;
-typedef INT16_T *PINT16_T;
-typedef unsigned short UINT16_T;
-typedef UINT16_T *PUINT16_T;
-typedef signed char INT8_T;
-typedef INT8_T *PINT8_T;
-typedef unsigned char UINT8_T;
-typedef UINT8_T *PUINT8_T;
-typedef double DOUBLE_T;
-typedef unsigned short WORD_T;
-typedef WORD_T *PWORD_T;
-typedef unsigned int DWORD_T;
-typedef DWORD_T *PDWORD_T;
-typedef size_t SIZE_T;
-#endif /* TUYAOS_COMPAT_TYPES_DEFINED */
 
 
 /* CELLULAR */

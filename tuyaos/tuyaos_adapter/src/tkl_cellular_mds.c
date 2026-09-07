@@ -64,18 +64,18 @@ TKL_MDS_NOTIFY gMdsNotify = NULL;
 BOOL_T gPdpAutoReactive = TRUE;
 static osMessageQueueId_t gPdpQueue;
 TUYA_CELLULAR_MDS_NET_STATUS_E gMdsNetStatus[MAX_CID];
-STATIC profile_t gProfile[MAX_CID] = {0};
-STATIC cid_status_e cid_status[MAX_CID] = {0};
+static profile_t gProfile[MAX_CID] = {0};
+static cid_status_e cid_status[MAX_CID] = {0};
 extern TKL_SIM_STATE_E gSimStatus;
 
 extern TUYA_CELLULAR_MDS_STATUS_E get_reg_status(void);
-static OPERATE_RET pdp_active_proc(UINT8_T cid, TUYA_MDS_PDP_TYPE_E pdp_type,
-                            PCHAR_T apn, PCHAR_T username, PCHAR_T password);
-static OPERATE_RET pdp_deactive_proc(UINT8_T cid);
-OPERATE_RET tkl_cellular_mds_adv_pdp_active(UINT8_T sim_id, UINT8_T cid,
+static OPERATE_RET pdp_active_proc(uint8_t cid, TUYA_MDS_PDP_TYPE_E pdp_type,
+                            char * apn, char * username, char * password);
+static OPERATE_RET pdp_deactive_proc(uint8_t cid);
+OPERATE_RET tkl_cellular_mds_adv_pdp_active(uint8_t sim_id, uint8_t cid,
                                             TUYA_MDS_PDP_TYPE_E pdp_type,
-                                            PCHAR_T apn, PCHAR_T username,
-                                            PCHAR_T password);
+                                            char * apn, char * username,
+                                            char * password);
 
 
 extern void simcard_hotplug_ctl(bool enable);
@@ -265,7 +265,7 @@ void pdp_reactive(void *arg)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_init(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_mds_init(uint8_t sim_id)
 {
     static bool init = false;
 
@@ -318,7 +318,7 @@ OPERATE_RET tkl_cellular_mds_init(UINT8_T sim_id)
  *
  * @return 蜂窝移动数据鉴权状态，查看 @TUYA_CELLULAR_MDS_STATUS_E 定义
  */
-TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_adv_get_status(UINT8_T sim_id, UINT8_T cid)
+TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_adv_get_status(uint8_t sim_id, uint8_t cid)
 {
     TUYA_CELLULAR_MDS_STATUS_E reg_status = get_reg_status();
     TUYA_CELLULAR_MDS_NET_STATUS_E net_status = get_mds_net_status(cid);
@@ -338,12 +338,12 @@ TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_adv_get_status(UINT8_T sim_id, UINT8
  *
  * @return 蜂窝移动数据鉴权状态，查看 @TUYA_CELLULAR_MDS_STATUS_E 定义
  */
-TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_get_status(UINT8_T sim_id)
+TUYA_CELLULAR_MDS_STATUS_E tkl_cellular_mds_get_status(uint8_t sim_id)
 {
     return tkl_cellular_mds_adv_get_status(sim_id, 1);
 }
 
-static OPERATE_RET pdp_active_proc(UINT8_T cid, TUYA_MDS_PDP_TYPE_E pdp_type, PCHAR_T apn, PCHAR_T username, PCHAR_T password)
+static OPERATE_RET pdp_active_proc(uint8_t cid, TUYA_MDS_PDP_TYPE_E pdp_type, char * apn, char * username, char * password)
 {
     int ret;
     ol_cid_index_enum olCid;
@@ -449,10 +449,10 @@ EXIT:
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_adv_pdp_active(UINT8_T sim_id, UINT8_T cid,
+OPERATE_RET tkl_cellular_mds_adv_pdp_active(uint8_t sim_id, uint8_t cid,
                                             TUYA_MDS_PDP_TYPE_E pdp_type,
-                                            PCHAR_T apn, PCHAR_T username,
-                                            PCHAR_T password)
+                                            char * apn, char * username,
+                                            char * password)
 {
     pdp_request_t msg;
     msg.cmd = PDP_REQUEST_ACTIVE;
@@ -504,12 +504,12 @@ OPERATE_RET tkl_cellular_mds_adv_pdp_active(UINT8_T sim_id, UINT8_T cid,
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_pdp_active(UINT8_T sim_id, PCHAR_T apn, PCHAR_T username, PCHAR_T password)
+OPERATE_RET tkl_cellular_mds_pdp_active(uint8_t sim_id, char * apn, char * username, char * password)
 {
     return tkl_cellular_mds_adv_pdp_active(sim_id, 1, TUYA_MDS_PDP_IPV4, apn, username, password);
 }
 
-static OPERATE_RET pdp_deactive_proc(UINT8_T cid)
+static OPERATE_RET pdp_deactive_proc(uint8_t cid)
 {
     CmsRetId cmsRet;
     int ret;
@@ -597,7 +597,7 @@ EXIT:
  * @param cid Specify the PDP Context Identifier
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_adv_pdp_deactive(UINT8_T sim_id, UINT8_T cid)
+OPERATE_RET tkl_cellular_mds_adv_pdp_deactive(uint8_t sim_id, uint8_t cid)
 {
     pdp_request_t msg;
     msg.cmd = PDP_REQUEST_DEACTIVE;
@@ -620,7 +620,7 @@ OPERATE_RET tkl_cellular_mds_adv_pdp_deactive(UINT8_T sim_id, UINT8_T cid)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_pdp_deactive(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_mds_pdp_deactive(uint8_t sim_id)
 {
     return  tkl_cellular_mds_adv_pdp_deactive(sim_id, 1);
 }
@@ -633,7 +633,7 @@ OPERATE_RET tkl_cellular_mds_pdp_deactive(UINT8_T sim_id)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_mds_pdp_auto_reactive(UINT8_T sim_id, BOOL_T enable)
+OPERATE_RET tkl_cellular_mds_pdp_auto_reactive(uint8_t sim_id, BOOL_T enable)
 {
     gPdpAutoReactive = enable;
     LOGI("set pdp auto reactive, sim/%d, enable/%d", sim_id, enable);
@@ -645,7 +645,7 @@ OPERATE_RET tkl_cellular_mds_pdp_auto_reactive(UINT8_T sim_id, BOOL_T enable)
  * @param fun 状态变化通知函数
  * @return 0 成功  其它 失败
  */
-OPERATE_RET tkl_cellular_mds_register_state_notify(UINT8_T sim_id,
+OPERATE_RET tkl_cellular_mds_register_state_notify(uint8_t sim_id,
                                                    TKL_MDS_NOTIFY fun)
 {
     gMdsNotify = fun;
@@ -658,7 +658,7 @@ OPERATE_RET tkl_cellular_mds_register_state_notify(UINT8_T sim_id,
  * @param   ip: The type of NW_IP_S
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_cellular_mds_adv_get_ip(UINT8_T sim_id, UINT8_T cid, NW_IP_S* ip)
+OPERATE_RET tkl_cellular_mds_adv_get_ip(uint8_t sim_id, uint8_t cid, NW_IP_S* ip)
 {
     CHECK_CID_AND_RETURN(cid);
 
@@ -692,7 +692,7 @@ OPERATE_RET tkl_cellular_mds_adv_get_ip(UINT8_T sim_id, UINT8_T cid, NW_IP_S* ip
  * @param   ip: The type of NW_IP_S
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_cellular_mds_get_ip(UINT8_T sim_id, NW_IP_S* ip)
+OPERATE_RET tkl_cellular_mds_get_ip(uint8_t sim_id, NW_IP_S* ip)
 {
     return tkl_cellular_mds_adv_get_ip(0, 1, ip);
 }

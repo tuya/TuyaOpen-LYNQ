@@ -18,39 +18,39 @@
 
 static bool storage_mounted = false;
 
-OPERATE_RET tkl_storage_get_internal_dir(CHAR_T path[MAX_PATH_LEN])
+OPERATE_RET tkl_storage_get_internal_dir(char path[MAX_PATH_LEN])
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_df(CHAR_T *mount_point, TKL_STORAGE_DF_T *df)
+OPERATE_RET tkl_storage_df(char *mount_point, TKL_STORAGE_DF_T *df)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_get_device_info(CHAR_T *dev_name, TKL_STORAGE_DEVICE_INFO_T *list)
+OPERATE_RET tkl_storage_get_device_info(char *dev_name, TKL_STORAGE_DEVICE_INFO_T *list)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_get_device_list(TKL_STORAGE_DEVICE_INFO_T *list, INT_T num)
+OPERATE_RET tkl_storage_get_device_list(TKL_STORAGE_DEVICE_INFO_T *list, int num)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_get_part_list(CHAR_T *dev_name, TKL_STORAGE_PART_INFO_T *list, INT_T num)
+OPERATE_RET tkl_storage_get_part_list(char *dev_name, TKL_STORAGE_PART_INFO_T *list, int num)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_make_part(CHAR_T *part_name, CHAR_T *part_type,
-    CHAR_T *fs_type, BOOL_T isadd, UINT_T part_index, LONG_T start, LONG_T end)
+OPERATE_RET tkl_storage_make_part(char *part_name, char *part_type,
+    char *fs_type, BOOL_T isadd, uint32_t part_index, int32_t start, int32_t end)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_mkfs(CHAR_T *fs_type, CHAR_T *fs_dev, CHAR_T *parm,
-    TKL_STORAGE_PROGRESS_CB cb, VOID *user_ctx)
+OPERATE_RET tkl_storage_mkfs(char *fs_type, char *fs_dev, char *parm,
+    TKL_STORAGE_PROGRESS_CB cb, void *user_ctx)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -67,7 +67,7 @@ OPERATE_RET __attribute__((weak)) tkl_storage_get_mount_info(char **mount_path, 
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_mount(CHAR_T *source, CHAR_T *target, CHAR_T *fs_type, ULONG_T flags, VOID *data)
+OPERATE_RET tkl_storage_mount(char *source, char *target, char *fs_type, uint32_t flags, void *data)
 {
     LOGD("tkl_storage_mount called");
     if (storage_mounted) {
@@ -103,7 +103,7 @@ OPERATE_RET tkl_storage_mount(CHAR_T *source, CHAR_T *target, CHAR_T *fs_type, U
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_storage_umount(CHAR_T *target, INT_T flags)
+OPERATE_RET tkl_storage_umount(char *target, int flags)
 {
     if (!storage_mounted) {
         return OPRT_OK;
@@ -116,23 +116,23 @@ OPERATE_RET tkl_storage_umount(CHAR_T *target, INT_T flags)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_storage_loop_event(TKL_STORAGE_EVENT_CB event_cb, VOID *user_ctx)
+OPERATE_RET tkl_storage_loop_event(TKL_STORAGE_EVENT_CB event_cb, void *user_ctx)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_fsck(CHAR_T *blk_dev, CHAR_T *fs_type, CHAR_T *parm, INT_T flags,
-    TKL_STORAGE_PROGRESS_CB cb, VOID *user_ctx)
+OPERATE_RET tkl_storage_fsck(char *blk_dev, char *fs_type, char *parm, int flags,
+    TKL_STORAGE_PROGRESS_CB cb, void *user_ctx)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_ioctl(CHAR_T *dev_name, ULONG_T request, VOID *args)
+OPERATE_RET tkl_storage_ioctl(char *dev_name, uint32_t request, void *args)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_storage_check_badblocks(CHAR_T *dev_name, TKL_STORAGE_BADBLK_CB cb, VOID *user_ctx)
+OPERATE_RET tkl_storage_check_badblocks(char *dev_name, TKL_STORAGE_BADBLK_CB cb, void *user_ctx)
 {
     return OPRT_OK;
 }

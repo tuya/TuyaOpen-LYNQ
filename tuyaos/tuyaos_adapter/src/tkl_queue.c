@@ -12,7 +12,7 @@
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, INT_T msgsize, INT_T msgcount)
+OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, int msgsize, int msgcount)
 {	
 	if (!queue) {
 		LOGE("create queue failed, queue is null");
@@ -43,7 +43,7 @@ OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, INT_T msgsize, INT_T 
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-int tkl_queue_post(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
+int tkl_queue_post(const TKL_QUEUE_HANDLE queue, void *msg, uint32_t timeout)
 {	
 	if (!queue || !msg) {
 		LOGE("queue post failed, invalid param, queue: %p, msg: %p", queue, msg);
@@ -63,7 +63,7 @@ int tkl_queue_post(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_queue_fetch(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
+OPERATE_RET tkl_queue_fetch(const TKL_QUEUE_HANDLE queue, void *msg, uint32_t timeout)
 {	
 	if (!queue || !msg) {
 		LOGE("queue fetch failed, invalid param, queue: %p, msg: %p", queue, msg);
@@ -79,9 +79,9 @@ OPERATE_RET tkl_queue_fetch(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T ti
  *
  * @param[in] queue the message queue handle
  *
- * @return VOID_T
+ * @return void
  */
-VOID_T tkl_queue_free(CONST TKL_QUEUE_HANDLE queue)
+void tkl_queue_free(const TKL_QUEUE_HANDLE queue)
 {
 	if (!queue) {
 		LOGE("queue free failed, invalid param");

@@ -17,7 +17,7 @@ typedef struct NETWORK_ERRNO_TRANS {
 
 extern OPERATE_RET rrc_release_timer_reset(void);
 
-CONST NETWORK_ERRNO_TRANS_S unw_errno_trans[]= {
+const NETWORK_ERRNO_TRANS_S unw_errno_trans[]= {
     {EINTR,UNW_EINTR},
     {EBADF,UNW_EBADF},
     {EAGAIN,UNW_EAGAIN},
@@ -77,7 +77,7 @@ TUYA_ERRNO tkl_net_get_errno(void)
 *
 * @return ip string
 */
-CHAR_T* tkl_net_addr2str(CONST TUYA_IP_ADDR_T ipaddr)
+char* tkl_net_addr2str(const TUYA_IP_ADDR_T ipaddr)
 {
     unsigned int addr = lwip_htonl(ipaddr);
 	ip_addr_t struct_ip = {
@@ -95,7 +95,7 @@ CHAR_T* tkl_net_addr2str(CONST TUYA_IP_ADDR_T ipaddr)
  * @param[in]            ip_str
  * @return   主机序ip地址(4B)
  */
-TUYA_IP_ADDR_T tkl_net_str2addr(CONST CHAR_T *ip_str)
+TUYA_IP_ADDR_T tkl_net_str2addr(const char *ip_str)
 {
     if(ip_str == NULL) {
         return 0xFFFFFFFF;
@@ -112,7 +112,7 @@ TUYA_IP_ADDR_T tkl_net_str2addr(CONST CHAR_T *ip_str)
  * @param[inout]      fds
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_fd_set(CONST INT_T fd, TUYA_FD_SET_T* fds)
+OPERATE_RET tkl_net_fd_set(const int fd, TUYA_FD_SET_T* fds)
 {
     FD_SET(fd, UNW_TO_SYS_FD_SET(fds));
     return OPRT_OK;
@@ -124,7 +124,7 @@ OPERATE_RET tkl_net_fd_set(CONST INT_T fd, TUYA_FD_SET_T* fds)
  * @param[inout]      fds
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_fd_clear(CONST INT_T fd, TUYA_FD_SET_T* fds)
+OPERATE_RET tkl_net_fd_clear(const int fd, TUYA_FD_SET_T* fds)
 {
     FD_CLR(fd, UNW_TO_SYS_FD_SET(fds));
     return OPRT_OK;
@@ -136,7 +136,7 @@ OPERATE_RET tkl_net_fd_clear(CONST INT_T fd, TUYA_FD_SET_T* fds)
  * @param[in]      fds
  * @return  0-没有可读fd other-有可读fd
  */
-OPERATE_RET tkl_net_fd_isset(CONST INT_T fd, TUYA_FD_SET_T* fds)
+OPERATE_RET tkl_net_fd_isset(const int fd, TUYA_FD_SET_T* fds)
 {
     return FD_ISSET(fd, UNW_TO_SYS_FD_SET(fds));
 }
@@ -165,9 +165,9 @@ OPERATE_RET tkl_net_fd_zero(TUYA_FD_SET_T* fds)
  * @param[inout]      ms_timeout
  * @return  0: success  <0: fail
  */
-INT_T tkl_net_select(CONST INT_T maxfd, TUYA_FD_SET_T *readfds,
+int tkl_net_select(const int maxfd, TUYA_FD_SET_T *readfds,
                      TUYA_FD_SET_T *writefds, TUYA_FD_SET_T *errorfds,
-                     CONST UINT_T ms_timeout)
+                     const uint32_t ms_timeout)
 
 {
     struct timeval *tmp;
@@ -195,7 +195,7 @@ INT_T tkl_net_select(CONST INT_T maxfd, TUYA_FD_SET_T *readfds,
 *
 * @return the count of no block file descriptors.
 */
-INT_T tkl_net_get_nonblock(CONST INT_T fd)
+int tkl_net_get_nonblock(const int fd)
 {
     if((fcntl(fd, F_GETFL, 0) & O_NONBLOCK) == O_NONBLOCK) {
         return 1;
@@ -212,7 +212,7 @@ INT_T tkl_net_get_nonblock(CONST INT_T fd)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_net_set_block(CONST INT_T fd, CONST BOOL_T block)
+OPERATE_RET tkl_net_set_block(const int fd, const BOOL_T block)
 {
     int flags;
 
@@ -235,7 +235,7 @@ OPERATE_RET tkl_net_set_block(CONST INT_T fd, CONST BOOL_T block)
  * @param[in]      fd
  * @return  0: success  <0: fail
  */
-TUYA_ERRNO tkl_net_close(CONST INT_T fd)
+TUYA_ERRNO tkl_net_close(const int fd)
 {
     return close(fd);
 }
@@ -246,7 +246,7 @@ TUYA_ERRNO tkl_net_close(CONST INT_T fd)
  * @param[in]      how
  * @return  OPRT_OK: success  <0: fail
  */
-TUYA_ERRNO tkl_net_shutdown(CONST INT_T fd, CONST INT_T how)
+TUYA_ERRNO tkl_net_shutdown(const int fd, const int how)
 {
     return shutdown(fd, how);
 }
@@ -256,7 +256,7 @@ TUYA_ERRNO tkl_net_shutdown(CONST INT_T fd, CONST INT_T how)
  * @param[in]      type
  * @return  >=0: socketfd  <0: fail
  */
-INT_T tkl_net_socket_create(CONST TUYA_PROTOCOL_TYPE_E type)
+int tkl_net_socket_create(const TUYA_PROTOCOL_TYPE_E type)
 {
     int fd = -1;
 
@@ -278,8 +278,8 @@ INT_T tkl_net_socket_create(CONST TUYA_PROTOCOL_TYPE_E type)
  * @param[in]      port
  * @return  0: success  Other: fail
  */
-TUYA_ERRNO tkl_net_connect(CONST INT_T fd, CONST TUYA_IP_ADDR_T addr,
-                          CONST UINT16_T port)
+TUYA_ERRNO tkl_net_connect(const int fd, const TUYA_IP_ADDR_T addr,
+                          const uint16_t port)
 {
     struct sockaddr_in sock_addr;
     uint16_t tmp_port = port;
@@ -300,7 +300,7 @@ TUYA_ERRNO tkl_net_connect(CONST INT_T fd, CONST TUYA_IP_ADDR_T addr,
  * @param[in]      len
  * @return  0: success  Other: fail
  */
-TUYA_ERRNO tkl_net_connect_raw(CONST INT_T fd, VOID *p_socket_addr, CONST INT_T len)
+TUYA_ERRNO tkl_net_connect_raw(const int fd, void *p_socket_addr, const int len)
 {
     return connect(fd, (struct sockaddr *)p_socket_addr, len);
 }
@@ -312,7 +312,7 @@ TUYA_ERRNO tkl_net_connect_raw(CONST INT_T fd, VOID *p_socket_addr, CONST INT_T 
  * @param[in]      port
  * @return  0: success  Other: fail
  */
-TUYA_ERRNO tkl_net_bind(CONST INT_T fd, CONST TUYA_IP_ADDR_T addr, CONST UINT16_T port)
+TUYA_ERRNO tkl_net_bind(const int fd, const TUYA_IP_ADDR_T addr, const uint16_t port)
 {
     unsigned short tmp_port;
     TUYA_IP_ADDR_T tmp_addr;
@@ -353,7 +353,7 @@ int tuya_os_adapt_net_socket_bind(const int fd, const char *ip)
  * @param[in]      backlog
  * @return  0: success  < 0: fail
  */
-TUYA_ERRNO tkl_net_listen(CONST INT_T fd, CONST INT_T backlog)
+TUYA_ERRNO tkl_net_listen(const int fd, const int backlog)
 {
     return listen(fd, backlog);
 }
@@ -365,7 +365,7 @@ TUYA_ERRNO tkl_net_listen(CONST INT_T fd, CONST INT_T backlog)
  * @param[inout]         port
  * @return  >=0: 新接收到的socketfd  others: fail
  */
-TUYA_ERRNO tkl_net_accept(CONST INT_T fd, TUYA_IP_ADDR_T *addr, UINT16_T *port)
+TUYA_ERRNO tkl_net_accept(const int fd, TUYA_IP_ADDR_T *addr, uint16_t *port)
 {
     struct sockaddr_in sock_addr;
     socklen_t len;
@@ -392,7 +392,7 @@ TUYA_ERRNO tkl_net_accept(CONST INT_T fd, TUYA_IP_ADDR_T *addr, UINT16_T *port)
  * @param[in]      nbytes
  * @return  nbytes has sended
  */
-TUYA_ERRNO tkl_net_send(CONST INT_T fd, CONST VOID *buf, CONST UINT_T nbytes)
+TUYA_ERRNO tkl_net_send(const int fd, const void *buf, const uint32_t nbytes)
 {
     if((fd < 0) || (buf == NULL) || (nbytes == 0)){
         LOGE("tkl_net_send, invalid param, fd/%d, buf/%p, nbytes/%u", fd, buf, nbytes);
@@ -412,7 +412,7 @@ TUYA_ERRNO tkl_net_send(CONST INT_T fd, CONST VOID *buf, CONST UINT_T nbytes)
  * @param[in]      port
  * @return  nbytes has sended
  */
-TUYA_ERRNO tkl_net_send_to(CONST INT_T fd, CONST VOID *buf, CONST UINT_T nbytes, CONST TUYA_IP_ADDR_T addr,CONST UINT16_T port)
+TUYA_ERRNO tkl_net_send_to(const int fd, const void *buf, const uint32_t nbytes, const TUYA_IP_ADDR_T addr,const uint16_t port)
 {
     unsigned short tmp_port = port;
     TUYA_IP_ADDR_T tmp_addr = addr;
@@ -438,7 +438,7 @@ TUYA_ERRNO tkl_net_send_to(CONST INT_T fd, CONST VOID *buf, CONST UINT_T nbytes,
  * @param[in]         nbytes
  * @return  nbytes has received
  */
-TUYA_ERRNO tkl_net_recv(CONST INT_T fd, VOID *buf, CONST UINT_T nbytes)
+TUYA_ERRNO tkl_net_recv(const int fd, void *buf, const uint32_t nbytes)
 {
     if ((fd < 0) || (buf == NULL) || (nbytes == 0)) {
         LOGE("tkl_net_recv, invalid param, fd/%d, buf/%p, nbytes/%u", fd, buf, nbytes);
@@ -456,7 +456,7 @@ TUYA_ERRNO tkl_net_recv(CONST INT_T fd, VOID *buf, CONST UINT_T nbytes)
  * @param[in]            nd_size
  * @return  nbytes has received
  */
-INT_T tkl_net_recv_nd_size(CONST INT_T fd, VOID *buf, CONST UINT_T buf_size, CONST UINT_T nd_size)
+int tkl_net_recv_nd_size(const int fd, void *buf, const uint32_t buf_size, const uint32_t nd_size)
 {
     if ((fd < 0) || (NULL == buf) || (buf_size == 0) ||
        (nd_size == 0) || (buf_size < nd_size)) {
@@ -465,11 +465,11 @@ INT_T tkl_net_recv_nd_size(CONST INT_T fd, VOID *buf, CONST UINT_T buf_size, CON
         return OPRT_INVALID_PARM;
     }
 
-    UINT32_T rd_size = 0;
-    INT_T ret = 0;
+    uint32_t rd_size = 0;
+    int ret = 0;
 
     while(rd_size < nd_size) {
-        ret = recv(fd,((UINT8_T *)buf + rd_size),nd_size-rd_size,0);
+        ret = recv(fd,((uint8_t *)buf + rd_size),nd_size-rd_size,0);
         if(ret <= 0) {
             if(EWOULDBLOCK == errno || EINTR == errno || EAGAIN == errno) {
                 osDelay(10);
@@ -496,7 +496,7 @@ INT_T tkl_net_recv_nd_size(CONST INT_T fd, VOID *buf, CONST UINT_T buf_size, CON
  * @param[inout]         port
  * @return  nbytes has received
  */
-TUYA_ERRNO tkl_net_recvfrom(CONST INT_T fd, VOID *buf, CONST UINT_T nbytes, TUYA_IP_ADDR_T *addr, UINT16_T *port)
+TUYA_ERRNO tkl_net_recvfrom(const int fd, void *buf, const uint32_t nbytes, TUYA_IP_ADDR_T *addr, uint16_t *port)
 {
     int ret = 0;
     struct sockaddr_in sock_addr;
@@ -530,8 +530,8 @@ TUYA_ERRNO tkl_net_recvfrom(CONST INT_T fd, VOID *buf, CONST UINT_T nbytes, TUYA
  * @param[in]         type
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_set_timeout(CONST INT_T fd, CONST INT_T ms_timeout,
-                                CONST TUYA_TRANS_TYPE_E type)
+OPERATE_RET tkl_net_set_timeout(const int fd, const int ms_timeout,
+                                const TUYA_TRANS_TYPE_E type)
 
 {
     struct timeval timeout;
@@ -555,8 +555,8 @@ OPERATE_RET tkl_net_set_timeout(CONST INT_T fd, CONST INT_T ms_timeout,
  * @param[in]         type
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_set_bufsize(CONST INT_T fd, CONST INT_T buf_size,
-                                CONST TUYA_TRANS_TYPE_E type)
+OPERATE_RET tkl_net_set_bufsize(const int fd, const int buf_size,
+                                const TUYA_TRANS_TYPE_E type)
 {
     int size;
     int optname;
@@ -575,7 +575,7 @@ OPERATE_RET tkl_net_set_bufsize(CONST INT_T fd, CONST INT_T buf_size,
  * @param[in]         fd
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_set_reuse(CONST INT_T fd)
+OPERATE_RET tkl_net_set_reuse(const int fd)
 {
     int flag = 1;
     if (0 != setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&flag, sizeof(int))) {
@@ -590,7 +590,7 @@ OPERATE_RET tkl_net_set_reuse(CONST INT_T fd)
  * @param[in]         fd
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_disable_nagle(CONST INT_T fd)
+OPERATE_RET tkl_net_disable_nagle(const int fd)
 {
     int flag = 1;
     if (0 != setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&flag, sizeof(int))) {
@@ -605,7 +605,7 @@ OPERATE_RET tkl_net_disable_nagle(CONST INT_T fd)
  * @param[in]         fd
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_set_boardcast(CONST INT_T fd)
+OPERATE_RET tkl_net_set_boardcast(const int fd)
 {
     int flag = 1;
     if (0 != setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(int))) {
@@ -621,7 +621,7 @@ OPERATE_RET tkl_net_set_boardcast(CONST INT_T fd)
  * @param[inout]         addr
  * @return  0: success  <0: fail
  */
-OPERATE_RET tkl_net_gethostbyname(CONST CHAR_T *domain, TUYA_IP_ADDR_T *addr)
+OPERATE_RET tkl_net_gethostbyname(const char *domain, TUYA_IP_ADDR_T *addr)
 {
     if ((domain == NULL) || (addr == NULL)) {
         return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -636,7 +636,7 @@ OPERATE_RET tkl_net_gethostbyname(CONST CHAR_T *domain, TUYA_IP_ADDR_T *addr)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_socket_bind(CONST INT_T fd, CONST CHAR_T *ip)
+OPERATE_RET tkl_net_socket_bind(const int fd, const char *ip)
 {
     if(NULL == ip) {
         return -3000;
@@ -653,17 +653,17 @@ OPERATE_RET tkl_net_socket_bind(CONST INT_T fd, CONST CHAR_T *ip)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_set_cloexec(CONST INT_T fd)
+OPERATE_RET tkl_net_set_cloexec(const int fd)
 {
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_get_socket_ip(CONST INT_T fd, TUYA_IP_ADDR_T *addr)
+OPERATE_RET tkl_net_get_socket_ip(const int fd, TUYA_IP_ADDR_T *addr)
 {
     struct sockaddr_in sock_addr;
     memset(&sock_addr, 0, sizeof(sock_addr));
     socklen_t len = sizeof(sock_addr);
-    INT_T ret = getsockname(fd, (struct sockaddr*)&sock_addr, &len);
+    int ret = getsockname(fd, (struct sockaddr*)&sock_addr, &len);
     if (ret != 0) {
         return OPRT_COM_ERROR;
     }
@@ -685,9 +685,9 @@ OPERATE_RET tkl_net_get_socket_ip(CONST INT_T fd, TUYA_IP_ADDR_T *addr)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_net_setsockopt(CONST INT_T fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, CONST VOID_T *optval, CONST INT_T optlen)
+OPERATE_RET tkl_net_setsockopt(const int fd, const TUYA_OPT_LEVEL level, const TUYA_OPT_NAME optname, const void *optval, const int optlen)
 {
-    return setsockopt((INT_T)fd, (int)level, (int)optname, optval, (INT_T)optlen);
+    return setsockopt((int)fd, (int)level, (int)optname, optval, (int)optlen);
 }
 
 /**
@@ -703,16 +703,16 @@ OPERATE_RET tkl_net_setsockopt(CONST INT_T fd, CONST TUYA_OPT_LEVEL level, CONST
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_net_getsockopt(CONST INT_T fd, CONST TUYA_OPT_LEVEL level, CONST TUYA_OPT_NAME optname, VOID_T *optval, INT_T *optlen)
+OPERATE_RET tkl_net_getsockopt(const int fd, const TUYA_OPT_LEVEL level, const TUYA_OPT_NAME optname, void *optval, int *optlen)
 {
-    if (0 != getsockopt((INT_T)fd, (int)level, (int)optname, (VOID*)optval, (socklen_t*)optlen)) {
+    if (0 != getsockopt((int)fd, (int)level, (int)optname, (void*)optval, (socklen_t*)optlen)) {
         return OPRT_COM_ERROR;
     }
 
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_set_broadcast(CONST INT_T fd)
+OPERATE_RET tkl_net_set_broadcast(const int fd)
 {
     int broadcast_enabled = 1;
     int ret = tkl_net_setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enabled , sizeof(broadcast_enabled));
@@ -723,7 +723,7 @@ OPERATE_RET tkl_net_set_broadcast(CONST INT_T fd)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_set_keepalive(INT_T fd, CONST BOOL_T alive, CONST UINT_T idle, CONST UINT_T intr, CONST UINT_T cnt)
+OPERATE_RET tkl_net_set_keepalive(int fd, const BOOL_T alive, const uint32_t idle, const uint32_t intr, const uint32_t cnt)
 {
     int ret;
 
@@ -757,7 +757,7 @@ OPERATE_RET tkl_net_set_keepalive(INT_T fd, CONST BOOL_T alive, CONST UINT_T idl
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_getsockname(INT_T fd, TUYA_IP_ADDR_T *addr, UINT16_T *port)
+OPERATE_RET tkl_net_getsockname(int fd, TUYA_IP_ADDR_T *addr, uint16_t *port)
 {
     struct sockaddr_in sock_addr;
     memset(&sock_addr, 0, sizeof(sock_addr));
@@ -770,19 +770,19 @@ OPERATE_RET tkl_net_getsockname(INT_T fd, TUYA_IP_ADDR_T *addr, UINT16_T *port)
         *addr = ntohl(sock_addr.sin_addr.s_addr);
     }
     if (port) {
-        *port = (UINT16_T)ntohs(sock_addr.sin_port);
+        *port = (uint16_t)ntohs(sock_addr.sin_port);
     }
     // LOGD("%d getsockname %x %d %s",fd, *addr, *port, tkl_net_addr2str(*addr));
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_net_getpeername(INT_T fd, TUYA_IP_ADDR_T *addr, UINT16_T *port)
+OPERATE_RET tkl_net_getpeername(int fd, TUYA_IP_ADDR_T *addr, uint16_t *port)
 {
     LOGE("getpeername");
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_net_sethostname(CONST CHAR_T *hostname)
+OPERATE_RET tkl_net_sethostname(const char *hostname)
 {
     LOGE("sethostname");
     return OPRT_NOT_SUPPORTED;
@@ -791,9 +791,9 @@ OPERATE_RET tkl_net_sethostname(CONST CHAR_T *hostname)
 #if 0
 void tcp_test(char *ip, uint16_t port)
 {
-    INT_T fd = -1;
+    int fd = -1;
     TUYA_IP_ADDR_T local_addr;
-    UINT16_T local_port = 0;
+    uint16_t local_port = 0;
     OPERATE_RET ret;
 
     fd = tkl_net_socket_create(PROTOCOL_TCP);

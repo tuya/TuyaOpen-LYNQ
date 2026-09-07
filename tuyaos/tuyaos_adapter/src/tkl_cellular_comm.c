@@ -33,7 +33,7 @@ OPERATE_RET tkl_cellular_comm_ctrl_at_port(BOOL_T enable)
 }
 
 // 获取RSSI dBm值
-OPERATE_RET tkl_cellular_comm_get_rssi_dBm(UINT8_T sim_id, INT_T *rssi_dBm)
+OPERATE_RET tkl_cellular_comm_get_rssi_dBm(uint8_t sim_id, int *rssi_dBm)
 {
 		if (rssi_dBm == NULL) {
         return OPRT_INVALID_PARM;
@@ -107,7 +107,7 @@ OPERATE_RET tkl_cellular_comm_get_nettype(TUYA_CELLULAR_RAT_E *net_type)
     31 51 dBm or greater
     99 not known or not detectable
 */
-OPERATE_RET tkl_cellular_comm_get_rssi(UINT8_T sim_id, INT_T *rssi)
+OPERATE_RET tkl_cellular_comm_get_rssi(uint8_t sim_id, int *rssi)
 {
     if (rssi == NULL) {
 		LOGE("get rssi failed, invalid param");
@@ -122,37 +122,37 @@ OPERATE_RET tkl_cellular_comm_get_rssi(UINT8_T sim_id, INT_T *rssi)
 		return OPRT_COM_ERROR;
 	}
 
-	*rssi = (INT_T)csq;
+	*rssi = (int)csq;
 
     return OPRT_OK;
 }
 
 // 模组进行自检
-OPERATE_RET tkl_cellular_comm_selfcheck(SELFTEST_TYPE type, VOID *pdata)
+OPERATE_RET tkl_cellular_comm_selfcheck(SELFTEST_TYPE type, void *pdata)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
 // 获取系统的Epoch 时间，单位秒
-OPERATE_RET tkl_cellular_comm_get_epoch_time(INT64_T *epoch_sec)
+OPERATE_RET tkl_cellular_comm_get_epoch_time(int64_t *epoch_sec)
 {
     if (epoch_sec == NULL) {
 		LOGE("get epoch time failed, invalid param");
         return OPRT_INVALID_PARM;
     }
 	
-	*epoch_sec = (INT64_T)ol_time(NULL);
+	*epoch_sec = (int64_t)ol_time(NULL);
     return OPRT_OK;
 }
 
 // 获取本次系统上电后的累计时间，单位ms
-OPERATE_RET tkl_cellular_comm_get_poweron_time(INT64_T *up_ms)
+OPERATE_RET tkl_cellular_comm_get_poweron_time(int64_t *up_ms)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
 // 获取本次系统上电后的累计时间,单位us
-OPERATE_RET tkl_cellular_comm_get_poweron_time_us(INT64_T *up_us)
+OPERATE_RET tkl_cellular_comm_get_poweron_time_us(int64_t *up_us)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -185,7 +185,7 @@ OPERATE_RET tkl_cellular_comm_ctrl_usb(TUYA_CELL_USB_CTRL *ctl)
 }
 
 //根据基站同步的时间，获取时区信息
-OPERATE_RET tkl_cellular_comm_get_timezone(INT_T *timezone)
+OPERATE_RET tkl_cellular_comm_get_timezone(int *timezone)
 {
     if (timezone == NULL) {
 		LOGE("get timezone failed, invalid param");
@@ -205,7 +205,7 @@ OPERATE_RET tkl_cellular_comm_get_timezone(INT_T *timezone)
 }
 
 //获取蜂窝SN号
-OPERATE_RET tkl_cellular_comm_get_sn(UINT8_T sim_id, CHAR_T sn[25])
+OPERATE_RET tkl_cellular_comm_get_sn(uint8_t sim_id, char sn[25])
 {
 	memset(sn, 0, 25);
     BOOL ret = appGetSNNumSync(sn);
@@ -217,36 +217,36 @@ OPERATE_RET tkl_cellular_comm_get_sn(UINT8_T sim_id, CHAR_T sn[25])
 }
 
 //设置蜂窝SN号
-OPERATE_RET tkl_cellular_comm_set_sn(UINT8_T sim_id, CHAR_T sn[25])
+OPERATE_RET tkl_cellular_comm_set_sn(uint8_t sim_id, char sn[25])
 {
 	LOGE("set sn not supported");
     return OPRT_OK;
 }
 
 //获取基础固件的版本号
-OPERATE_RET tkl_cellular_comm_get_sysfw_ver(CHAR_T ver[32])
+OPERATE_RET tkl_cellular_comm_get_sysfw_ver(char ver[32])
 {
-    CHAR_T module[32]={0};
+    char module[32]={0};
     tuya_cniot_get_sysfw_info(module, ver);
 
     return OPRT_OK;
 }
 
 //获取模组型号
-OPERATE_RET tkl_cellular_comm_get_module(CHAR_T module[32])
+OPERATE_RET tkl_cellular_comm_get_module(char module[32])
 {
     strncpy(module, "L511-Y7", 10);
     return OPRT_OK;
 }
 
 //平台支持的系统备份功能
-OPERATE_RET tkl_cellular_comm_sysbackup(VOID)
+OPERATE_RET tkl_cellular_comm_sysbackup(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
 //设置PLMN
-OPERATE_RET tkl_cellular_comm_set_plmn(CHAR_T *plmn)
+OPERATE_RET tkl_cellular_comm_set_plmn(char *plmn)
 {
     if (plmn == NULL) {
 		LOGE("set plmn failed, invalid param");
@@ -267,7 +267,7 @@ OPERATE_RET tkl_cellular_comm_set_virtual_at_recv_cb(TKL_VIRTAT_RESP resp_callba
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_cellular_comm_send_virtual_at(CHAR_T *at_cmd)
+OPERATE_RET tkl_cellular_comm_send_virtual_at(char *at_cmd)
 {
 	char buf[1024] = {0};
 	int ret = ol_at_send_wait_resp(at_cmd, 60, buf, 1024);

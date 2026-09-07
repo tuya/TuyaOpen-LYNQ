@@ -7,12 +7,12 @@ void tkl_pm_init(void)
 {
 }
 
-TUYA_PM_DEV_DESC_T *tkl_pm_get_dev_info(CONST CHAR_T *devname)
+TUYA_PM_DEV_DESC_T *tkl_pm_get_dev_info(const char *devname)
 {
     return NULL;
 }
 
-OPERATE_RET tkl_pm_dev_unregistor(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_dev_unregistor(const char *devname)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -22,27 +22,27 @@ TUYA_PM_DEV_DESC_T *tkl_pm_get_dev_list_head(void)
     return NULL;
 }
 
-OPERATE_RET tkl_pm_set_voltage(CONST CHAR_T *devname, INT_T mV)
+OPERATE_RET tkl_pm_set_voltage(const char *devname, int mV)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_pm_get_voltage(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_get_voltage(const char *devname)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_pm_set_current(CONST CHAR_T *devname,INT_T mA)
+OPERATE_RET tkl_pm_set_current(const char *devname,int mA)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_pm_get_current(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_get_current(const char *devname)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_pm_enable(CONST CHAR_T *devname,INT_T lp_en)
+OPERATE_RET tkl_pm_enable(const char *devname,int lp_en)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -54,7 +54,7 @@ OPERATE_RET tkl_pm_enable(CONST CHAR_T *devname,INT_T lp_en)
  *
  * @return 0 设置成功 其它 设置失败
  */
-OPERATE_RET tkl_pm_disable(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_disable(const char *devname)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -66,7 +66,7 @@ OPERATE_RET tkl_pm_disable(CONST CHAR_T *devname)
  *
  * @return 1 打开；0 关闭
  */
-OPERATE_RET tkl_pm_is_enable(CONST CHAR_T *devname,BOOL_T *status)
+OPERATE_RET tkl_pm_is_enable(const char *devname,BOOL_T *status)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -79,7 +79,7 @@ OPERATE_RET tkl_pm_is_enable(CONST CHAR_T *devname,BOOL_T *status)
  * @return 1 打开；0 关闭
  */
 extern void ol_power_off(void);
-OPERATE_RET tkl_pm_power_off(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_power_off(const char *devname)
 {
     if (!strcmp(devname,"SYS_DEV")) {
         ol_power_off();
@@ -96,7 +96,7 @@ OPERATE_RET tkl_pm_power_off(CONST CHAR_T *devname)
  * @return 0 设置成功 其它 设置失败
  */
 extern void ol_power_reset(void);
-OPERATE_RET tkl_pm_reset(CONST CHAR_T *devname)
+OPERATE_RET tkl_pm_reset(const char *devname)
 {
     if (!strcmp(devname,"SYS_DEV")) {
         ol_power_reset();
@@ -188,7 +188,7 @@ static int tuya_net_mode_led_srv_deinit(void)
  * @param param    输入参数指针
  * @return 0 设置成功 其它 设置失败
  */
-OPERATE_RET tkl_pm_ioctl(CONST CHAR_T *devname, INT_T ctl_cmd, void *param)
+OPERATE_RET tkl_pm_ioctl(const char *devname, int ctl_cmd, void *param)
 {
     if(!strcasecmp(devname, "net_mode")) {
         if (IOCTRL_CMD_SET == ctl_cmd) {

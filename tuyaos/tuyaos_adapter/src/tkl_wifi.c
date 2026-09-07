@@ -10,7 +10,7 @@
  * @param[in]       chan        the channel to set
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_cur_channel(CONST UCHAR_T chan)
+OPERATE_RET tkl_wifi_set_cur_channel(const uint8_t chan)
 {
     // Set chan when current channel and the requested channel are not equal
     return OPRT_OK;
@@ -22,7 +22,7 @@ OPERATE_RET tkl_wifi_set_cur_channel(CONST UCHAR_T chan)
  * @param[out]      chan        the channel wifi works
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_get_cur_channel(UCHAR_T* chan)
+OPERATE_RET tkl_wifi_get_cur_channel(uint8_t* chan)
 {
     return OPRT_OK;
 }
@@ -37,7 +37,7 @@ OPERATE_RET tkl_wifi_get_cur_channel(UCHAR_T* chan)
  * @param[in]       cb          notify callback
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_sniffer(CONST BOOL_T en, CONST SNIFFER_CALLBACK cb)
+OPERATE_RET tkl_wifi_set_sniffer(const BOOL_T en, const SNIFFER_CALLBACK cb)
 {
     return OPRT_OK;
 }
@@ -68,7 +68,7 @@ int tkl_wifi_get_mac(const WF_IF_E wf, NW_MAC_S* mac)
  * @param[in]       mac         the mac info
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_mac(CONST WF_IF_E wf, CONST NW_MAC_S* mac)
+OPERATE_RET tkl_wifi_set_mac(const WF_IF_E wf, const NW_MAC_S* mac)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -79,7 +79,7 @@ OPERATE_RET tkl_wifi_set_mac(CONST WF_IF_E wf, CONST NW_MAC_S* mac)
  * @param[in]       mode        wifi work mode
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_work_mode(CONST WF_WK_MD_E mode)
+OPERATE_RET tkl_wifi_set_work_mode(const WF_WK_MD_E mode)
 {
     return OPRT_OK;
 }
@@ -101,7 +101,7 @@ OPERATE_RET tkl_wifi_get_work_mode(WF_WK_MD_E* mode)
  * @param[in]       ccode  country code
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_set_country_code(CONST COUNTRY_CODE_E ccode)
+OPERATE_RET tkl_wifi_set_country_code(const COUNTRY_CODE_E ccode)
 {
     return OPRT_OK;
 }
@@ -113,7 +113,7 @@ OPERATE_RET tkl_wifi_set_country_code(CONST COUNTRY_CODE_E ccode)
  * @param[in]       len         length of buffer
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_send_mgnt(CONST UCHAR_T* buf, CONST UINT_T len)
+OPERATE_RET tkl_wifi_send_mgnt(const uint8_t* buf, const uint32_t len)
 {
     return OPRT_OK;
 }
@@ -125,8 +125,8 @@ OPERATE_RET tkl_wifi_send_mgnt(CONST UCHAR_T* buf, CONST UINT_T len)
  * @param[in]       recv_cb     receive callback
  * @return  OPRT_OK: success  Other: fail
  */
-OPERATE_RET tkl_wifi_register_recv_mgnt_callback(CONST BOOL_T enable,
-        CONST WIFI_REV_MGNT_CB recv_cb)
+OPERATE_RET tkl_wifi_register_recv_mgnt_callback(const BOOL_T enable,
+        const WIFI_REV_MGNT_CB recv_cb)
 {
     return OPRT_OK;
 }
@@ -149,7 +149,7 @@ int tkl_wifi_set_lp_mode(const BOOL_T en, const unsigned char dtim)
  * @param[in]       none
  * @return  true: rf param exist  Other: fail
  */
-BOOL_T tkl_wifi_set_rf_calibrated(VOID_T)
+BOOL_T tkl_wifi_set_rf_calibrated(void)
 {
     return OPRT_OK;
 }
@@ -170,12 +170,12 @@ int tkl_wifi_get_bssid(unsigned char* mac)
     return 0;
 }
 
-OPERATE_RET tkl_wifi_station_connect(CONST SCHAR_T* ssid, CONST SCHAR_T* passwd)
+OPERATE_RET tkl_wifi_station_connect(const int8_t* ssid, const int8_t* passwd)
 {
     return 0;
 }
 
-OPERATE_RET tkl_wifi_station_disconnect(VOID_T)
+OPERATE_RET tkl_wifi_station_disconnect(void)
 {
     return 0;
 }
@@ -204,7 +204,7 @@ static bool is_bssid_valid_for_location(const uint8_t *m) {
     return true;
 }
 
-OPERATE_RET tkl_wifi_all_ap_scan(AP_IF_S** ap_ary, UINT_T* num)
+OPERATE_RET tkl_wifi_all_ap_scan(AP_IF_S** ap_ary, uint32_t* num)
 {
 	SetWifiScanParams wifiscanreq = {0};
     GetWifiScanInfo *pWifiScanInfo = NULL;
@@ -293,7 +293,7 @@ EXIT:
     return ret;
 }
 
-OPERATE_RET tkl_wifi_get_ip(CONST WF_IF_E wf, NW_IP_S* ip)
+OPERATE_RET tkl_wifi_get_ip(const WF_IF_E wf, NW_IP_S* ip)
 {
     return 0;
 }
@@ -303,12 +303,12 @@ OPERATE_RET tkl_wifi_release_ap(AP_IF_S* ap)
     return 0;
 }
 
-OPERATE_RET tkl_wifi_start_ap(CONST WF_AP_CFG_IF_S* cfg)
+OPERATE_RET tkl_wifi_start_ap(const WF_AP_CFG_IF_S* cfg)
 {
     return 0;
 }
 
-OPERATE_RET tkl_wifi_stop_ap(VOID_T)
+OPERATE_RET tkl_wifi_stop_ap(void)
 {
     return 0;
 }
@@ -319,18 +319,18 @@ OPERATE_RET tkl_wifi_get_connected_ap_info(FAST_WF_CONNECTED_AP_INFO_T**
     return 0;
 }
 
-OPERATE_RET tkl_wifi_scan_ap(CONST SCHAR_T* ssid, AP_IF_S** ap_ary, UINT_T* num)
+OPERATE_RET tkl_wifi_scan_ap(const int8_t* ssid, AP_IF_S** ap_ary, uint32_t* num)
 {
 	LOGI("tkl_wifi_scan_ap call");
     return tkl_wifi_all_ap_scan(ap_ary, num);
 }
 
-OPERATE_RET tkl_wifi_station_get_conn_ap_rssi(SCHAR_T* rssi)
+OPERATE_RET tkl_wifi_station_get_conn_ap_rssi(int8_t* rssi)
 {
     return 0;
 }
 
-OPERATE_RET tkl_wifi_station_fast_connect(CONST FAST_WF_CONNECTED_AP_INFO_T*
+OPERATE_RET tkl_wifi_station_fast_connect(const FAST_WF_CONNECTED_AP_INFO_T*
         fast_ap_info)
 {
     return 0;

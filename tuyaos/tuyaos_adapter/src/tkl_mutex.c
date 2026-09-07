@@ -49,7 +49,7 @@ OPERATE_RET tkl_mutex_create_init(TKL_MUTEX_HANDLE* pMutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_lock(CONST TKL_MUTEX_HANDLE mutexHandle)
+OPERATE_RET tkl_mutex_lock(const TKL_MUTEX_HANDLE mutexHandle)
 {	
 	if (!mutexHandle) {
 		LOGE("mutex lock failed, invalid param");
@@ -75,7 +75,7 @@ OPERATE_RET tkl_mutex_lock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_unlock(CONST TKL_MUTEX_HANDLE mutexHandle)
+OPERATE_RET tkl_mutex_unlock(const TKL_MUTEX_HANDLE mutexHandle)
 {	
 	if (!mutexHandle) {
 		LOGE("mutex unlock failed, invalid param");
@@ -101,7 +101,7 @@ OPERATE_RET tkl_mutex_unlock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_trylock(CONST TKL_MUTEX_HANDLE mutexHandle)
+OPERATE_RET tkl_mutex_trylock(const TKL_MUTEX_HANDLE mutexHandle)
 {	
 	if (!mutexHandle) {
 		LOGE("mutex try lock failed, invalid param");
@@ -127,7 +127,7 @@ OPERATE_RET tkl_mutex_trylock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_release(CONST TKL_MUTEX_HANDLE mutexHandle)
+OPERATE_RET tkl_mutex_release(const TKL_MUTEX_HANDLE mutexHandle)
 {	
 	if (!mutexHandle) {
 		LOGE("mutex release failed, invalid param");

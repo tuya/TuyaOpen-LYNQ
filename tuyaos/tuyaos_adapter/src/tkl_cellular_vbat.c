@@ -9,7 +9,7 @@
  *
  * @return OPRT_OK 获取成功 其它 获取失败
  */
-OPERATE_RET tkl_cellular_vbat_get_rsoc(UINT8_T* rsoc)
+OPERATE_RET tkl_cellular_vbat_get_rsoc(uint8_t* rsoc)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -21,7 +21,7 @@ OPERATE_RET tkl_cellular_vbat_get_rsoc(UINT8_T* rsoc)
  *
  * @return OPRT_OK 获取成功 其它 获取失败
  */
-OPERATE_RET tkl_cellular_vbat_get_voltage(UINT_T* voltage)
+OPERATE_RET tkl_cellular_vbat_get_voltage(uint32_t* voltage)
 {
     int ret = ol_adc_get_vol(OL_ADC_VBAT) / 1000;
     if (ret < 0) {
@@ -53,7 +53,7 @@ OPERATE_RET tkl_cellular_vbat_ntc_enable(BOOL_T enable)
  *
  * @return OPRT_OK 设置成功 其它 设置失败
  */
-OPERATE_RET tkl_cellular_vbat_set_charge_current(UINT_T current)
+OPERATE_RET tkl_cellular_vbat_set_charge_current(uint32_t current)
 {
     LOGE("set charge current not support");
     return OPRT_NOT_SUPPORTED;
@@ -66,7 +66,7 @@ OPERATE_RET tkl_cellular_vbat_set_charge_current(UINT_T current)
  *
  * @return 充电器状态，查看 @TKL_CELLULAR_VBAT_CHG_STATE_E定义
  */
-TKL_CELLULAR_VBAT_CHG_STATE_E tkl_cellular_vbat_get_charger_state(VOID)
+TKL_CELLULAR_VBAT_CHG_STATE_E tkl_cellular_vbat_get_charger_state(void)
 {
     return OPRT_NOT_SUPPORTED;
 }

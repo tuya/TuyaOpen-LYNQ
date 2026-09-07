@@ -75,7 +75,7 @@ static int codec_get_micvolume(int *vol)
 }
 
 // 设置speak音量，范围0~100
-OPERATE_RET codec_volume_set(VOLUME_TYPE_E type, INT_T vol)
+OPERATE_RET codec_volume_set(VOLUME_TYPE_E type, int vol)
 {
     if (vol < 0 || vol > 100 || type >= VOLUME_TYPE_MAX) {
         return OPRT_INVALID_PARM;
@@ -95,7 +95,7 @@ OPERATE_RET codec_volume_set(VOLUME_TYPE_E type, INT_T vol)
 }
 
 // 获取speak音量，范围0~100
-OPERATE_RET codec_volume_get(VOLUME_TYPE_E type, INT_T *vol)
+OPERATE_RET codec_volume_get(VOLUME_TYPE_E type, int *vol)
 {
     if (vol == NULL || type >= VOLUME_TYPE_MAX) {
         return OPRT_INVALID_PARM;
@@ -118,7 +118,7 @@ OPERATE_RET codec_volume_get(VOLUME_TYPE_E type, INT_T *vol)
             volume_controls[VOLUME_TYPE_TONE].volume = (uint8_t)current_vol;
     }
 
-    *vol = (INT_T)volume_controls[type].volume;
+    *vol = (int)volume_controls[type].volume;
     return OPRT_OK;
 }
 
@@ -152,7 +152,7 @@ OPERATE_RET codec_volume_get_mute(VOLUME_TYPE_E type, BOOL_T *mute)
 }
 
 // 设置麦克风音量，范围0~100
-OPERATE_RET codec_mic_set_volume(MIC_TYPE_E type, INT_T vol)
+OPERATE_RET codec_mic_set_volume(MIC_TYPE_E type, int vol)
 {
     if (vol < 0 || vol > 100 || type >= MIC_TYPE_MAX) {
         return OPRT_INVALID_PARM;
@@ -180,7 +180,7 @@ OPERATE_RET codec_mic_set_volume(MIC_TYPE_E type, INT_T vol)
 }
 
 // 获取麦克风音量，范围0~100
-OPERATE_RET codec_mic_get_volume(MIC_TYPE_E type, INT_T *vol)
+OPERATE_RET codec_mic_get_volume(MIC_TYPE_E type, int *vol)
 {
     if (vol == NULL || type >= MIC_TYPE_MAX) {
         return OPRT_INVALID_PARM;
@@ -201,7 +201,7 @@ OPERATE_RET codec_mic_get_volume(MIC_TYPE_E type, INT_T *vol)
             mic_controls[MIC_TYPE_CALL].volume = current_vol;
     }
 
-    *vol = (INT_T)mic_controls[type].volume;
+    *vol = (int)mic_controls[type].volume;
     return OPRT_OK;
 }
 

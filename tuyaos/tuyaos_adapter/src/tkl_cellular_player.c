@@ -24,8 +24,8 @@
  */
 OPERATE_RET tkl_cellular_player_start(TKL_AUDIO_PLAYER_TYPE_E type,
                                       TKL_AUDIO_STREAM_FORMAT_E format,
-                                      PCHAR_T file_path,
-                                      TKL_AUDIO_PLAYER_CB cb, PVOID_T cb_ctx)
+                                      char * file_path,
+                                      TKL_AUDIO_PLAYER_CB cb, void * cb_ctx)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -35,7 +35,7 @@ OPERATE_RET tkl_cellular_player_start(TKL_AUDIO_PLAYER_TYPE_E type,
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_pause(VOID)
+OPERATE_RET tkl_cellular_player_pause(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -45,7 +45,7 @@ OPERATE_RET tkl_cellular_player_pause(VOID)
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_resume(VOID)
+OPERATE_RET tkl_cellular_player_resume(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -55,7 +55,7 @@ OPERATE_RET tkl_cellular_player_resume(VOID)
  * @param 无
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_stop(VOID)
+OPERATE_RET tkl_cellular_player_stop(void)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -65,7 +65,7 @@ OPERATE_RET tkl_cellular_player_stop(VOID)
  * @param vol （0~100）
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_set_vol(INT_T vol)
+OPERATE_RET tkl_cellular_player_set_vol(int vol)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -75,7 +75,7 @@ OPERATE_RET tkl_cellular_player_set_vol(INT_T vol)
  * @param vol （0~100）
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_get_vol(PINT_T vol)
+OPERATE_RET tkl_cellular_player_get_vol(int * vol)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -116,8 +116,8 @@ OPERATE_RET tkl_cellular_player_get_mute(PBOOL_T mute)
 
 OPERATE_RET tkl_cellular_player_mem_start(TKL_AUDIO_PLAYER_TYPE_E type,
                                           TKL_AUDIO_STREAM_FORMAT_E format,
-                                          PBYTE_T buff, UINT_T size,
-                                          TKL_AUDIO_PLAYER_CB cb, PVOID_T cb_ctx)
+                                          uint8_t * buff, uint32_t size,
+                                          TKL_AUDIO_PLAYER_CB cb, void * cb_ctx)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -187,9 +187,9 @@ OPERATE_RET tkl_cellular_player_get_status(TKL_AUDIO_PLAYER_STATUS_E* status)
  * @return 0 成功，其他失败
  */
 OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
-        CONST TKL_AUDIO_PLAY_OPS_T* playOps,
-        PVOID_T playCtx,
-        CONST TKL_AUDIO_FRAME_T* frame)
+        const TKL_AUDIO_PLAY_OPS_T* playOps,
+        void * playCtx,
+        const TKL_AUDIO_FRAME_T* frame)
 {
     LOGE("tkl_cellular_player_start_stream not support!");
     return OPRT_NOT_SUPPORTED;
@@ -200,7 +200,7 @@ OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
  *
  * @return 0 成功，其他失败
  */
-OPERATE_RET tkl_cellular_player_stop_stream(VOID)
+OPERATE_RET tkl_cellular_player_stop_stream(void)
 {
     LOGE("tkl_cellular_player_stop_stream not support!");
     return OPRT_NOT_SUPPORTED;

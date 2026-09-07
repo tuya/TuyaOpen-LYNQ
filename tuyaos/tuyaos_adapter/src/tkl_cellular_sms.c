@@ -64,7 +64,7 @@ static int gsm_7bit_pack(const uint8_t *septets, unsigned int n_septets, uint8_t
  * @param[out] num_digits_out TP-DA length in digits (excluding skipped non-digits)
  * @return number of BCD octets written, 0 on error
  */
-static size_t sms_phone_to_bcd(const CHAR_T *phone, uint8_t *bcd, size_t bcd_cap, uint8_t *ton_out,
+static size_t sms_phone_to_bcd(const char *phone, uint8_t *bcd, size_t bcd_cap, uint8_t *ton_out,
     uint8_t *num_digits_out)
 {
     char digits[TUYA_SMS_PHONENUM_LEN_MAX];
@@ -161,7 +161,7 @@ static OPERATE_RET encode_pdu_msg(TUYA_CELLULAR_SMS_SEND_T *sms_msg, uint8_t *pd
 
     if (sms_msg->sms_encode != to_chset) {
         int out_bytes = 0;
-        VOID *converted = mlConvertStr(sms_msg->msg, (int)sms_msg->msg_len, sms_msg->sms_encode, to_chset, &out_bytes);
+        void *converted = mlConvertStr(sms_msg->msg, (int)sms_msg->msg_len, sms_msg->sms_encode, to_chset, &out_bytes);
         if (converted != NULL) {
             size_t msg_cap = sizeof(sms_msg->msg);
 
@@ -281,7 +281,7 @@ static OPERATE_RET encode_pdu_msg(TUYA_CELLULAR_SMS_SEND_T *sms_msg, uint8_t *pd
  *
  * @return  0 发送成功 其它 发送失败
  */
-OPERATE_RET tkl_cellular_sms_send(UINT8_T sim_id, TUYA_CELLULAR_SMS_SEND_T* sms_msg)
+OPERATE_RET tkl_cellular_sms_send(uint8_t sim_id, TUYA_CELLULAR_SMS_SEND_T* sms_msg)
 {
     if(NULL == sms_msg || NULL == sms_msg->phone || NULL == sms_msg->msg || sms_msg->msg_len == 0) {
         return OPRT_INVALID_PARM;
@@ -366,7 +366,7 @@ OPERATE_RET tkl_cellular_sms_mute(BOOL_T mute)
  *      - NULL: invalid parameters
  *      - output string
  */
-VOID *tkl_cellular_sms_convert_str(CONST VOID *from, INT_T from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, INT_T *to_size)
+void *tkl_cellular_sms_convert_str(const void *from, int from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, int *to_size)
 {
     return NULL;
 }
@@ -390,7 +390,7 @@ TUYA_CELLULAR_SMS_ENCODE_E tkl_cellular_sms_get_charactor(void)
 }
 
 
-static void decode_msg(UINT8_T* buf, UINT8_T* data, UINT32_T* data_len)
+static void decode_msg(uint8_t* buf, uint8_t* data, uint32_t* data_len)
 {
 	*data_len = buf[0];
 	memcpy(data, &(buf[1]), *data_len);
