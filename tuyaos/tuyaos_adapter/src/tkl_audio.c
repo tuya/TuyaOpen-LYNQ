@@ -321,13 +321,14 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, INT32_T count, VOID **handl
     if(pconfig->codectype != TKL_CODEC_AUDIO_PCM) {                                                                                                     
         return OPRT_NOT_SUPPORTED;
     }
-    if(pconfig->sample != TKL_AUDIO_SAMPLE_8K && pconfig->sample != TKL_AUDIO_SAMPLE_16K) {
+    TKL_AUDIO_SAMPLE_E spk_sample = pconfig->spk_sample ? pconfig->spk_sample : pconfig->sample;
+    if(spk_sample != TKL_AUDIO_SAMPLE_8K && spk_sample != TKL_AUDIO_SAMPLE_16K) {
         return OPRT_NOT_SUPPORTED;
     }
 
     memset(&tkl_ao_params, 0, sizeof(tkl_ao_params));
     tkl_ao_params.field.bitWidth = 0;                   //默认16bit
-    tkl_ao_params.field.samplerate = pconfig->sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;                  
+    tkl_ao_params.field.samplerate = spk_sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;
     tkl_ao_params.field.envType = MED_DATA_ENV_TYPE_LOCAL;
 
     AUDIO_MUTEX_LOCK_INIT();
@@ -484,6 +485,38 @@ OPERATE_RET tkl_ao_stop(INT32_T card, TKL_AO_CHN_E chn, VOID *handle)
 #endif
     tkl_ao_state = 0;
     LOGI("tkl_ao_stop %d", tkl_ao_state);
+    return OPRT_OK;
+}
+
+/**
+* @brief ao clear buffer
+*
+* Throw away what is still queued, instead of playing it out: this is the
+* interrupt path (TuyaOpen's TDD_AUDIO_CMD_PLAY_STOP), the opposite of
+* tkl_ao_stop, which deliberately waits for the cache to drain. Playback stays
+* started -- medDataHandleStop keeps the ring buffer, and the next
+* tkl_ao_put_frame restarts the data handle.
+*
+* @param[in] card: card number
+* @param[in] chn: channel number
+*
+* @return OPRT_OK on success. Others on error, please refer to tkl_error_code.h
+*/
+OPERATE_RET tkl_ao_clear_buffer(INT32_T card, TKL_AO_CHN_E chn)
+{
+    if (!tkl_ao_state) {
+        return OPRT_OK;
+    }
+#if AUDIO_PLAY_ORIGINAL_MODE_ENABLE
+    audPcmPlayStop();
+#else
+    AUDIO_MUTEX_LOCK();
+    if (medDataHandleStateGet() == MED_DATA_HDL_STA_START) {
+        medDataHandleStop();
+    }
+    AUDIO_MUTEX_UNLOCK();
+#endif
+    LOGI("tkl_ao_clear_buffer");
     return OPRT_OK;
 }
 

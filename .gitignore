@@ -2,5 +2,7 @@ PLAT/gccout/
 PLAT/L511G_Y7PVM_download/
 PLAT/L511G_Y7PM_download/
 PLAT/middleware/developed/build_config.inc
+PLAT/middleware/developed/debug/inc/dbversion.h
+PLAT/middleware/developed/debug/inc/debug_log_ap.h
 PLAT/tools/comdb_cust_lib.txt
 __pycache__/
