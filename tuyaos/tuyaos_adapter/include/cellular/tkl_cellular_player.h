@@ -265,9 +265,9 @@ OPERATE_RET tkl_cellular_player_get_status(TKL_AUDIO_PLAYER_STATUS_E *status);
  * @return OPRT_OK on success. Others on error.
  */
 OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
-                                             CONST TKL_AUDIO_PLAY_OPS_T *playOps,
+                                             const TKL_AUDIO_PLAY_OPS_T *playOps,
                                              void * playCtx,
-                                             CONST TKL_AUDIO_FRAME_T *frame);
+                                             const TKL_AUDIO_FRAME_T *frame);
 
 /**
  * @brief stop the stream being played

@@ -64,8 +64,8 @@ TKL_MDS_NOTIFY gMdsNotify = NULL;
 BOOL_T gPdpAutoReactive = TRUE;
 static osMessageQueueId_t gPdpQueue;
 TUYA_CELLULAR_MDS_NET_STATUS_E gMdsNetStatus[MAX_CID];
-STATIC profile_t gProfile[MAX_CID] = {0};
-STATIC cid_status_e cid_status[MAX_CID] = {0};
+static profile_t gProfile[MAX_CID] = {0};
+static cid_status_e cid_status[MAX_CID] = {0};
 extern TKL_SIM_STATE_E gSimStatus;
 
 extern TUYA_CELLULAR_MDS_STATUS_E get_reg_status(void);

@@ -20,11 +20,11 @@
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
 OPERATE_RET tkl_thread_create(TKL_THREAD_HANDLE* thread,
-                              CONST char* name,
+                              const char* name,
                               uint32_t stack_size,
                               uint32_t priority,
-                              CONST THREAD_FUNC_T func,
-                              void* CONST arg)
+                              const THREAD_FUNC_T func,
+                              void* const arg)
 {	
 	osThreadAttr_t attr;
 	memset(&attr, 0, sizeof(attr));
@@ -52,11 +52,11 @@ OPERATE_RET tkl_thread_create(TKL_THREAD_HANDLE* thread,
 }
 
 OPERATE_RET tkl_thread_create_in_psram(TKL_THREAD_HANDLE* thread,
-                              CONST char* name,
+                              const char* name,
                               uint32_t stack_size,
                               uint32_t priority,
-                              CONST THREAD_FUNC_T func,
-                              void* CONST arg)
+                              const THREAD_FUNC_T func,
+                              void* const arg)
 {
     return tkl_thread_create(thread, name, stack_size, priority, func, arg);
 }
@@ -70,7 +70,7 @@ OPERATE_RET tkl_thread_create_in_psram(TKL_THREAD_HANDLE* thread,
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_release(CONST TKL_THREAD_HANDLE thread)
+OPERATE_RET tkl_thread_release(const TKL_THREAD_HANDLE thread)
 {
     osStatus_t status = osThreadTerminate(thread);
 	if (osOK != status) {
@@ -91,7 +91,7 @@ OPERATE_RET tkl_thread_release(CONST TKL_THREAD_HANDLE thread)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_get_watermark(CONST TKL_THREAD_HANDLE thread, uint32_t* watermark)
+OPERATE_RET tkl_thread_get_watermark(const TKL_THREAD_HANDLE thread, uint32_t* watermark)
 {
     *watermark = osThreadGetStackSpace(thread);
     return OPRT_OK;
@@ -125,7 +125,7 @@ OPERATE_RET tkl_thread_get_id(TKL_THREAD_HANDLE *thread)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_thread_set_self_name(CONST char* name)
+OPERATE_RET tkl_thread_set_self_name(const char* name)
 {
 	LOGE("thread set self name not support, name: %s", name);
     return OPRT_NOT_SUPPORTED;

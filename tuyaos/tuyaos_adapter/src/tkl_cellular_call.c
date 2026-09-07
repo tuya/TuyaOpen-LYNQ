@@ -306,7 +306,7 @@ OPERATE_RET tkl_cellular_call_get_mic_gain(int *gain)
     return codec_mic_get_volume(MIC_TYPE_CALL, gain);
 }
 
-OPERATE_RET tkl_cellular_ctrl_call_sideton_gain(BOOL_T set,INOUT int *gain)
+OPERATE_RET tkl_cellular_ctrl_call_sideton_gain(BOOL_T set, int *gain)
 {
     return OPRT_NOT_SUPPORTED;
 }

@@ -187,9 +187,9 @@ OPERATE_RET tkl_cellular_player_get_status(TKL_AUDIO_PLAYER_STATUS_E* status)
  * @return 0 成功，其他失败
  */
 OPERATE_RET tkl_cellular_player_start_stream(TKL_AUDIO_PLAYER_TYPE_E type,
-        CONST TKL_AUDIO_PLAY_OPS_T* playOps,
+        const TKL_AUDIO_PLAY_OPS_T* playOps,
         void * playCtx,
-        CONST TKL_AUDIO_FRAME_T* frame)
+        const TKL_AUDIO_FRAME_T* frame)
 {
     LOGE("tkl_cellular_player_start_stream not support!");
     return OPRT_NOT_SUPPORTED;

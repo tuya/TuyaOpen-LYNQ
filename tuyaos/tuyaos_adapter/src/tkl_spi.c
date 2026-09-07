@@ -66,7 +66,7 @@ static void spi1_event_cb(uint32_t event)
     }
 }
 
-OPERATE_RET tkl_spi_init(TUYA_SPI_NUM_E port, CONST TUYA_SPI_BASE_CFG_T *cfg)
+OPERATE_RET tkl_spi_init(TUYA_SPI_NUM_E port, const TUYA_SPI_BASE_CFG_T *cfg)
 {
     if (port >= SPI_DEV_NUM || cfg == NULL) {
         return OPRT_INVALID_PARM;

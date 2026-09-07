@@ -62,7 +62,7 @@ OPERATE_RET tkl_flash_read(uint32_t addr, uint8_t *dst, uint32_t size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_flash_write(uint32_t addr, CONST uint8_t *src, uint32_t size)
+OPERATE_RET tkl_flash_write(uint32_t addr, const uint8_t *src, uint32_t size)
 {
     if (!ext_flash_inited) {
         if(tkl_flash_init())

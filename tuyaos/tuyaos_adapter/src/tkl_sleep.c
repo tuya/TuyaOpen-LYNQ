@@ -116,7 +116,7 @@ OPERATE_RET tkl_cpu_sleep_mode_set(BOOL_T enable, TUYA_CPU_SLEEP_MODE_E mode)
  * @param[in] num_ms expected sleep window in milliseconds
  * @return OPRT_NOT_SUPPORTED not supported on this platform
  */
-OPERATE_RET tkl_cpu_sleep_time_set(CONST uint32_t num_ms)
+OPERATE_RET tkl_cpu_sleep_time_set(const uint32_t num_ms)
 {
     (void)num_ms;
     return OPRT_NOT_SUPPORTED;

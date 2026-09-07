@@ -22,8 +22,8 @@
 #define PDP_REACTIVE_TIME_INTERVAL   (10 * 1000 * 1000)  // 10s
 
 static uint8_t simcard_hotplug_enable = 0;          //0: 不开启热插拔  1：开启  2：开启并已识别到插入卡后的电平状态
-STATIC TKL_SIM_NOTIFY gSimNotify = NULL;
-STATIC TKL_REGISTION_NOTIFY gRegNotify = NULL;
+static TKL_SIM_NOTIFY gSimNotify = NULL;
+static TKL_REGISTION_NOTIFY gRegNotify = NULL;
 TKL_SIM_STATE_E gSimStatus = 0xff;
 TUYA_CELLULAR_MDS_STATUS_E gRegStatus = TUYA_CELLULAR_MDS_STATUS_UNKNOWN;
 

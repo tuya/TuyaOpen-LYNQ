@@ -366,7 +366,7 @@ OPERATE_RET tkl_cellular_sms_mute(BOOL_T mute)
  *      - NULL: invalid parameters
  *      - output string
  */
-void *tkl_cellular_sms_convert_str(CONST void *from, int from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, int *to_size)
+void *tkl_cellular_sms_convert_str(const void *from, int from_size, TUYA_CELLULAR_SMS_ENCODE_E from_chset, TUYA_CELLULAR_SMS_ENCODE_E to_chset, int *to_size)
 {
     return NULL;
 }

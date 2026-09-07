@@ -61,7 +61,7 @@ static fs_storage_type_t get_storage_type(const char* path)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_fs_mkdir(CONST char* path)
+int tkl_fs_mkdir(const char* path)
 {
     if(!is_ext_path(path)) {
         return OPRT_OK;
@@ -84,7 +84,7 @@ int tkl_fs_mkdir(CONST char* path)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_fs_remove(CONST char* path)
+int tkl_fs_remove(const char* path)
 {
     if (NULL == path) {
         LOGE("tkl_fs_remove, path null");
@@ -106,7 +106,7 @@ int tkl_fs_remove(CONST char* path)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_fs_mode(CONST char* path, uint32_t* mode)
+int tkl_fs_mode(const char* path, uint32_t* mode)
 {
     LOGD("tkl_fs_mode not support: %s", path);
     return OPRT_NOT_SUPPORTED;
@@ -122,7 +122,7 @@ int tkl_fs_mode(CONST char* path, uint32_t* mode)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_fs_is_exist(CONST char* path, BOOL_T* is_exist)
+int tkl_fs_is_exist(const char* path, BOOL_T* is_exist)
 {
     OLFILE fp = NULL;
 
@@ -153,7 +153,7 @@ int tkl_fs_is_exist(CONST char* path, BOOL_T* is_exist)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_fs_rename(CONST char* path_old, CONST char* path_new)
+int tkl_fs_rename(const char* path_old, const char* path_new)
 {
     return OPRT_NOT_SUPPORTED;
 }
@@ -168,7 +168,7 @@ int tkl_fs_rename(CONST char* path_old, CONST char* path_new)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_dir_open(CONST char* path, TUYA_DIR* dir)
+int tkl_dir_open(const char* path, TUYA_DIR* dir)
 {
     if(dir == NULL) {
         return OPRT_INVALID_PARM;
@@ -271,14 +271,14 @@ int tkl_dir_read(TUYA_DIR dir, TUYA_FILEINFO* info)
 *
 * @return 0 on success. Others on failed
 */
-int tkl_dir_name(TUYA_FILEINFO info, CONST char** name)
+int tkl_dir_name(TUYA_FILEINFO info, const char** name)
 {
     if((info == NULL) || (name == NULL)) {                                                                                                                             
         return OPRT_INVALID_PARM;                                                                                                                                      
     }                                                                                                                                                                  
                                                                                                                                                                        
     struct lfs_info* pinfo = (struct lfs_info*)info;                                                                                                                   
-    *name = (CONST char*)pinfo->name;                                                                                                                              
+    *name = (const char*)pinfo->name;                                                                                                                              
     return OPRT_OK;  
 }
 
@@ -334,7 +334,7 @@ int tkl_dir_is_regular(TUYA_FILEINFO info, BOOL_T* is_regular)
 *
 * @return the file handle, NULL means failed
 */
-TUYA_FILE tkl_fopen(CONST char* path, CONST char* mode)
+TUYA_FILE tkl_fopen(const char* path, const char* mode)
 {
     if (NULL == path) {
         LOGE("tkl_fopen failed, path null");
@@ -499,7 +499,7 @@ int64_t tkl_ftell(TUYA_FILE file)
 *
 * @return the sizeof of file
 */
-int tkl_fgetsize(CONST char* filepath)
+int tkl_fgetsize(const char* filepath)
 {
     TUYA_FILE fp = tkl_fopen(filepath, "r");
     if (!fp) {
@@ -523,7 +523,7 @@ int tkl_fgetsize(CONST char* filepath)
 *
 * @return 0 success,-1 failed
 */
-int tkl_faccess(CONST char* filepath, int mode)
+int tkl_faccess(const char* filepath, int mode)
 {
     BOOL_T exist;
     int ret = tkl_fs_is_exist(filepath, &exist);
@@ -652,7 +652,7 @@ void tkl_ext_fs_list_v2(const char *dirpath)
 {
     TUYA_DIR dir = NULL;
     TUYA_FILEINFO info = NULL;
-    CONST char *name = NULL;
+    const char *name = NULL;
     BOOL_T is_dir = FALSE;
     BOOL_T is_reg = FALSE;
     char path[64];

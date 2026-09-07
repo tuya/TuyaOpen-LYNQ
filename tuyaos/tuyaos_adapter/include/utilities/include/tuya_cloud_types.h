@@ -76,9 +76,9 @@ typedef int bool_t;
 #define BIT(nr) (1UL << (nr))
 #endif
 #define MAKEWORD(a, b) ((uint16_t)(((uint8_t)(a)) | ((uint16_t)((uint8_t)(b))) << 8))
-#define MAKELONG(a, b) ((int32_t)(((uint16_t)(a)) | ((Duint16_t)((uint16_t)(b))) << 16))
+#define MAKELONG(a, b) ((int32_t)(((uint16_t)(a)) | ((uint32_t)((uint16_t)(b))) << 16))
 #define LOWORD(l)      ((uint16_t)(l))
-#define HIWORD(l)      ((uint16_t)(((Duint16_t)(l) >> 16) & 0xFFFF))
+#define HIWORD(l)      ((uint16_t)(((uint32_t)(l) >> 16) & 0xFFFF))
 #define LOBYTE(w)      ((uint8_t)(w))
 #define HIBYTE(w)      ((uint8_t)(((uint16_t)(w) >> 8) & 0xFF))
 
@@ -1731,75 +1731,7 @@ typedef int TUYA_ERRNO;
  * own types header is where they belong. Every one is guarded, and defined
  * exactly as in src/tuya_ai_service/port/include/tuya_ai_types.h, so a
  * translation unit pulling in both sees identical definitions. */
-#ifndef CONST
-#define CONST const
-#endif
 
-#ifndef STATIC
-#define STATIC static
-#endif
-
-#ifndef IN
-#define IN
-#endif
-
-#ifndef OUT
-#define OUT
-#endif
-
-#ifndef INOUT
-#define INOUT
-#endif
-
-// #ifndef TUYAOS_COMPAT_TYPES_DEFINED
-// #define TUYAOS_COMPAT_TYPES_DEFINED
-// typedef long long Dint32_t;
-// typedef Dint32_t *PDint32_t;
-// typedef float FLOAT_T;
-// typedef FLOAT_T *PFLOAT_T;
-// typedef signed int INT_T;
-// typedef int *PINT_T;
-// typedef void *PVOID_T;
-// typedef char CHAR_T;
-// typedef char *PCHAR_T;
-// typedef signed char SCHAR_T;
-// typedef unsigned char UCHAR_T;
-// typedef short SHORT_T;
-// typedef unsigned short USHORT_T;
-// typedef short *PSHORT_T;
-// typedef long int32_t;
-// typedef unsigned long Uint32_t;
-// typedef long *Pint32_t;
-// typedef unsigned char BYTE_T;
-// typedef BYTE_T *PBYTE_T;
-// typedef uint32_t UINT_T;
-// typedef uint32_t *PUINT_T;
-// typedef int64_t INT64_T;
-// typedef INT64_T *PINT64_T;
-// typedef uint64_t UINT64_T;
-// typedef UINT64_T *PUINT64_T;
-// typedef uint32_t UINT32_T;
-// typedef uint32_t *PUINT32_T;
-// /* int32_t is long int in this toolchain's stdint.h, so alias the stdint
-//  * types rather than the plain int the OEM sources would otherwise clash
-//  * with. */
-// typedef int32_t INT32_T;
-// typedef int32_t *PINT32_T;
-// typedef short INT16_T;
-// typedef INT16_T *PINT16_T;
-// typedef unsigned short UINT16_T;
-// typedef UINT16_T *PUINT16_T;
-// typedef signed char INT8_T;
-// typedef INT8_T *PINT8_T;
-// typedef unsigned char UINT8_T;
-// typedef UINT8_T *PUINT8_T;
-// typedef double DOUBLE_T;
-// typedef unsigned short uint16_t;
-// typedef uint16_t *Puint16_t;
-// typedef unsigned int Duint16_t;
-// typedef Duint16_t *PDuint16_t;
-// typedef size_t SIZE_T;
-// #endif /* TUYAOS_COMPAT_TYPES_DEFINED */
 
 
 /* CELLULAR */
