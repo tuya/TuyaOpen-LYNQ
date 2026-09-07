@@ -1,0 +1,10 @@
+#ifndef _DB_VERSION_H
+#define _DB_VERSION_H
+
+/*
+ * Bootstrap header used before LogPrePass generates the real dbversion.h.
+ * The generated file is copied over this file by the build-unilog target.
+ */
+#define DB_VERSION_UNIQ_ID "0x00000000"
+
+#endif /* _DB_VERSION_H */
