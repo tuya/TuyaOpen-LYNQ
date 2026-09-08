@@ -17,6 +17,7 @@ The vendor makefiles pick TuyaOpen up through three environment variables --
 TUYA_LIB_DIR, TUYA_LIBS and TUYA_APP_KCONFIG_DIR -- exported below.
 '''
 
+import errno
 import json
 import os
 import shutil
@@ -63,6 +64,48 @@ def run_vendor_script(variant, args, env):
     print(f"Run [{' '.join(cmd)}] in {PLAT_ROOT}")
     return subprocess.run(cmd, cwd=PLAT_ROOT, env=env).returncode
 
+
+def check_fcelf_runnable():
+    """Check that the vendor packager can be loaded on this host."""
+    fcelf = os.path.join(PLAT_ROOT, "tools", "fcelf")
+    if not os.path.isfile(fcelf):
+        print(f"Error: L511G packaging tool is missing: {fcelf}")
+        return False
+    if not os.access(fcelf, os.X_OK):
+        print(f"Error: L511G packaging tool is not executable: {fcelf}")
+        print(f"Run: chmod +x {fcelf}")
+        return False
+
+    try:
+        # fcelf has no help option and returns non-zero for it. Use it only to
+        # test whether Linux can load the executable and its dependencies.
+        result = subprocess.run([fcelf, "--help"], stdin=subprocess.DEVNULL,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+                                text=True, timeout=5, check=False)
+    except OSError as exc:
+        if exc.errno == errno.ENOENT:
+            print(f"Error: L511G packaging tool exists but cannot be loaded: {fcelf}")
+            print("The required 32-bit ELF loader (/lib/ld-linux.so.2) is missing.")
+            print("On Debian/Ubuntu run: sudo apt-get install -y libc6-i386")
+        elif exc.errno == errno.EACCES:
+            print(f"Error: cannot execute L511G packaging tool: {fcelf} ({exc})")
+        else:
+            print(f"Error: cannot start L511G packaging tool {fcelf}: {exc}")
+        return False
+    except subprocess.TimeoutExpired:
+        print(f"Error: L511G packaging tool did not respond: {fcelf}")
+        return False
+
+    if "error while loading shared libraries:" in result.stderr:
+        print(f"Error: L511G packaging tool is missing a shared library: {fcelf}")
+        print(result.stderr.strip())
+        print("On Debian/Ubuntu run:")
+        print("  sudo dpkg --add-architecture i386")
+        print("  sudo apt-get update")
+        print("  sudo apt-get install -y libc6-i386 libstdc++6:i386")
+        return False
+
+    return True
 
 def download_dir(variant):
     return os.path.join(PLAT_ROOT, f"{variant['build_pro_target']}_download")
@@ -117,6 +160,9 @@ def collect_output(variant, param):
 
 
 def build(variant, param, env):
+    if not check_fcelf_runnable():
+        return False
+
     binpkg = os.path.join(download_dir(variant),
                           f"{variant['build_pro_name']}.binpkg")
     if os.path.isfile(binpkg):
