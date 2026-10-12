@@ -147,6 +147,12 @@ int32_t tkl_spi_get_data_count(TUYA_SPI_NUM_E port);
  * @param[in]       args    args associated with the command
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
+/* Optional native-CS transaction control. args points to TUYA_GPIO_LEVEL_E.
+ * LOW asserts CS; HIGH releases it. Suppresses automatic per-transfer CS until
+ * deinit, and must also work during GPIO handover after deinit. Unsupported
+ * adapters return OPRT_NOT_SUPPORTED. Currently implemented for L511G SPI1.
+ */
+#define TKL_SPI_IOCTL_SET_NATIVE_CS 0x53534301u
 OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, uint32_t cmd, void *args);
 
 /**

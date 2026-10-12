@@ -47,7 +47,8 @@ static gpio_map_t pinMap[] = {
 	{57, 4, 0, false, false, 0, 0}, 			//CAM_I2C_SCL 	-> GPIO18			//ok
 	{58, 4, 0, false, false, 0, 0}, 			//CAM_I2C_SDA 	-> GPIO19			//设置成中断,不响应
 	// {62, 0, 0, false, false, 0, 0}, 			//USIM2_CLK 	-> GPIO14			//无法测试
-	// {63, 0, 0, false, false, 0, 0}, 			//USIM2_RST 	-> GPIO13			//无法测试
+	/* SPI1 MOSI: allow GPIO handover for bidirectional SSD2677 SDA reads. */
+	{63, 0, 0, false, false, 0, 0},            // Module pad 63 -> GPIO13 (SPI1 MOSI/SDA)
 	// {64, 0, 0, false, false, 0, 0}, 			//USIM2_DATA 	-> GPIO12			//无法测试
 	// {66, 0, 0, false, false, 0, 0}, 			//I2C_SDA 		-> GPIO8			//无法测试
 	// {67, 0, 0, false, false, 0, 0}, 			//I2C_SCL 		-> GPIO9			//无法测试

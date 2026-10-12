@@ -25,6 +25,7 @@
 #include "Driver_Common.h"
 #include "cmsis_os2.h"
 #include "ol_spi_api.h"
+#include "ol_gpio_api.h"
 
 #define LOGD(fmt, args...) tkl_log_output("[tkl_spi][DBG/%d] " fmt "\n", __LINE__, ##args)
 #define LOGE(fmt, args...) tkl_log_output("[tkl_spi][ERR/%d] " fmt "\n", __LINE__, ##args)
@@ -41,6 +42,7 @@ typedef struct {
     bool init_flag;
     bool is_irq_enable;
     bool dma_mode;
+    bool manual_native_cs;
     ol_spi_index_num port_id;
     TUYA_SPI_IRQ_CB cb;
     TKL_MUTEX_HANDLE mutex;
@@ -143,12 +145,13 @@ OPERATE_RET tkl_spi_deinit(TUYA_SPI_NUM_E port)
     }
 
     spi_dev[port].init_flag = false;
+    spi_dev[port].manual_native_cs = false;
     return OPRT_OK;
 }
 
 OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, void* send_buf, void* receive_buf, uint32_t length)
 {
-    if (port > SPI_DEV_NUM || length == 0 || (send_buf == NULL && receive_buf == NULL)) { 
+    if (port >= SPI_DEV_NUM || length == 0 || (send_buf == NULL && receive_buf == NULL)) { 
         return OPRT_INVALID_PARM;
     }
     
@@ -166,7 +169,9 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, void* send_buf, void* receive_
     }
 
     tkl_mutex_lock(spi_dev[port].mutex);
-    spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_INACTIVE);
+    if (!spi_dev[port].manual_native_cs) {
+        spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_INACTIVE);
+    }
     int total_send_len = 0;
     int total_rcv_len = 0;
     int total_xfer_len = 0;
@@ -198,7 +203,9 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, void* send_buf, void* receive_
         if(receive_buf)
             total_rcv_len += xfer_len;
     }
-    spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_ACTIVE);
+    if (!spi_dev[port].manual_native_cs) {
+        spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_ACTIVE);
+    }
     tkl_mutex_unlock(spi_dev[port].mutex);
 
     if(ret == OPRT_OK && spi_dev[port].is_irq_enable && (spi_dev[port].cb != NULL) && send_buf) {
@@ -285,7 +292,36 @@ int32_t tkl_spi_get_data_count(TUYA_SPI_NUM_E port)
 
 OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, uint32_t cmd, void *args)
 {
-    return OPRT_NOT_SUPPORTED;
+    if (cmd != TKL_SPI_IOCTL_SET_NATIVE_CS) {
+        return OPRT_NOT_SUPPORTED;
+    }
+    if (port != TUYA_SPI_NUM_1 || args == NULL) {
+        return OPRT_INVALID_PARM;
+    }
+    TUYA_GPIO_LEVEL_E level = *(const TUYA_GPIO_LEVEL_E *)args;
+    if (level != TUYA_GPIO_LEVEL_LOW && level != TUYA_GPIO_LEVEL_HIGH) {
+        return OPRT_INVALID_PARM;
+    }
+    /* Module pad 64 is the native SPI1 CS. CMSIS configures this pad as GPIO
+     * in ARM_SPI_SS_MASTER_SW mode. Keep it usable when CLK/SDA are handed
+     * over for a bidirectional temperature read, without extending TKL's GPIO
+     * enum (64 is TUYA_GPIO_NUM_MAX, the absent-pin sentinel).
+     */
+    if (!spi_dev[port].init_flag) {
+        ol_gpio_config_struct cfg = {
+            .gpio_func = OL_GPIO_FUNC0,
+            .gpio_dir = OL_GPIO_OUTPUT,
+            .gpio_initoutput = level == TUYA_GPIO_LEVEL_HIGH,
+        };
+        if (ol_pin_config(64, &cfg) != 0) {
+            return OPRT_COM_ERROR;
+        }
+    }
+    if (ol_pin_set_level(64, level == TUYA_GPIO_LEVEL_HIGH ? OL_GPIO_LEVEL_HIGH : OL_GPIO_LEVEL_LOW) != 0) {
+        return OPRT_COM_ERROR;
+    }
+    spi_dev[port].manual_native_cs = true;
+    return OPRT_OK;
 }
 
 uint32_t tkl_spi_get_max_dma_data_length(void)
