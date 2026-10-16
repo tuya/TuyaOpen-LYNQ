@@ -8,7 +8,7 @@
 #include "tkl_gpio.h"
 
 /**
- * 底层codec 音量范围为 0-255，
+ * 底层 ol_setVolume / ol_getVolume 音量范围为 0-100。
  */
 
 typedef struct 
@@ -45,10 +45,43 @@ void tkl_audio_pa_pin_set(int pin, bool enable)
     pa_pin_num = pin;
 }
 
+/* ES8311 DAC volume mapping:
+ * - 0      -> 0 (-95.5 dB, mute)
+ * - 1..100 -> 45..75 (-38.5 dB .. 0.0 dB, vendor calibrated speaker range)
+ */
+#define CODEC_HW_VOL_MIN 45
+#define CODEC_HW_VOL_MAX 75
+
+static int __codec_vol_to_hw(int vol)
+{
+    if (vol <= 0) {
+        return 0;
+    }
+    if (vol >= 100) {
+        return CODEC_HW_VOL_MAX;
+    }
+    return CODEC_HW_VOL_MIN + (vol * (CODEC_HW_VOL_MAX - CODEC_HW_VOL_MIN) + 50) / 100;
+}
+
+static int __codec_hw_to_vol(int hw_vol)
+{
+    if (hw_vol <= 0) {
+        return 0;
+    }
+    if (hw_vol <= CODEC_HW_VOL_MIN) {
+        return 1;
+    }
+    if (hw_vol >= CODEC_HW_VOL_MAX) {
+        return 100;
+    }
+    return ((hw_vol - CODEC_HW_VOL_MIN) * 100 + (CODEC_HW_VOL_MAX - CODEC_HW_VOL_MIN) / 2) /
+           (CODEC_HW_VOL_MAX - CODEC_HW_VOL_MIN);
+}
+
 static int codec_set_volume(int vol)
 {
     LOGI("type:%d set volume:%d", current_volume_type, vol);
-    ol_setVolume(vol * 2);
+    ol_setVolume(__codec_vol_to_hw(vol));
     return 0;
 }
 
@@ -56,7 +89,7 @@ static int codec_get_volume(int *vol)
 {
     int v;
     ol_getVolume(&v);
-    *vol = v / 2;
+    *vol = __codec_hw_to_vol(v);
     return 0;
 }
 

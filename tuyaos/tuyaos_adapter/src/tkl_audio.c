@@ -50,6 +50,7 @@
 #ifndef PCM_DATA_CACHE_SIZE
 #define PCM_DATA_CACHE_SIZE             (PCM_DATA_CACHE_PRE_FILL_SIZE + MED_PCM_FRAME_SIZE * 3)
 #endif
+#define TKL_AUDIO_WRITE_PROGRESS_TIMEOUT_MS 2000
 
 #define USE_PA_PIN_CTRL  0
 #if USE_PA_PIN_CTRL == 1
@@ -113,7 +114,7 @@ static uint8_t audio_sleep_vote = 0xFF;
 #define TKL_AUDIO_SLEEP_ENABLE() slpManPlatVoteEnableSleep(audio_sleep_vote, SLP_SLP1_STATE)
 #define TKL_AUDIO_SLEEP_DISABLE() slpManPlatVoteDisableSleep(audio_sleep_vote, SLP_SLP1_STATE)
 
-#define TKL_AUDIO_MUTEX_LOCK_EN 0
+#define TKL_AUDIO_MUTEX_LOCK_EN 1
 #if TKL_AUDIO_MUTEX_LOCK_EN
 static TKL_MUTEX_HANDLE audio_lock = NULL;
 #define AUDIO_MUTEX_LOCK_INIT() do {                     \
@@ -341,15 +342,26 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, void **handl
         return OPRT_NOT_SUPPORTED;
     }
 
+    AUDIO_MUTEX_LOCK_INIT();
+    if (NULL == audio_lock) {
+        return OPRT_COM_ERROR;
+    }
+    if (OPRT_OK != AUDIO_MUTEX_LOCK()) {
+        return OPRT_COM_ERROR;
+    }
+    if (tkl_ao_state) {
+        AUDIO_MUTEX_UNLOCK();
+        return OPRT_OK;
+    }
+
     memset(&tkl_ao_params, 0, sizeof(tkl_ao_params));
     tkl_ao_params.field.bitWidth = 0;                   //默认16bit
     tkl_ao_params.field.samplerate = spk_sample == TKL_AUDIO_SAMPLE_8K ? SAMPLERATE_8K : SAMPLERATE_16K;
     tkl_ao_params.field.envType = MED_DATA_ENV_TYPE_LOCAL;
 
-    AUDIO_MUTEX_LOCK_INIT();
 #if USE_PA_PIN_CTRL == 1
     if (audio_pa_init() < 0) {
-        AUDIO_MUTEX_RELEASE();
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_COM_ERROR;
     }
 #else
@@ -359,15 +371,34 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, void **handl
     if (NULL == tkl_audio_play_sem) {
         ret = tkl_semaphore_create_init(&tkl_audio_play_sem, 0, 1);
         if ((ret < 0) || (NULL == tkl_audio_play_sem)) {
-            AUDIO_MUTEX_RELEASE();
+            AUDIO_MUTEX_UNLOCK();
             return OPRT_COM_ERROR;
         }
     }
 #endif
     TKL_AUDIO_PA_ENABLE();
     LOGI("ao init sample:%d pa_pin:%d", tkl_ao_params.field.samplerate, pconfig->spk_gpio);
+    AUDIO_MUTEX_UNLOCK();
     return OPRT_OK;
 }
+
+#if !AUDIO_PLAY_ORIGINAL_MODE_ENABLE
+static OPERATE_RET audio_play_start_locked(void)
+{
+    uint32_t unread_size;
+
+    if (NULL == audio_play_cache) {
+        return OPRT_COM_ERROR;
+    }
+    unread_size = (uint32_t)xEcRingGetOption(audio_play_cache, E_LRO_DATA_SIZE);
+    /* medDataHandleStart resets dmaBufFillCnt; align it to bytes still queued. */
+    audio_play_cache->idataCnt = (int32_t)unread_size;
+    if (0 != medDataHandleStart(&tkl_ao_params)) {
+        return OPRT_COM_ERROR;
+    }
+    return OPRT_OK;
+}
+#endif
 
 /**
 * @brief ao start
@@ -380,12 +411,17 @@ OPERATE_RET tkl_ao_init(TKL_AUDIO_CONFIG_T *pconfig, int32_t count, void **handl
 */
 OPERATE_RET tkl_ao_start(int32_t card, TKL_AO_CHN_E chn, void *handle)
 {
+    if (NULL == audio_lock || OPRT_OK != AUDIO_MUTEX_LOCK()) {
+        return OPRT_COM_ERROR;
+    }
     if (tkl_ao_state) {
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_OK;
     }
     LOGI("tkl_ao_start");
 #if AUDIO_PLAY_ORIGINAL_MODE_ENABLE     
     if (audioInit() < 0) {
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_COM_ERROR;
     }
 #else
@@ -394,11 +430,13 @@ OPERATE_RET tkl_ao_start(int32_t card, TKL_AO_CHN_E chn, void *handle)
     audio_play_cache = medInitDataCache(PCM_DATA_CACHE_SIZE, 0);        //仅首次调用，底层才会create ringbuffer
     if (NULL == audio_play_cache) {
         LOGE("create audio play data cache failed");
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_COM_ERROR;
     }
 #endif
     TKL_AUDIO_SLEEP_DISABLE();
     tkl_ao_state = 1;
+    AUDIO_MUTEX_UNLOCK();
     return OPRT_OK;
 }
 
@@ -423,39 +461,76 @@ OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, void *handle, TKL_A
     uint32_t buff_size;
     uint32_t write_size = 0;
     uint32_t pick_size;
+    uint32_t last_read_pos;
+    uint32_t last_progress_time;
+    uint32_t read_pos;
+    int32_t write_result;
     char *pbuf;
 #endif
+    OPERATE_RET ret = OPRT_OK;
 
-    if (!tkl_ao_state) {
+    if (NULL == audio_lock || OPRT_OK != AUDIO_MUTEX_LOCK()) {
         return OPRT_COM_ERROR;
     }
-
-    AUDIO_MUTEX_LOCK();
-    if(medDataHandleStateGet() != MED_DATA_HDL_STA_START) {
-        LOGI("medDataHandleStart");
-        medDataHandleStart(&tkl_ao_params);
+    if (!tkl_ao_state) {
+        AUDIO_MUTEX_UNLOCK();
+        return OPRT_COM_ERROR;
     }
 
 #if AUDIO_PLAY_ORIGINAL_MODE_ENABLE             
     ol_audioPlayPcmData((uint8_t *)pframe->pbuf, pframe->buf_size, tkl_ao_params.field.samplerate, audio_play_complete_handler, 0);
 #else
+    /* medDataHandleStop() frees rawDataCache. Reacquire it before each write. */
+    audio_play_cache = medGetDataCache();
+    if (NULL == audio_play_cache) {
+        audio_play_cache = medInitDataCache(PCM_DATA_CACHE_SIZE, 0);
+        if (NULL == audio_play_cache) {
+            LOGE("create audio play data cache failed");
+            ret = OPRT_COM_ERROR;
+            goto put_frame_done;
+        }
+    }
+
     pbuf = pframe->pbuf;
     buff_size = pframe->used_size;
+    last_read_pos = (uint32_t)audio_play_cache->iPosRead;
+    last_progress_time = (uint32_t)tkl_system_get_millisecond();
     while (write_size < buff_size) {
-        if(medDataHandleStateGet() != MED_DATA_HDL_STA_START) {
-            LOGI("medDataHandleStateGet not start");
-            break;
-        }
-
         pick_size = ((buff_size - write_size) > MED_PCM_FRAME_SIZE) ? MED_PCM_FRAME_SIZE : (buff_size - write_size);
         cache_free_size = medGetDataCacheAvlbSize();
         if (cache_free_size < pick_size) {
+            if (MED_DATA_HDL_STA_SUSPEND == medDataHandleStateGet() && OPRT_OK != audio_play_start_locked()) {
+                LOGE("resume audio data handle failed");
+                ret = OPRT_COM_ERROR;
+                goto put_frame_done;
+            }
             tkl_system_sleep(40);
-            // LOGD("no enough cache memory(cache_free_size=%d %d)", cache_free_size, medGetDataCacheAvlbSize());
-            continue;
+        } else {
+            write_result = xEcRingWriteEx(audio_play_cache, (uint8_t *)(pbuf + write_size), pick_size);
+            if (write_result <= 0) {
+                LOGE("audio cache write made no progress");
+                ret = OPRT_COM_ERROR;
+                goto put_frame_done;
+            }
+            write_size += (uint32_t)write_result;
+
+            if (medDataHandleStateGet() != MED_DATA_HDL_STA_START && OPRT_OK != audio_play_start_locked()) {
+                LOGE("start audio data handle failed");
+                ret = OPRT_COM_ERROR;
+                goto put_frame_done;
+            }
         }
-        pick_size = xEcRingWriteEx(audio_play_cache, (uint8_t *)(pbuf + write_size), pick_size);
-        write_size += pick_size;
+
+        read_pos = (uint32_t)audio_play_cache->iPosRead;
+        if (read_pos != last_read_pos) {
+            last_read_pos = read_pos;
+            last_progress_time = (uint32_t)tkl_system_get_millisecond();
+        } else if (write_size < buff_size &&
+                   (uint32_t)((uint32_t)tkl_system_get_millisecond() - last_progress_time) >= TKL_AUDIO_WRITE_PROGRESS_TIMEOUT_MS) {
+            LOGE("audio cache consumer stalled at %u/%u bytes", write_size, buff_size);
+            ret = OPRT_COM_ERROR;
+            goto put_frame_done;
+        }
     }
     TKL_AUDIO_SLEEP_ENABLE();
 #endif
@@ -466,8 +541,9 @@ OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, void *handle, TKL_A
     }
 #endif
 
+put_frame_done:
     AUDIO_MUTEX_UNLOCK();
-    return OPRT_OK;
+    return ret;
 }
 
 /**
@@ -482,23 +558,31 @@ OPERATE_RET tkl_ao_put_frame(int32_t card, TKL_AO_CHN_E chn, void *handle, TKL_A
 OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, void *handle)
 {
     LOGI("tkl_ao_stop %d", tkl_ao_state);
-    if(!tkl_ao_state)
+    if (NULL == audio_lock || OPRT_OK != AUDIO_MUTEX_LOCK()) {
+        return OPRT_COM_ERROR;
+    }
+    if(!tkl_ao_state) {
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_OK;
+    }
 #if AUDIO_PLAY_ORIGINAL_MODE_ENABLE    
     audPcmPlayStop();
 #else
     // Wait for the ring buffer to drain before stopping so that
     // audio fed just before stop() is fully played out.
     // PCM_DATA_CACHE_SIZE ≈ 22144; buffer is empty when avlb returns near full.
+    audio_play_cache = medGetDataCache();
     int drain_wait = 0;
-    while (medGetDataCacheAvlbSize() < (PCM_DATA_CACHE_SIZE - MED_PCM_FRAME_SIZE)
+    while (audio_play_cache && medGetDataCacheAvlbSize() < (PCM_DATA_CACHE_SIZE - MED_PCM_FRAME_SIZE)
            && drain_wait < 150) {
         tkl_system_sleep(20);
         drain_wait++;
     }
-    medDataHandleStop();                        // stop，底层不释放ringbuffer
+    medDataHandleStop();                        // stop并释放底层ringbuffer
+    audio_play_cache = NULL;
 #endif
     tkl_ao_state = 0;
+    AUDIO_MUTEX_UNLOCK();
     LOGI("tkl_ao_stop %d", tkl_ao_state);
     return OPRT_OK;
 }
@@ -509,8 +593,7 @@ OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, void *handle)
 * Throw away what is still queued, instead of playing it out: this is the
 * interrupt path (TuyaOpen's TDD_AUDIO_CMD_PLAY_STOP), the opposite of
 * tkl_ao_stop, which deliberately waits for the cache to drain. Playback stays
-* started -- medDataHandleStop keeps the ring buffer, and the next
-* tkl_ao_put_frame restarts the data handle.
+* started; medDataHandleStop frees the cache, which the next put_frame recreates.
 *
 * @param[in] card: card number
 * @param[in] chn: channel number
@@ -519,18 +602,20 @@ OPERATE_RET tkl_ao_stop(int32_t card, TKL_AO_CHN_E chn, void *handle)
 */
 OPERATE_RET tkl_ao_clear_buffer(int32_t card, TKL_AO_CHN_E chn)
 {
+    if (NULL == audio_lock || OPRT_OK != AUDIO_MUTEX_LOCK()) {
+        return OPRT_COM_ERROR;
+    }
     if (!tkl_ao_state) {
+        AUDIO_MUTEX_UNLOCK();
         return OPRT_OK;
     }
 #if AUDIO_PLAY_ORIGINAL_MODE_ENABLE
     audPcmPlayStop();
 #else
-    AUDIO_MUTEX_LOCK();
-    if (medDataHandleStateGet() == MED_DATA_HDL_STA_START) {
-        medDataHandleStop();
-    }
-    AUDIO_MUTEX_UNLOCK();
+    medDataHandleStop();
+    audio_play_cache = NULL;
 #endif
+    AUDIO_MUTEX_UNLOCK();
     LOGI("tkl_ao_clear_buffer");
     return OPRT_OK;
 }
@@ -542,6 +627,13 @@ OPERATE_RET tkl_ao_clear_buffer(int32_t card, TKL_AO_CHN_E chn)
 */
 OPERATE_RET tkl_ao_uninit(void *handle)
 {
+    if (NULL == audio_lock || OPRT_OK != AUDIO_MUTEX_LOCK()) {
+        return OPRT_COM_ERROR;
+    }
+    if (tkl_ao_state && OPRT_OK != tkl_ao_stop(0, 0, NULL)) {
+        AUDIO_MUTEX_UNLOCK();
+        return OPRT_COM_ERROR;
+    }
 #if TKL_AUDIO_SEMAPHORE_EN    
     if (tkl_audio_play_sem) {
         tkl_semaphore_release(tkl_audio_play_sem);
@@ -549,7 +641,7 @@ OPERATE_RET tkl_ao_uninit(void *handle)
     }
 #endif    
     memset(&tkl_ao_params, 0, sizeof(tkl_ao_params));
-    AUDIO_MUTEX_RELEASE();
+    AUDIO_MUTEX_UNLOCK();
     return OPRT_OK;
 }
 
