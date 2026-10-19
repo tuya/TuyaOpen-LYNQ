@@ -13,11 +13,11 @@ print_not_null()
 }
 
 set -e
-cd `dirname $0`
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
-BUILD_PARAM_DIR=$1
+BUILD_PARAM_DIR=$(cd -- "$1" && pwd)
 BUILD_PARAM_FILE=$BUILD_PARAM_DIR/build_param.config
-. $BUILD_PARAM_FILE
+. "$BUILD_PARAM_FILE"
 
 EXAMPLE_NAME=$CONFIG_PROJECT_NAME
 EXAMPLE_VER=$CONFIG_PROJECT_VERSION
@@ -28,6 +28,11 @@ OUTPUT_DIR=$BIN_OUTPUT_DIR
 USER_CMD=$2
 BOARD_NAME=$PLATFORM_BOARD
 
+PLAT_DIR=$SCRIPT_DIR/PLAT
+if [ -n "$OUTPUT_DIR" ] && [ "${OUTPUT_DIR#/}" = "$OUTPUT_DIR" ]; then
+    OUTPUT_DIR=$PLAT_DIR/$OUTPUT_DIR
+fi
+
 APP_BIN_NAME=$EXAMPLE_NAME
 APP_VERSION=$EXAMPLE_VER
 
@@ -36,8 +41,7 @@ if [ "$USER_CMD" = "build" ]; then
 fi
 
 echo "Start Compile"
-set -e
-cd PLAT/
+cd "$PLAT_DIR"
 if [ "$USER_CMD" = "clean" ];then
 	./build.sh clean
 	echo "*************************************************************************"
@@ -51,15 +55,27 @@ export TUYA_LIBS="$LIBS"
 export TUYA_APP_KCONFIG_DIR=${BUILD_PARAM_DIR}/../include
 ./build.sh
 
-BIN_DIR=L511C_Y6E_download
-if [ ! -d $OUTPUT_DIR ]; then
-    mkdir $OUTPUT_DIR
+BIN_DIR=$PLAT_DIR/L511C_Y6E_download
+BINPKG=$BIN_DIR/L511C_Y6E.binpkg
+ELF=$BIN_DIR/ap_tuyaopen.elf
+if [ ! -f "$BINPKG" ]; then
+    echo "Error: vendor build did not produce $BINPKG" >&2
+    exit 1
 fi
-rm -rf $OUTPUT_DIR/*
-cp $BIN_DIR $OUTPUT_DIR/ -r
-cd $OUTPUT_DIR/
-rm $BIN_DIR/config_factory_uart.ini $BIN_DIR/config_linux_uart.ini
-cp $BIN_DIR/L511C_Y6E.binpkg $BIN_DIR/Custom.binpkg 
-zip  $OUTPUT_DIR/${APP_BIN_NAME}_${APP_VERSION}.zip $BIN_DIR/*
-cp $BIN_DIR/Custom.binpkg ${APP_BIN_NAME}_QIO_${APP_VERSION}.bin
-cp $BIN_DIR/Custom.binpkg ${APP_BIN_NAME}_QIO_${APP_VERSION}.binpkg
+if [ ! -f "$ELF" ]; then
+    echo "Error: vendor build did not produce $ELF" >&2
+    exit 1
+fi
+if [ -z "$APP_BIN_NAME" ] || [ -z "$APP_VERSION" ] || [ -z "$OUTPUT_DIR" ]; then
+    echo "Error: project name, version, or output directory is empty" >&2
+    exit 1
+fi
+
+mkdir -p "$OUTPUT_DIR"
+rm -rf -- "$OUTPUT_DIR/L511C_Y6E_download"
+cp -a "$BIN_DIR" "$OUTPUT_DIR/"
+# Remove a stale archive from the previous ZIP-based output flow.
+rm -f -- "$OUTPUT_DIR/${APP_BIN_NAME}_${APP_VERSION}.zip"
+cp -p "$BINPKG" "$OUTPUT_DIR/${APP_BIN_NAME}_QIO_${APP_VERSION}.bin"
+cp -p "$BINPKG" "$OUTPUT_DIR/${APP_BIN_NAME}_QIO_${APP_VERSION}.binpkg"
+cp -p "$ELF" "$OUTPUT_DIR/${APP_BIN_NAME}_${APP_VERSION}.elf"

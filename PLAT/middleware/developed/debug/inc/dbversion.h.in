@@ -1,0 +1,7 @@
+#ifndef _DB_VERSION_H
+#define _DB_VERSION_H
+
+/* Bootstrap header used until LogPrePass generates the build-specific version. */
+#define DB_VERSION_UNIQ_ID "0x00000000"
+
+#endif /* _DB_VERSION_H */

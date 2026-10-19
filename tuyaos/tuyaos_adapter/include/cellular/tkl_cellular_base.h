@@ -5,8 +5,8 @@
  *
  * @copyright Copyright (c) tuya.inc 2021
  */
-#ifndef __TKL_CELLULAR_H__
-#define __TKL_CELLULAR_H__
+#ifndef __TKL_CELLULAR_BASE_H__
+#define __TKL_CELLULAR_BASE_H__
 
 #include "tuya_cloud_types.h"
 #include "tkl_cellular_mds.h"
