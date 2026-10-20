@@ -20,6 +20,10 @@
 #include "cmsis_os2.h"
 #include "ps_lib_api.h"
 #include "ol_open_api.h"
+/* Prototype from PLAT/open_api/inc/ol_sys_api.h:64. That header cannot
+ * be included here because it redeclares ol_dump_mode from ol_open_api.h. */
+extern char *ol_get_sw_version(void);
+
 #include "ol_nw_api.h"
 #include "ol_time_api.h"
 #include "ol_at_api.h"

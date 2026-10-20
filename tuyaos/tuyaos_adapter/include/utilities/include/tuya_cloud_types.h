@@ -1589,6 +1589,16 @@ typedef int TUYA_ERRNO;
 #define TKL_THREAD_PRI_LOW          1
 #define TKL_THREAD_PRI_LOWEST       0
 
+/* Cellular transport definitions used by the TuyaOpen TAL interface. */
+typedef enum {
+    TUYA_CELLULAR_IF_USB = 0,
+    TUYA_CELLULAR_IF_UART,
+} TUYA_CELLULAR_IF_E;
+
+typedef enum {
+    TUYA_CELLULAR_PROTOCOL_PPP = 0,
+} TUYA_CELLULAR_PROTOCOL_E;
+
 /* MTD 接口类型枚举 */
 typedef enum {
     MTD_IF_SPI,        // 标准SPI接口

@@ -77,6 +77,16 @@ $(DISABLE_LTO_OBJS) : DISABLE_LTO_FLAG=no-
 
 PPFILES += $(patsubst %.o, %.pp, $(OBJS))
 
+# Bootstrap dbversion.h before preprocessing sources that include it.
+DBVERSION_HEADER   := $(TOP)/PLAT/middleware/developed/debug/inc/dbversion.h
+DBVERSION_TEMPLATE := $(TOP)/PLAT/middleware/developed/debug/inc/dbversion.h.in
+
+$(DBVERSION_HEADER):
+	@mkdir -p $(dir $@)
+	@test -s $@ || cp -f $(DBVERSION_TEMPLATE) $@
+
+$(PPFILES) $(LIBPPFILES) $(LIBUSBPPFILES) $(CUSTLIBPPFILES): $(DBVERSION_HEADER)
+
 LD_PRECOMPILE_FILE ?= $(BUILDDIR)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/$(TARGET)_flash.c
 LD_COMPILED_FILE ?= $(BUILDDIR)/PLAT/project/$(TARGET)/$(CORE)/apps/$(PROJECT)/$(TARGET)_flash_output.ld
 MEM_MAP_ORIGIN_FILE ?= $(TOP)/PLAT/device/target/board/$(BOARD_NAME)/common/inc/mem_map.h

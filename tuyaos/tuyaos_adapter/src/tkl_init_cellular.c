@@ -8,6 +8,26 @@
 *
 */
 #include "tkl_init_cellular.h"
+#include "tkl_cellular.h"
+
+static const TKL_CELLULAR_DESC_T c_legacy_cell_desc = {
+    .init = tkl_cellular_init,
+    .get_status = tkl_cellular_get_status,
+    .set_status_cb = tkl_cellular_set_status_cb,
+    .get_ip = tkl_cellular_get_ip,
+    .get_ipv6 = tkl_cellular_get_ipv6,
+    .get_ccid = tkl_cellular_get_ccid,
+    .get_rssi = tkl_cellular_get_rssi,
+    .get_volt = tkl_cellular_get_volt,
+    .get_imei = tkl_cellular_get_imei,
+    .get_sn = tkl_cellular_get_sn,
+    .get_sw_ver = tkl_cellular_get_sw_ver,
+};
+
+TKL_CELLULAR_DESC_T *tkl_cellular_desc_get(void)
+{
+    return (TKL_CELLULAR_DESC_T *)&c_legacy_cell_desc;
+}
 
 TKL_CELL_BASE_INTF_T c_cell_desc = {
     .base_init                  = tkl_cellular_base_init,
