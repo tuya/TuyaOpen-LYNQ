@@ -1,0 +1,21 @@
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f default.info      -F default.info
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f phoneMenu_cn.json -F fpui_res/phoneMenu_cn.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f callList_cn.json  -F fpui_res/callList_cn.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f contact_cn.json   -F fpui_res/contact_cn.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f contactDb.json    -F feature_db/contactDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f contactDb.type    -F feature_db/contactDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f callListDb.json   -F feature_db/callListDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f callListDb.type   -F feature_db/callListDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f displayDb.json    -F feature_db/displayDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f displayDb.type    -F feature_db/displayDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f profileDb.json    -F feature_db/profileDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f profileDb.type    -F feature_db/profileDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f ttsDb.json        -F feature_db/ttsDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f ttsDb.type        -F feature_db/ttsDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f presetSmsDb.json  -F feature_db/presetSmsDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f presetSmsDb.type  -F feature_db/presetSmsDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f smsInboxDb.json   -F feature_db/smsInboxDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f smsInboxDb.type   -F feature_db/smsInboxDb.type
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f smsOutboxDb.json  -F feature_db/smsOutboxDb.json
+lfsutil.exe -i lfsInDefaultForPhone.bin -w -f smsOutboxDb.type  -F feature_db/smsOutboxDb.type
+del lfsutil.log

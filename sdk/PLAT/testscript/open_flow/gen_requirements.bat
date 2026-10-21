@@ -1,0 +1,1 @@
+pipreqs.exe ./ --force --pypi-server=https://mirrors.tuna.tsinghua.edu.cn/pypi/

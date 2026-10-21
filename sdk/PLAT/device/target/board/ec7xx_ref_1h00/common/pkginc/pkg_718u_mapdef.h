@@ -1,0 +1,50 @@
+#ifndef __PKG_718U_MAPDEF_H__
+#define __PKG_718U_MAPDEF_H__
+
+#define AP_FLASH_BASE_LNA 0x800000
+
+//For 718U, CP image in AP Flash
+#define CP_PKGIMG_LNA (0x0082D000)
+
+#define BL_PKGIMG_LNA (0x00803000)
+
+#define BOOTLOADER_PKGIMG_LIMIT_SIZE (0x20000)
+
+#if defined (FEATURE_AMR_CP_ENABLE) || defined (FEATURE_VEM_CP_ENABLE)
+
+#define AP_PKGIMG_LNA   (0x008CD000)
+
+#define AP_PKGIMG_LIMIT_SIZE    (0x63F000)//6396KB   
+
+#define CP_PKGIMG_LIMIT_SIZE    (0xA0000)
+
+#else
+
+#define AP_PKGIMG_LNA   (0x00891000)
+
+#define AP_PKGIMG_LIMIT_SIZE    (0x67B000)//6636KB   
+
+#define CP_PKGIMG_LIMIT_SIZE    (0x64000)
+
+
+#endif
+
+#define XPKGDBLSH_VIRTIMG_MERGE_LNA    (0x0)
+#define XPKGDSYSH_VIRTIMG_MERGE_LNA    (0x1000)
+#define XPKGDPRM_VIRTIMG_MERGE_LNA  (0x0)
+#define XPKGDCMN_VIRTIMG_MERGE_LNA  (0x0)
+#define XPKG_VIRTIMG_LOAD_SIZE      (0x100000)
+
+#define EF_IMG_GUI_FONT_LNA         (0x80000000)
+#define EF_IMG_GUI_FONT_SIZE        (  0x180000)
+
+#define EF_IMG_LFS_LNA              (0x80180000)
+#define EF_IMG_LFS_SIZE             (  0x280000)
+
+#define PKGFLXRAW0_LFS_LNA          (0x00F24000)
+#define PKGFLXRAW0_LFS_SIZE         (   0x40000)
+
+#define PKGFLXRAW1_LOGO_LNA         (0x00F64000)
+#define PKGFLXRAW1_LOGO_SIZE        (   0x80000)
+#endif
+

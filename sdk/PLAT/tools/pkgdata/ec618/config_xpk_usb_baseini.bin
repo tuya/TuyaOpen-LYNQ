@@ -1,0 +1,65 @@
+[config]
+line_0_com = COM9
+agbaud=921600
+baud=130000
+filter_embedusb=0
+filter_externcom=1
+
+path_convert_cfg_avail = 1
+pathconv_to_file_basedir_pairs=bootloader:headpath;system:headpath
+
+[agentboot]
+comment_agentboot = "agentboot.bin file infomation"
+tool_basedir = 1
+agpath = .\product_sets\ec618_products\common_data\agentboot_usb\agentboot.bin
+
+[storage_cfg]
+format_path = format_ec618_none.json
+
+
+[bootloader]
+headpath = .\bl_sec_header.bin
+blpath = .\ap_bootloader.bin
+blloadskip = 0
+burnaddr=0x4000
+
+;system.bin file infomation
+[system]
+headpath = .\sys_sec_header.bin
+syspath =.\ap_demo-flash.bin
+sysloadskip = 0
+burnaddr = 0x24000
+
+[cp_system]
+cp_syspath = .\cp-demo-flash.bin
+cp_sysloadskip = 0
+burnaddr = 0x0
+
+[security]
+hashtype = 1
+extern_sec_head_used=1
+curve_type = curve_224
+
+[control]
+comment_default="control such as reset before download"
+
+prempt_detect_time = 6
+msg_waittime = 2
+max_preamble_cnt = 8
+lpc_recover_en = 0
+;cfg reset to 2, skip reset pin
+pullup_qspi = 1
+;trc_ser = 1
+rom_version= 0000000102000000
+£»auto_disconnect = reset,poweroff
+£»auto_disconnect =none,poweroff
+
+[flexfile0]
+filepath = .\MergeRfTable.bin
+burnaddr = 0xe7000
+storage_type=cp_flash
+
+[flexfile1]
+filepath = .\MergeRfTable.bin
+burnaddr = 0xce000
+storage_type=cp_flash

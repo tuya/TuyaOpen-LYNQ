@@ -1,0 +1,65 @@
+SUBSYS_SENSORHUB_DIR  := $(TOP)/PLAT/subsys/sensorhub
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/inc
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/driver/eMPL
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/driver/vendor
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/driver/include
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/mllite
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/mpl
+CFLAGS_INC += -I $(SUBSYS_SENSORHUB_DIR)/mpu/eMPL-hal
+
+PREBUILDLIBS += $(SUBSYS_SENSORHUB_DIR)/lib/liblibmplmpu.a
+
+CFLAGS += -DFEATURE_SUBSYS_SENSORHUB_ENABLE
+CFLAGS += -DMPU6500
+CFLAGS += -DEMPL
+CFLAGS += -DEMPL_TARGET_EC718
+CFLAGS += -DUSE_DMP
+
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/src
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/mpu/mpl
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/mpu/mllite
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/mpu/driver/eMPL 
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/mpu/driver/vendor 
+SUBSYS_SENSORHUB_SRC_DIRS += $(SUBSYS_SENSORHUB_DIR)/mpu/eMPL-hal 
+
+SUBSYS_SENSORHUB_EXCLUDE_FILES :=
+
+SUBSYS_SENSORHUB_CSRC = $(foreach dir, $(SUBSYS_SENSORHUB_SRC_DIRS), $(wildcard $(dir)/*.c))
+SUBSYS_SENSORHUB_CFILES = $(filter-out $(SUBSYS_SENSORHUB_EXCLUDE_FILES), $(SUBSYS_SENSORHUB_CSRC))
+SUBSYS_SENSORHUB_COBJSTEMP := $(patsubst %.c, %.o, $(SUBSYS_SENSORHUB_CFILES))
+SUBSYS_SENSORHUB_COBJSTEMP :=$(subst $(SUBSYS_SENSORHUB_DIR),PLAT/subsys/sensorhub,$(SUBSYS_SENSORHUB_COBJSTEMP))
+SUBSYS_SENSORHUB_COBJS := $(addprefix $(BUILDDIR)/, $(SUBSYS_SENSORHUB_COBJSTEMP))
+SUBSYS_SENSORHUB_PPFILES := $(patsubst %.o, %.pp, $(SUBSYS_SENSORHUB_COBJS))
+PPFILES += $(SUBSYS_SENSORHUB_PPFILES)
+
+
+ifneq ($(MAKECMDGOALS), build-unilog)
+-include $(SUBSYS_SENSORHUB_COBJS:.o=.d)
+endif
+-include $(SUBSYS_SENSORHUB_COBJS:.o=.dd)
+
+ifeq ($(TOOLCHAIN),GCC)
+
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/gcc
+
+lib-y += libsubsys_sensorhub.a
+
+$(BUILDDIR)/lib/libsubsys_sensorhub.a: $(SUBSYS_SENSORHUB_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) -cr $@ $^
+
+endif
+
+ifeq ($(TOOLCHAIN),ARMCC)
+
+CFLAGS_INC += -I $(TOP)/PLAT/os/freertos/portable/keil
+
+lib-y += libsubsys_sensorhub.lib
+
+$(BUILDDIR)/lib/libsubsys_sensorhub.lib: $(SUBSYS_SENSORHUB_COBJS)
+	@mkdir -p $(dir $@)
+	$(ECHO) AR $@
+	$(Q)$(AR) $(ARFLAGS) $@ $^
+
+endif

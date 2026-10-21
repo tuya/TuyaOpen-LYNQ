@@ -1,0 +1,55 @@
+[config]
+line_0_com = COM9
+agbaud=921600
+baud=130000
+filter_embedusb=0
+filter_externcom=1
+
+path_convert_cfg_avail = 1
+pathconv_to_file_basedir_pairs=bootloader:headpath;system:headpath
+
+[agentboot]
+tool_basedir = 1
+agpath = .\product_sets\ec718_products\common_data\agentboot_usb\agentboot.bin
+
+[storage_cfg]
+#will be update when load
+format_path = format_ec718_none.json
+
+[bootloader]
+headpath = .\bl_sec_header.bin
+blpath = .\ap_bootloader.bin
+blloadskip = 0
+burnaddr=0x3000
+;system.bin file infomation
+[system]
+headpath = .\sys_sec_header.bin
+syspath =.\ap_demo-flash.bin
+sysloadskip = 0
+burnaddr = 0x72000
+
+[cp_system]
+cp_syspath = .\image_ec718\cp-demo-flash.bin
+cp_sysloadskip = 0
+burnaddr = 0x1a000
+
+[security]
+hashtype = 1
+extern_sec_head_used=1
+curve_type = curve_224
+
+[control]
+prempt_detect_time = 6
+msg_waittime = 2
+max_preamble_cnt = 8
+lpc_recover_en = 0
+pullup_qspi = 1
+trc_ser = 1
+rom_version= 0000000203000000
+
+dribble_dld_en=0
+
+[flexfile0]
+filepath = .\MergeRfTable.bin
+burnaddr = 0x1f3000
+

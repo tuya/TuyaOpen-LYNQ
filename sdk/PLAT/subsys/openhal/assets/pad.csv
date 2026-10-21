@@ -1,0 +1,7 @@
+paddr,mux,pullUp,pullDown,pullSelect,inputControl,outputControl,brief
+11,0,1,0,0,0,0,SWCLKA
+12,0,1,0,0,0,0,SWDIOA
+13,4,1,0,1,0,0,GPIO18
+14,4,1,0,1,0,0,GPIO19
+42,0,0,0,0,0,0,GPIO36
+53,0,1,0,1,0,0,GPIO28

@@ -1,0 +1,222 @@
+cmake_minimum_required(VERSION 3.13)
+
+set(SOURCE_TOP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(BINARY_TOP_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(PROJECT_ROOT_DIR ${SOURCE_TOP_DIR}/../..)
+set(flash_ldscript ${PROJECT_ROOT_DIR}/ldscripts/flash_output.ld)
+
+set(out_lib_dir ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(out_inc_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+set(cmd_mksimage fcelf)
+
+include(${PROJECT_ROOT_DIR}/prebuilts/linux/toolchain-gcc.cmake)
+
+set(CMAKE_C_COMPILER_FORCED   1)
+set(CMAKE_CXX_COMPILER_FORCED 1)
+set(BUILD_SHARED_LIBS OFF)
+
+# 设置 C++11 标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) # 如果你想使用 C++11 而不是 GNU 扩展的 C++11
+
+set(lib_path ${PROJECT_ROOT_DIR}/libs)
+file(GLOB app_lib ${lib_path}/*.a)
+# message(STATUS "Linked libs: ${app_lib}")
+
+project(${APP_NAME} C CXX ASM)
+
+# 解析 build/tuya_app.config (Kconfig 风格)：把 KEY=VALUE 设为 CMake 变量并加入
+# TUYA_APP_CONFIG_KEYS。`# KEY is not set` 视为未定义，跳过。文件不存在则什么都不做。
+set(TUYA_APP_CONFIG_KEYS "")
+set(_app_config_file "${CMAKE_SOURCE_DIR}/build/tuya_app.config")
+if(EXISTS "${_app_config_file}")
+    file(STRINGS "${_app_config_file}" _config_lines)
+    foreach(_line ${_config_lines})
+        string(STRIP "${_line}" _line)
+        if("${_line}" STREQUAL "")
+            continue()
+        endif()
+        if("${_line}" MATCHES "^#[ \t]*[A-Za-z0-9_]+[ \t]+is[ \t]+not[ \t]+set[ \t]*$")
+            continue()
+        endif()
+        if("${_line}" MATCHES "^#")
+            continue()
+        endif()
+        if("${_line}" MATCHES "^([A-Za-z0-9_]+)=(.*)$")
+            set(${CMAKE_MATCH_1} "${CMAKE_MATCH_2}")
+            list(APPEND TUYA_APP_CONFIG_KEYS ${CMAKE_MATCH_1})
+        endif()
+    endforeach()
+endif()
+
+function(include_subdirectories root_dir)
+    if(IS_DIRECTORY ${root_dir})
+        include_directories(${root_dir})
+    endif()
+    file(GLOB ALL_SUB RELATIVE ${root_dir} ${root_dir}/*)
+    foreach(sub ${ALL_SUB})
+        if(IS_DIRECTORY ${root_dir}/${sub})
+            # 检查是否是 lib_tflm 目录
+            if("lib_tflm" MATCHES ${sub})
+                # 如果是 lib_tflm，只添加 lib_tflm 和特定的子目录
+                include_directories(${root_dir}/${sub})
+                include_directories(${root_dir}/${sub}/third_party/flatbuffers/include)
+                include_directories(${root_dir}/${sub}/third_party/gemmlowp)
+            elseif(NOT (".git" MATCHES ${sub} OR "output" MATCHES ${sub} OR "doc" MATCHES ${sub} OR "example" MATCHES ${sub}))
+                # 排除 .git/output/doc/example 目录，参考代码目录不加入头文件搜索路径
+                include_subdirectories(${root_dir}/${sub})
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
+include_subdirectories(${PROJECT_ROOT_DIR}/include)
+include_subdirectories(${SOURCE_TOP_DIR}/src)
+include_directories(${SOURCE_TOP_DIR})
+include_directories(${SOURCE_TOP_DIR}/include)
+
+# 添加库目录
+link_directories("${LIB_PATH}")
+set(out_hex_dir ${CMAKE_CURRENT_BINARY_DIR}/${APP_VERSION})
+
+function(add_appimg target ldscript)
+    set(gen_ldscript ${target}_ldscript)
+    set(target_app_image_file ${out_hex_dir}/${target}.bin)
+    set(target_map_file ${out_hex_dir}/${target}.map)
+    set(target_img_file ${out_hex_dir}/${target}.binpkg)
+    set(target_img_size_file ${out_hex_dir}/${target}.size)
+
+    get_filename_component(C_COMPILER_PATH ${CMAKE_C_COMPILER} DIRECTORY)
+    set(CMAKE_SIZE "${C_COMPILER_PATH}/arm-none-eabi-size")
+
+    add_executable(${target} ${ARGN})
+    target_link_directories(${target} PRIVATE ${PROJECT_ROOT_DIR}/libs)
+    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${out_hex_dir})
+    
+    # 设置链接器脚本和其他链接选项
+    target_link_options(${target} PRIVATE
+        -T ${ldscript}
+        -Wl,-Map=${target_map_file}
+        -Wl,--gc-sections
+        -Wl,--cref
+    )
+
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${target}> ${target_app_image_file}
+        COMMAND ${CMAKE_OBJDUMP}  -h ${out_hex_dir}/${target}.elf > ${target_img_size_file}
+        COMMAND ${CMAKE_SIZE} -G ${out_hex_dir}/${target}.elf >> ${target_img_size_file} 
+    )
+
+    file(GLOB LIB_FILES "${PROJECT_ROOT_DIR}/libs/*.a")
+    foreach(lib ${LIB_FILES})
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_SIZE} ${lib} -t -G >> ${target_img_size_file}
+        )
+    endforeach()
+
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND cp ${target_app_image_file} ${out_hex_dir}/${target}_unZip.bin
+        COMMAND cp ${PROJECT_ROOT_DIR}/sysfw/mem_map.txt ${out_hex_dir}
+        COMMAND ${cmd_mksimage} -C -bin ${out_hex_dir}/${target}_unZip.bin -cfg ${PROJECT_ROOT_DIR}/sysfw/sectionInfo_ec718pm.json -map ${target_map_file} -out ${target_app_image_file}
+
+        COMMAND ${cmd_mksimage} -M  
+            -input ${PROJECT_ROOT_DIR}/sysfw/ap_bootloader.bin -addrname BL_PKGIMG_LNA -flashsize BOOTLOADER_PKGIMG_LIMIT_SIZE  
+            -input ${target_app_image_file} -addrname AP_PKGIMG_LNA -flashsize AP_PKGIMG_LIMIT_SIZE 
+            -input ${PROJECT_ROOT_DIR}/sysfw/cp-demo-flash.bin -addrname CP_PKGIMG_LNA -flashsize CP_PKGIMG_LIMIT_SIZE 
+            -input ${PROJECT_ROOT_DIR}/sysfw/ec718pm_PrMgrCfg.json.bin -addrname XPKGDPRM_VIRTIMG_MERGE_LNA -flashsize XPKG_VIRTIMG_LOAD_SIZE 
+            -input ${PROJECT_ROOT_DIR}/sysfw/format_ec718pm.json.bin -addrname XPKGDCMN_VIRTIMG_MERGE_LNA -flashsize XPKG_VIRTIMG_LOAD_SIZE 
+            -input ${PROJECT_ROOT_DIR}/sysfw/config_ec718pm_prd_uart.baseini.bin -addrname XPKGDCMN_VIRTIMG_MERGE_LNA -flashsize XPKG_VIRTIMG_LOAD_SIZE 
+            -input ${PROJECT_ROOT_DIR}/sysfw/config_ec718pm_prd_usb.baseini.bin -addrname XPKGDCMN_VIRTIMG_MERGE_LNA -flashsize XPKG_VIRTIMG_LOAD_SIZE 
+            -pkgmode 1  
+            -banoldtool 1 
+            -productname EC718PM_PRD 
+            -def ${PROJECT_ROOT_DIR}/sysfw/mem_map.txt
+            -outfile ${out_hex_dir}/${target}.binpkg
+    )
+
+endfunction()
+
+# 检查文件是否存在
+set(APP_COMPONENTS "")
+if(EXISTS "${CMAKE_SOURCE_DIR}/components.mk")
+    # 如果存在，则读取文件内容
+    file(READ components.mk CFG_COMPONENTS)
+    string(REPLACE "COMPONENTS:=" "" COMPONENT_LIST ${CFG_COMPONENTS})
+    # 先剥掉首尾空白，再按任意空白切分。否则文件末尾的换行会附在最后一项上
+    # (如 "svc_ai_player\n")，下面依附路径的 EXISTS 判为不存在，该组件被静默跳过，
+    # 症状是其他组件 include 它的头文件时报 No such file or directory。
+    string(STRIP "${COMPONENT_LIST}" COMPONENT_LIST)
+    string(REGEX REPLACE "[ \t\r\n]+" ";" APP_COMPONENTS "${COMPONENT_LIST}")
+else()
+    message(STATUS "File components.mk does not exist. "
+                   "Falling back to per-component CMakeLists.txt.")
+    foreach(_base application_components application_drivers)
+        set(_base_dir "${PROJECT_ROOT_DIR}/${_base}")
+        if(IS_DIRECTORY "${_base_dir}")
+            file(GLOB _children LIST_DIRECTORIES true "${_base_dir}/*")
+            foreach(_child ${_children})
+                if(IS_DIRECTORY "${_child}" AND EXISTS "${_child}/CMakeLists.txt")
+                    get_filename_component(_comp_name "${_child}" NAME)
+                    message(STATUS "  add subdirectory: ${_base}/${_comp_name}")
+                    add_subdirectory("${_child}" "${CMAKE_BINARY_DIR}/_comps/${_comp_name}")
+                endif()
+            endforeach()
+        endif()
+    endforeach()
+endif()
+
+set(target ${APP_NAME})
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.c")
+# 排除 doc/example 等参考代码目录，避免厂商示例代码参与编译
+list(FILTER SOURCES EXCLUDE REGEX "/(doc|docs|example|examples)/")
+add_appimg(${target} ${flash_ldscript} ${SOURCES})
+
+# 把 fallback 路径下子 CMakeLists.txt 注册到全局 property 的 INTERFACE target 链接到主 app,
+# 让它们的 INTERFACE sources / include / compile_definitions 真正生效。
+get_property(_comp_targets GLOBAL PROPERTY TUYA_COMPONENT_TARGETS)
+if(_comp_targets)
+    target_link_libraries(${target} PRIVATE ${_comp_targets})
+endif()
+# 添加宏定义
+target_compile_definitions(${target} PRIVATE
+    APP_NAME="${APP_NAME}"
+    APP_VERSION="${APP_VERSION}"
+    TUYAOS_VER=38
+    CLI_UART_NUM=3
+)
+foreach(_key ${TUYA_APP_CONFIG_KEYS})
+    if(DEFINED ${_key} AND NOT "${${_key}}" STREQUAL "")
+        target_compile_definitions(${target} PRIVATE ${_key}=${${_key}})
+    endif()
+endforeach()
+if(APP_COMPONENTS)
+    message("PROJECT_ROOT_DIR ${PROJECT_ROOT_DIR}")
+    set(tuya_app_components ${PROJECT_ROOT_DIR}/application_components)
+    foreach(sub ${APP_COMPONENTS})
+        if(EXISTS "${tuya_app_components}/${sub}")
+            message("add app components: ${sub}")
+            include_subdirectories(${PROJECT_ROOT_DIR}/application_components/${sub})
+            file(GLOB_RECURSE list_components_files CONFIGURE_DEPENDS ${tuya_app_components}/${sub}/src/*.c ${tuya_app_components}/${sub}/src/*.cc)
+            target_sources(${target} PRIVATE ${list_components_files})
+        endif()
+    endforeach()
+endif()
+
+# 链接库
+target_link_libraries(${target} PRIVATE -Wl,-start-group -Wl,--whole-archive ${app_lib}
+            -Wl,--no-whole-archive
+            -Wl,--end-group
+            -lc -lm -Wl,--no-undefined -Wl,--no-print-map-discarded
+)
+# 添加自定义目标清理构建目录
+add_custom_target(clean-all
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/clean-all.cmake
+)
+
+# 创建一个CMake脚本文件来执行清理
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/clean-all.cmake "
+    file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/build)
+    file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/output)
+")

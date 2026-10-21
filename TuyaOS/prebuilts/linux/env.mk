@@ -1,0 +1,57 @@
+GCCLIB_PATH ?= $(SDK_ROOT)/prebuilts/linux/gcc-arm-none-eabi-10-2020-q4-major
+CROSS_COMPILE := $(GCCLIB_PATH)/bin/arm-none-eabi-
+LD_COMPILED_FILE ?= $(SDK_ROOT)/ldscripts/ec7xx_0h00_flash_output.ld
+
+# Compilation tools
+CC = $(CROSS_COMPILE)gcc
+CXX = $(CROSS_COMPILE)g++
+LD = $(CROSS_COMPILE)ld
+SIZE = $(CROSS_COMPILE)size
+STRIP = $(CROSS_COMPILE)strip
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJDUMP = $(CROSS_COMPILE)objdump
+GDB = $(CROSS_COMPILE)gdb
+NM = $(CROSS_COMPILE)nm
+AR = $(CROSS_COMPILE)ar
+
+# Setup compilation params
+CFLAGS_CPU      ?= -mcpu=cortex-m3 -mthumb
+CFLAGS_OPTION   ?= -std=gnu99 -nostartfiles -mapcs-frame -specs=nano.specs
+CFLAGS_OPTIMIZE ?= -Os -ffunction-sections -fdata-sections -fno-isolate-erroneous-paths-dereference -freorder-blocks-algorithm=stc
+CFLAGS_ANALYSIS ?= #-fanalyzer
+CFLAGS_WARNING  ?= -Wall -Wno-format
+CFLAGS_DEBUG    ?= -gdwarf-2
+
+# Trace level used for compilation
+# (can be overriden by adding TRACE_LEVEL=#number to the command-line)
+# TRACE_LEVEL_DEBUG      5
+# TRACE_LEVEL_INFO       4
+# TRACE_LEVEL_WARNING    3
+# TRACE_LEVEL_ERROR      2
+# TRACE_LEVEL_FATAL      1
+# TRACE_LEVEL_NO_TRACE   0
+ifdef DEBUG
+TRACE_LEVEL ?= 5
+CFLAGS_DEFS += -DTRACE_LEVEL=$(TRACE_LEVEL)
+CFLAGS += -g3
+CFLAGS_ASM += -g3
+else
+TRACE_LEVEL ?= 4
+CFLAGS_DEFS += -DNDEBUG -DTRACE_LEVEL=$(TRACE_LEVEL)
+endif
+
+# compiler flags
+CFLAGS += $(CFLAGS_CPU) $(CFLAGS_OPTION) $(CFLAGS_OPTIMIZE) $(CFLAGS_WARNING) $(CFLAGS_DEBUG) $(CFLAGS_ANALYSIS) -D__CURRENT_FILE_NAME__=$(basename $(@F))
+CFLAGS += $(CFLAGS_DEFS)
+
+CXXFLAGS += -std=c++11 -fno-exceptions $(CFLAGS_CPU) $(CFLAGS_OPTIMIZE) $(CFLAGS_WARNING) $(CFLAGS_DEBUG) $(CFLAGS_ANALYSIS) -D__CURRENT_FILE_NAME__=$(basename $(@F))
+CXXFLAGS += $(CFLAGS_DEFS) -DARM_MATH_CM3
+
+CFLAGS_ASM += -Wall -D__ASSEMBLY__ -mthumb -gdwarf-2 #-mthumb-interwork
+CFLAGS_ASM += $(CFLAGS_DEFS)
+
+DEPFLAGS = -MMD -MP -MT $(basename $@).o -MF $(basename $@).d
+
+# linker flags
+LDFLAGS = -specs=nano.specs -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--print-memory-usage
+

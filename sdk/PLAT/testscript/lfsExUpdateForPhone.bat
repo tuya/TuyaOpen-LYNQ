@@ -1,0 +1,24 @@
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f default.info      -F default.info
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f contactDb.json    -F feature_db/contactDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f contactDb.type    -F feature_db/contactDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f callListDb.json   -F feature_db/callListDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f callListDb.type   -F feature_db/callListDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f displayDb.json    -F feature_db/displayDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f displayDb.type    -F feature_db/displayDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f profileDb.json    -F feature_db/profileDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f profileDb.type    -F feature_db/profileDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f ttsDb.json        -F feature_db/ttsDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f ttsDb.type        -F feature_db/ttsDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f presetSmsDb.json  -F feature_db/presetSmsDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f presetSmsDb.type  -F feature_db/presetSmsDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f smsInboxDb.json   -F feature_db/smsInboxDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f smsInboxDb.type   -F feature_db/smsInboxDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f smsOutboxDb.json  -F feature_db/smsOutboxDb.json
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f smsOutboxDb.type  -F feature_db/smsOutboxDb.type
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_01.jpg  -F package/phone/MM_01.jpg
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_02.jpg  -F package/phone/MM_02.jpg
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_03.jpg  -F package/phone/MM_03.jpg
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_04.jpg  -F package/phone/MM_04.jpg
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_05.jpg  -F package/phone/MM_05.jpg
+lfsutil.exe -i ../project/ec7xx_ref_1h00/ap/apps/phone/lfs/ext_lfs_2M5.bin -w -f MM_06.jpg  -F package/phone/MM_06.jpg
+del lfsutil.log

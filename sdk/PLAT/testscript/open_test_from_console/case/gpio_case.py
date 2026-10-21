@@ -1,0 +1,2 @@
+case_map = {"create": {"cmd": b'gpio create 28\r\n', "match": "create gpio :28", "re": False},
+            "delete": {"cmd": b'gpio delete 28\r\n', "match": "delete gpio :28", "re": False}, "create_all": {"cmd": b'gpio create_all\r\n', "match": "", "re": False}, "delete_all": {"cmd": b'gpio delete_all\r\n', "match": "", "re": False}, "write": {"cmd": b'gpio write 28 1\r\n', "match": "write gpio[28]: 1", "re": False}, "read": {"cmd": b'gpio read 28\r\n', "match": "read gpio[28] res: 0", "re": False}, "write_all": {"cmd": b'gpio write_all 0\r\n', "match": "", "re": False}}

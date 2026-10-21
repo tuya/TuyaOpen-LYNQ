@@ -1,0 +1,19 @@
+
+/*********************************************************************
+*
+*       SetupTarget
+*/
+void SetupTarget(void)
+{ 
+  int regValue;
+
+  regValue = JLINK_MEM_ReadU32(0x4f020054);
+  regValue |= 1;
+  
+  JLINK_MEM_WriteU32(0x4f020054, regValue);
+  JLINK_SYS_Sleep(1);
+  regValue = JLINK_MEM_ReadU32(0x4f020054);
+
+  JLINK_SYS_Report1("SetupTarget, reset cfg:", regValue); 
+}
+

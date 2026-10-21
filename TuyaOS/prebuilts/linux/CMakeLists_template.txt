@@ -1,0 +1,208 @@
+cmake_minimum_required(VERSION 3.13)
+
+set(SOURCE_TOP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(BINARY_TOP_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(PROJECT_ROOT_DIR ${SOURCE_TOP_DIR}/../..)
+set(tools_dir ${PROJECT_ROOT_DIR}/tools)
+# set(flash_ldscript ${PROJECT_ROOT_DIR}/ldscripts/qcx216_0h00_flash_output.ld)
+set(flash_ldscript ${PROJECT_ROOT_DIR}/ldscripts/ec7xx_0h00_flash_output.ld)
+
+
+
+set(out_lib_dir ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(out_inc_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(tools_dir ${PROJECT_ROOT_DIR}/tools)
+
+set(cmd_mksimage fcelf)
+
+include(${PROJECT_ROOT_DIR}/prebuilts/linux/toolchain-gcc.cmake)
+
+set(CMAKE_C_COMPILER_FORCED   1)
+set(CMAKE_CXX_COMPILER_FORCED 1)
+set(BUILD_SHARED_LIBS OFF)
+
+# 设置 C++11 标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) # 如果你想使用 C++11 而不是 GNU 扩展的 C++11
+
+set(libopendriver "${PROJECT_ROOT_DIR}/libs/libopendriver.a")
+set(libL511 "${PROJECT_ROOT_DIR}/libs/libL511C_Y6.a")
+set(libdriver "${PROJECT_ROOT_DIR}/libs/libdriver.a")
+set(libfreertos "${PROJECT_ROOT_DIR}/libs/libfreertos.a")
+set(libmiddleware_ec "${PROJECT_ROOT_DIR}/libs/libmiddleware_ec.a")
+set(libpsnv "${PROJECT_ROOT_DIR}/libs/libpsnv.a")
+set(libstartup "${PROJECT_ROOT_DIR}/libs/libstartup.a")
+set(libtcpipmgr "${PROJECT_ROOT_DIR}/libs/libtcpipmgr.a")
+set(libopenapi "${PROJECT_ROOT_DIR}/libs/libopenapi.a")
+set(libyrcompress "${PROJECT_ROOT_DIR}/libs/libyrcompress.a")
+set(librohc "${PROJECT_ROOT_DIR}/libs/librohc.a")
+set(libiperf "${PROJECT_ROOT_DIR}/libs/libiperf.a")
+set(libhttpclient "${PROJECT_ROOT_DIR}/libs/libhttpclient.a")
+set(liblwip "${PROJECT_ROOT_DIR}/libs/liblwip.a")
+set(libping "${PROJECT_ROOT_DIR}/libs/libping.a")
+set(liblfs "${PROJECT_ROOT_DIR}/libs/liblfs.a")
+set(libsntp "${PROJECT_ROOT_DIR}/libs/libsntp.a")
+set(libps "${PROJECT_ROOT_DIR}/libs/libps.a")
+set(libpsl1 "${PROJECT_ROOT_DIR}/libs/libpsl1.a")
+set(libpsif "${PROJECT_ROOT_DIR}/libs/libpsif.a")
+set(libosa "${PROJECT_ROOT_DIR}/libs/libosa.a")
+set(libmiddleware_ec_private "${PROJECT_ROOT_DIR}/libs/libmiddleware_ec_private.a")
+set(libccio "${PROJECT_ROOT_DIR}/libs/libccio.a")
+set(libdeltapatch "${PROJECT_ROOT_DIR}/libs/libdeltapatch.a")
+set(libfota "${PROJECT_ROOT_DIR}/libs/libfota.a")
+set(libdriver_private "${PROJECT_ROOT_DIR}/libs/libdriver_private.a")
+set(libusb_private "${PROJECT_ROOT_DIR}/libs/libusb_private.a")
+set(libtuyaos_adapter "${PROJECT_ROOT_DIR}/libs/libtuyaos_adapter.a")
+set(libtuyaos "${PROJECT_ROOT_DIR}/libs/libtuyaos.a")
+set(libml "${PROJECT_ROOT_DIR}/libs/libml.a")
+set(liblzma "${PROJECT_ROOT_DIR}/libs/liblzma.a")
+# 搜索所有的.a文件
+# file(GLOB LIBRARY_FILES "${PROJECT_ROOT_DIR}/libs/*.a")
+# message("Found libraries: ${LIBRARY_FILES}")
+
+# 设置头文件目录
+add_compile_definitions(TF_LITE_MICRO_ENABLED)
+add_compile_definitions(TF_LITE_MCU_DEBUG_LOG)
+add_compile_definitions(TF_LITE_STATIC_MEMORY)
+#去掉TFLM的日志，减少代码空间
+add_compile_definitions(TF_LITE_STRIP_ERROR_STRINGS)
+add_compile_definitions(CMSIS_NN)
+project(${APP_NAME} C CXX ASM)
+
+function(include_subdirectories root_dir)
+    if(IS_DIRECTORY ${root_dir})
+        include_directories(${root_dir})
+    endif()
+    file(GLOB ALL_SUB RELATIVE ${root_dir} ${root_dir}/*)
+    foreach(sub ${ALL_SUB})
+        if(IS_DIRECTORY ${root_dir}/${sub})
+            # 检查是否是 lib_tflm 目录
+            if("lib_tflm" MATCHES ${sub})
+                # 如果是 lib_tflm，只添加 lib_tflm 和特定的子目录
+                include_directories(${root_dir}/${sub})
+                include_directories(${root_dir}/${sub}/third_party/flatbuffers/include)
+                include_directories(${root_dir}/${sub}/third_party/gemmlowp)
+            elseif(NOT (".git" MATCHES ${sub} OR "output" MATCHES ${sub}))
+                # 如果不是 lib_tflm，递归地包含其他子目录
+                include_subdirectories(${root_dir}/${sub})
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
+include_subdirectories(${PROJECT_ROOT_DIR}/include)
+include_directories(${SOURCE_TOP_DIR})
+include_directories(${SOURCE_TOP_DIR}/include)
+
+# 添加库目录
+link_directories("${LIB_PATH}")
+
+# 添加宏定义
+add_definitions(-DAPP_NAME="${APP_NAME}")
+add_definitions(-DAPP_VERSION="${APP_VERSION}")
+add_definitions(-DTUYAOS_VER=38)
+set(out_hex_dir ${CMAKE_CURRENT_BINARY_DIR}/${APP_VERSION})
+
+
+function(add_appimg target ldscript)
+    set(gen_ldscript ${target}_ldscript)
+    set(target_app_image_file ${out_hex_dir}/${APP_NAME}.bin)
+    set(target_map_file ${out_hex_dir}/${target}.map)
+    set(target_img_file ${out_hex_dir}/${target}.binpkg)
+
+    add_executable(${target} ${ARGN})
+    target_link_directories(${target} PRIVATE ${PROJECT_ROOT_DIR}/libs)
+    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${out_hex_dir})
+
+    # 设置链接器脚本和其他链接选项
+    target_link_options(${target} PRIVATE
+        -T ${ldscript}
+        -Wl,-Map=${target_map_file}
+        -Wl,--gc-sections
+        -Wl,--no-undefined
+        -Wl,--no-print-map-discarded
+        -Wl,--no-whole-archive
+    )
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${target}> ${target_app_image_file}
+    )
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${cmd_mksimage} -M
+        -input ${PROJECT_ROOT_DIR}/sysfw/ap_bootloader.bin -addrname BL_PKGIMG_LNA -flashsize BOOTLOADER_PKGIMG_LIMIT_SIZE
+        -input ${target_app_image_file}  -addrname AP_PKGIMG_LNA -flashsize AP_PKGIMG_LIMIT_SIZE
+        -input ${PROJECT_ROOT_DIR}/sysfw/cp-demo-flash.bin -addrname CP_PKGIMG_LNA -flashsize CP_PKGIMG_LIMIT_SIZE
+        -pkgmode 1 -banoldtool 1
+        -def ${PROJECT_ROOT_DIR}/sysfw/mem_map.txt
+        -outfile ${target_img_file}
+        DEPENDS ${APP_NAME}
+        COMMENT "Creating binpkg file"
+    )
+endfunction()
+
+file(READ components.mk CFG_COMPONENTS)
+string(REPLACE "COMPONENTS:=" "" COMPONENT_LIST ${CFG_COMPONENTS})
+string(REPLACE " " ";" APP_COMPONENTS ${COMPONENT_LIST})
+
+set(target ${APP_NAME})
+file(GLOB_RECURSE app_src src/*.c)
+add_appimg(${target} ${flash_ldscript} ${app_src})
+if(APP_COMPONENTS)
+    message("PROJECT_ROOT_DIR ${PROJECT_ROOT_DIR}")
+    set(tuya_app_components ${PROJECT_ROOT_DIR}/application_components)
+    foreach(sub ${APP_COMPONENTS})
+        message("add app components: ${sub}")
+        include_directories(${PROJECT_ROOT_DIR}/application_components/${sub}/include)
+        include_subdirectories(${tuya_app_components}/${sub}/include)
+        file(GLOB_RECURSE list_components_files ${tuya_app_components}/${sub}/src/*.c ${tuya_app_components}/${sub}/src/*.cc)
+        target_sources(${target} PRIVATE ${list_components_files})
+    endforeach()
+endif()
+
+# 链接库
+target_link_libraries(${target} PRIVATE -Wl,--whole-archive
+            ${libopendriver}
+            ${libL511}
+            ${libdriver}
+            ${libfreertos}
+            ${libmiddleware_ec}
+            ${libpsnv}
+            ${libstartup}
+            ${libtcpipmgr}
+            ${libopenapi}
+            ${libyrcompress}
+            # ${librohc}
+            # ${libiperf}
+            ${libhttpclient}
+            ${liblwip}
+            ${libping}
+            ${liblfs}
+            ${libsntp}
+            ${libps}
+            ${libpsl1}
+            ${libpsif}
+            ${libosa}
+            ${libmiddleware_ec_private}
+            ${libccio}
+            ${libdeltapatch}
+            ${libfota}
+            ${libdriver_private}
+            ${libusb_private}
+            ${libtuyaos_adapter}
+            ${libtuyaos}
+            ${liblzma}
+            # ${libml}
+            # ${libcmux}
+            # ${LIBRARY_FILES}
+            -Wl,--no-whole-archive
+)
+# 添加自定义目标清理构建目录
+add_custom_target(clean-all
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/clean-all.cmake
+)
+
+# 创建一个CMake脚本文件来执行清理
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/clean-all.cmake "
+    file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/build)
+    file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/output)
+")

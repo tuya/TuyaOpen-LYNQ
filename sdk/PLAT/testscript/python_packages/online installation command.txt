@@ -1,0 +1,3 @@
+pip install pyelftools
+pip install pyserial
+pip install pywindnd

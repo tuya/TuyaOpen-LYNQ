@@ -1,0 +1,485 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('ref_app') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 ref_app
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('ref_min') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 ref_min
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('phone') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 phone
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('speaker 718p 8311') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 speaker_718p_8311
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('speaker 718p 7149') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 speaker_718p_7149
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('speaker 718p pwm') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 speaker_718p_pwm
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('speaker 716e 7111') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 speaker_716e_7111
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('speaker 716e pwm') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 speaker_716e_pwm
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('audio_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 audio_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('camera_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 camera_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('fs_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 fs_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('socket_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 socket_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('http_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 http_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('slp_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 slp_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('time_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 time_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('volte_demo') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 volte_demo
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('lcd_demo lvgl') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 lcd_demo lvgl
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('lcd_demo rgb') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 lcd_demo rgb
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('driver_example USART_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example USART_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example SPI_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example SPI_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example I2C_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example I2C_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example GPIO_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example GPIO_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example TIMER_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example TIMER_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example WDT_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example WDT_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example DMA_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example DMA_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example ADC_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example ADC_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example KPC_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example KPC_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example AUDIO_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example AUDIO_EX
+                        '''
+                    }
+                }
+            }
+        }
+        // stage('driver_example AUDIOLOOP_EX') {
+        //     steps {
+        //         cleanWs()
+        //         git branch: 'jenkins_test', credentialsId: 'open_user', url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+        //         script{
+        //             catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+        //                 bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example AUDIOLOOP_EX
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
+        stage('driver_example TLS_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example TLS_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example CAMERA_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example CAMERA_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example LCD_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example LCD_EX
+                        '''
+                    }
+                }
+            }
+        }
+        stage('driver_example ONEW_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example ONEW_EX
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('driver_example PSRAM_EX') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''python PLAT/testscript/open_test_from_console/jenkins_use/main.py COM15 COM9 driver_example PSRAM_EX
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('cpp_check') {
+            steps {
+                cleanWs()
+                git branch: 'jenkins_test',  url: 'ssh://git@10.10.60.68:2222/open_eigencomm/ec718_716_sdk_main.git'
+                // checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'jjyan_svn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: 'https://10.10.30.220/svn/ec718_716_sdk_rel_a0_V001.016_20231130']], quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                script{
+                    catchError(stageResult: 'FAILURE', buildResult: 'UNSTABLE') {
+                        bat '''cppcheck PLAT/subsys/ PLAT/project/ --enable=all --xml --output-file=./cppcheck-result.xml -j 8
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Publish results'){
+            steps {
+                publishCppcheck allowNoReport: true
+            }
+        }
+    }
+}

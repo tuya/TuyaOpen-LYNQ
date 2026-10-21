@@ -1,0 +1,133 @@
+SDK_ROOT := $(shell pwd)/../..
+APP_NAME ?= $(notdir $(shell pwd))
+APP_VERSION ?= 0.0.1
+
+include $(SDK_ROOT)/prebuilts/linux/env.mk
+-include components.mk
+# Define a makefile function to find directories excluding .git and lib_tflm
+define find_includes
+$(shell find $(SDK_ROOT)/include -name .git -prune -o -name lib_tflm -prune -o -type d -print)
+endef
+
+MACRO_FLAGS := -DAPP_NAME=\"$(APP_NAME)\" -DAPP_VERSION=\"$(APP_VERSION)\" -DTUYAOS_VER=38
+
+COMP_INC_FLAGS := $(addsuffix /include, $(addprefix -I$(SDK_ROOT)/application_components/, $(COMPONENTS)))
+# Populate INC_PATH with the result of the function call
+INC_PATH := $(foreach dir,$(call find_includes),$(if $(wildcard $(dir)/.),$(dir)))
+
+# Check if lib_tflm directory exists and add it to INC_PATH if it does
+LIB_TFLM_DIR := $(SDK_ROOT)/include/lib_tflm
+ifneq ("$(wildcard $(LIB_TFLM_DIR)/.)","")
+    INC_PATH += $(LIB_TFLM_DIR)
+    INC_PATH +=$(LIB_TFLM_DIR)/third_party/flatbuffers/include
+    INC_PATH +=$(LIB_TFLM_DIR)/third_party/gemmlowp
+	CXXFLAGS += -DTF_LITE_MICRO_ENABLED -DTF_LITE_MCU_DEBUG_LOG -DTF_LITE_STATIC_MEMORY -DTF_LITE_STRIP_ERROR_STRINGS -DCMSIS_NN
+endif
+
+INC_FLAGS:=$(addprefix -I, $(INC_PATH))
+
+EXTRA_CFLAGS := -I$(shell pwd)/include
+EXTRA_CFLAGS += $(COMP_INC_FLAGS)
+EXTRA_CFLAGS += $(MACRO_FLAGS)
+EXTRA_CFLAGS += $(INC_FLAGS)
+
+LIB_PATH := $(SDK_ROOT)/libs
+LDFLAGS += -Wl,--wrap=_malloc_r -Wl,--wrap=_free_r -Wl,--wrap=_realloc_r
+LDFLAGS += -L$(LIB_PATH)
+LIBS := $(LIB_PATH)/libopendriver.a
+LIBS += $(LIB_PATH)/libL511C_Y6.a
+LIBS += $(LIB_PATH)/libdriver.a
+LIBS += $(LIB_PATH)/libfreertos.a
+LIBS += $(LIB_PATH)/libmiddleware_ec.a
+LIBS += $(LIB_PATH)/libpsnv.a
+LIBS += $(LIB_PATH)/libstartup.a
+LIBS += $(LIB_PATH)/libtcpipmgr.a
+LIBS += $(LIB_PATH)/libopenapi.a
+LIBS += $(LIB_PATH)/libyrcompress.a
+LIBS += $(LIB_PATH)/librohc.a
+LIBS += $(LIB_PATH)/libiperf.a
+LIBS += $(LIB_PATH)/libhttpclient.a
+LIBS += $(LIB_PATH)/liblwip.a
+LIBS += $(LIB_PATH)/libping.a
+LIBS += $(LIB_PATH)/liblfs.a
+LIBS += $(LIB_PATH)/libsntp.a
+LIBS += $(LIB_PATH)/libps.a
+LIBS += $(LIB_PATH)/libpsl1.a
+LIBS += $(LIB_PATH)/libpsif.a
+LIBS += $(LIB_PATH)/libosa.a
+LIBS += $(LIB_PATH)/libmiddleware_ec_private.a
+LIBS += $(LIB_PATH)/libccio.a
+LIBS += $(LIB_PATH)/libdeltapatch.a
+LIBS += $(LIB_PATH)/libfota.a
+LIBS += $(LIB_PATH)/libdriver_private.a
+LIBS += $(LIB_PATH)/libusb_private.a
+LIBS += $(LIB_PATH)/libtuyaos_adapter.a
+LIBS += $(LIB_PATH)/libtuyaos.a
+LIBS += $(LIB_PATH)/liblzma.a
+LIBS += $(foreach comp, $(COMPONENTS), $(SDK_ROOT)/application_components/$(comp)/build/lib$(comp).a)
+OUTPUT := build/$(APP_VERSION)
+DISTRO := output/$(APP_VERSION)
+
+# Find all .c and .cc files in src directory and its subdirectories
+SRCS_C := $(shell find src/ -name "*.c")
+SRCS_CC := $(shell find src/ -name "*.cc")
+
+# Generate the corresponding .o files in $(OUTPUT)/objs directory with subdirectories
+OBJS_C := $(SRCS_C:src/%.c=$(OUTPUT)/objs/%.o)
+OBJS_CC := $(SRCS_CC:src/%.cc=$(OUTPUT)/objs/%.o)
+OBJS := $(OBJS_C) $(OBJS_CC)
+
+INC_FLAGS+=-Isrc/model
+
+all: $(OUTPUT)/$(APP_NAME).binpkg
+
+$(OUTPUT)/$(APP_NAME).binpkg: $(OUTPUT)/ap_adpter.bin
+	@echo "make $@"
+	@$(SDK_ROOT)/tools/fcelf -M \
+	-input $(SDK_ROOT)/sysfw/ap_bootloader.bin -addrname BL_PKGIMG_LNA -flashsize BOOTLOADER_PKGIMG_LIMIT_SIZE \
+	-input $< -addrname AP_IMG_MERGE_ADDR  -addrname AP_PKGIMG_LNA -flashsize AP_PKGIMG_LIMIT_SIZE \
+	-input $(SDK_ROOT)/sysfw/cp-demo-flash.bin -addrname -addrname CP_PKGIMG_LNA -flashsize CP_PKGIMG_LIMIT_SIZE
+	-def ${SDK_ROOT}/sysfw/mem_map.txt \
+	-pkgmode 1 -banoldtool 1 \
+	-outfile $@
+
+$(OUTPUT)/ap_adpter.bin: $(OUTPUT)/$(APP_NAME).elf
+	@echo "OBJCOPY $@"
+	@$(OBJCOPY) -O binary $< $@
+	@$(SIZE) $<
+
+$(OUTPUT)/$(APP_NAME).elf: $(OBJS)
+	@mkdir -p $(OUTPUT)
+	@for COMP in $(COMPONENTS); do \
+		echo "build component: $$COMP"; \
+		cp -f $(SDK_ROOT)/prebuilts/linux/lib.mk $(SDK_ROOT)/application_components/$$COMP/Makefile; \
+		make -C $(SDK_ROOT)/application_components/$$COMP EXTRA_CFLAGS='$(EXTRA_CFLAGS)'; \
+	done
+	@echo "LD $@"
+	@$(CXX) $(LDFLAGS) $(CFLAGS_CPU) -T$(LD_COMPILED_FILE) -Wl,-Map,$(OUTPUT)/$(APP_NAME).map \
+	-o $@ $(OBJS) -u _scanf_float -u _printf_float -Wl,--start-group \
+	-Wl,--whole-archive $(LIBS) -Wl,--no-whole-archive -Wl,--end-group \
+	-lc -lm -Wl,--no-undefined -Wl,--no-print-map-discarded
+# Compile .c files to .o files
+$(OBJS_C): $(OUTPUT)/objs/%.o : src/%.c
+	@mkdir -p $(dir $@)
+	@echo "CC $<"
+	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -g -c -o $@ $<
+
+# Compile .cc files to .o files
+$(OBJS_CC): $(OUTPUT)/objs/%.o : src/%.cc
+	@mkdir -p $(dir $@)
+	@echo "CXX $<"
+	@$(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) -g -c -o $@ $<
+
+clean:
+	@for COMP in $(COMPONENTS); do \
+		echo "clean component: $$COMP"; \
+		cp -f $(SDK_ROOT)/prebuilts/linux/lib.mk $(SDK_ROOT)/application_components/$$COMP/Makefile; \
+		make -C $(SDK_ROOT)/application_components/$$COMP clean; \
+		rm -rf $(SDK_ROOT)/application_components/$$COMP/Makefile; \
+	done
+	rm -rf build output
+
+.PHONY: all clean
+

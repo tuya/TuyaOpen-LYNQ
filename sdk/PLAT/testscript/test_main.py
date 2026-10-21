@@ -1,0 +1,170 @@
+# coding:utf-8
+import argparse
+import os
+import sys
+import inspect
+import serial.tools.list_ports
+import time
+import random
+
+__version__ = "1.0"
+PYTHON2 = sys.version_info[0] < 3  # True if on pre-Python 3
+
+DEFAULT_BAUD='115200'
+DEFAULT_PORT='COM25'
+
+V_MENU_1_CMD = b'{"name":"@key","param1":0,"param2":0,"param3":"1"}\r'
+V_MENU_2_CMD = b'{"name":"@key","param1":0,"param2":0,"param3":"2"}\r'
+V_MENU_3_CMD = b'{"name":"@key","param1":0,"param2":0,"param3":"3"}\r'
+V_MENU_4_CMD = b'{"name":"@key","param1":0,"param2":0,"param3":"4"}\r'
+V_MENU_MENU_PRE_CMD = b'{"name":"@key","param1":0,"param2":0,"param3":"'
+V_MENU_MENU_AFTER_CMD = b'"}\r'
+
+plist = list(serial.tools.list_ports.comports())
+
+class FatalError(RuntimeError):
+    def __init__(self, message):
+        RuntimeError.__init__(self, message)
+
+    @staticmethod
+    def WithResult(message, result):
+        """
+        Return a fatal error object that appends the hex values of
+        'result' as a string formatted argument.
+        """
+        message += " (result was %s)" % hex(result)
+        return FatalError(message)
+
+def arg_auto_int(x):
+    return int(x, 0)
+
+def version(args):
+    print(__version__)
+
+def list_com(args):
+    print("----- useful serial port list ------------------------")
+    if len(plist) <= 0:
+        print("No useful port!")
+    else:
+        for plist_i in plist:
+            serialFd = serial.Serial(plist_i[0], 9600, timeout=1)
+            print("- Port : %s"% serialFd.name)
+            serialFd.close()
+    print("")
+
+def V_KEY_CMD(ser,key):
+    no_ret_cmd(ser,V_MENU_MENU_PRE_CMD)
+    no_ret_cmd(ser,key)
+    no_ret_cmd(ser,V_MENU_MENU_AFTER_CMD)
+
+def no_ret_cmd(ser,cmd):
+    ser.write(cmd)
+
+def ret_cmd(ser,cmd):
+    ser.write(cmd)
+    s=ser.readline()
+    print(bytes.decode(s))
+    return bytes.decode(s)
+
+def monkey(args):
+    #open port
+    ser = serial.Serial(args.port, args.baud, bytesize=8, parity='N', stopbits=1, timeout=1)
+    ser.close()
+    ser.open()
+    print("* Target Connected.       *")
+    print("*------------------------*")
+    seq=[b'1',b'2',b'3',b'4',b'5',b'6',b'7']
+    counter=1
+    while True:
+        print("loop:%d"%counter)
+        time.sleep(1)
+        vkey=random.choice(seq)
+        print(vkey)
+        V_KEY_CMD(ser,vkey)
+        time.sleep(0.5)
+        V_KEY_CMD(ser,b'\xF7')
+        time.sleep(1)
+        counter = counter+1
+    ser.close()
+    print("*------------------------*")
+    print("* Target Disconnected.    *")
+    
+def common(args):
+    #open port
+    ser = serial.Serial(args.port, args.baud, bytesize=8, parity='N', stopbits=1, timeout=1)
+    ser.close()
+    ser.open()
+    print("* Target Connected.       *")
+    print("*------------------------*")
+    counter=1
+    while True:
+        print("loop:%d"%counter)
+        time.sleep(1)
+        no_ret_cmd(ser,V_MENU_1_CMD)
+        time.sleep(0.1*counter)
+        V_KEY_CMD(ser,b'\xF7')
+        time.sleep(1)
+        counter = counter+1
+    ser.close()
+    print("*------------------------*")
+    print("* Target Disconnected.    *")
+
+def main():
+    parser = argparse.ArgumentParser(description='test_main.py v%s - Testing Utility' % __version__, prog='test_main')
+
+    parser.add_argument(
+        '--port', '-p',
+        help='Serial port device',
+        default=DEFAULT_PORT)
+
+    parser.add_argument(
+        '--baud', '-b',
+        help='Serial port baud rate used when flashing/reading',
+        type=arg_auto_int,
+        default=DEFAULT_BAUD)
+
+    subparsers = parser.add_subparsers(
+        dest='operation',
+        help='Run test_main {command} -h for additional help')
+
+    parser_step = subparsers.add_parser(
+        'common',
+        help='test test_main common.')
+        
+    parser_step = subparsers.add_parser(
+        'monkey',
+        help='test monkey.')
+        
+    parser_list_com = subparsers.add_parser(
+        'list_com',
+        help='list all useful com ports.')
+
+    args = parser.parse_args()
+    print("------------------------------------------------------")
+    print('                Testing Utility v%s'      % __version__)
+    print("------------------------------------------------------")
+    print("")
+
+    if args.operation is None:
+        parser.print_help()
+        sys.exit(1)
+
+    operation_func = globals()[args.operation]
+
+    if PYTHON2:
+        # This function is depreciated in Python3
+        operation_args = inspect.getargspec(operation_func).args
+    else:
+        operation_args = inspect.getfullargspec(operation_func).args
+
+    operation_func(args)
+
+def _main():
+    try:
+        main()
+    except FatalError as e:
+        print('\n A fatal error occurred: %s' % e)
+        sys.exit(2)
+
+if __name__ == '__main__':
+    _main()
