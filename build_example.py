@@ -20,6 +20,7 @@ TUYA_LIB_DIR, TUYA_LIBS and TUYA_APP_KCONFIG_DIR -- exported below.
 import errno
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -119,6 +120,25 @@ def clean(variant, env):
     return True
 
 
+def bind_package_configs(package_dir, package_name):
+    """Point this platform's USB/UART configs at the application package."""
+    for name in ("config_custom_usb.ini", "config_custom_uart.ini"):
+        path = os.path.join(package_dir, name)
+        if not os.path.isfile(path):
+            continue
+        with open(path, "rb") as stream:
+            original = stream.read()
+        content, count = re.subn(
+            rb"(?m)^(arg_pkg_path_val[ \t]*=[ \t]*)[^\r\n]*",
+            lambda match: match[1] + ("..\\" + package_name).encode("utf-8"),
+            original,
+        )
+        if count != 1:
+            raise ValueError(f"expected one arg_pkg_path_val in {path}")
+        with open(path, "wb") as stream:
+            stream.write(content)
+
+
 def collect_output(variant, param):
     '''
     Copy the vendor download package next to the other TuyaOpen artifacts, and
@@ -147,6 +167,7 @@ def collect_output(variant, param):
     shutil.copy2(binpkg, qio)
     shutil.copy2(binpkg, os.path.join(
         out_dir, f"{app_name}_QIO_{app_ver}.binpkg"))
+    bind_package_configs(pkg_dir, f"{app_name}_QIO_{app_ver}.binpkg")
 
     # Keep the elf around under the app's name: tos.py's crash decoding and
     # addr2line both want it.
