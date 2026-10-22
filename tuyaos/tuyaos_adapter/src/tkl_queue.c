@@ -12,24 +12,24 @@
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, INT_T msgsize, INT_T msgcount)
-{	
+OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, int msgsize, int msgcount)
+{
 	if (!queue) {
 		LOGE("create queue failed, queue is null");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	if (0 >= msgsize || 0 >= msgcount) {
 		LOGE("invalid msgsize or msgcount, msgsize: %d, msgcount: %d", msgsize, msgcount);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	osMessageQueueId_t id = osMessageQueueNew((uint32_t)msgcount, (uint32_t)msgsize, NULL);
 	if (NULL == id) {
 		LOGE("create queue failed");
 		return OPRT_OS_ADAPTER_QUEUE_CREAT_FAILED;
 	}
-	
+
 	*queue = id;
 	return OPRT_OK;
 }
@@ -43,13 +43,13 @@ OPERATE_RET tkl_queue_create_init(TKL_QUEUE_HANDLE *queue, INT_T msgsize, INT_T 
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-int tkl_queue_post(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
-{	
+int tkl_queue_post(const TKL_QUEUE_HANDLE queue, void *msg, uint32_t timeout)
+{
 	if (!queue || !msg) {
 		LOGE("queue post failed, invalid param, queue: %p, msg: %p", queue, msg);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	osStatus_t status = osMessageQueuePut(queue, msg, 0, timeout);
 	return (osOK == status) ? OPRT_OK : OPRT_OS_ADAPTER_QUEUE_SEND_FAIL;
 }
@@ -63,8 +63,8 @@ int tkl_queue_post(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_queue_fetch(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T timeout)
-{	
+OPERATE_RET tkl_queue_fetch(const TKL_QUEUE_HANDLE queue, void *msg, uint32_t timeout)
+{
 	if (!queue || !msg) {
 		LOGE("queue fetch failed, invalid param, queue: %p, msg: %p", queue, msg);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -79,15 +79,15 @@ OPERATE_RET tkl_queue_fetch(CONST TKL_QUEUE_HANDLE queue, VOID_T *msg, UINT_T ti
  *
  * @param[in] queue the message queue handle
  *
- * @return VOID_T
+ * @return void
  */
-VOID_T tkl_queue_free(CONST TKL_QUEUE_HANDLE queue)
+void tkl_queue_free(const TKL_QUEUE_HANDLE queue)
 {
 	if (!queue) {
 		LOGE("queue free failed, invalid param");
 		return;
 	}
-	
+
 	osStatus_t status = osMessageQueueDelete(queue);
 	if (osOK != status) {
 		LOGE("queue free failed, status: %d", status);

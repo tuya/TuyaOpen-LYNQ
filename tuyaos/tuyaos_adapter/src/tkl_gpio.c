@@ -3,6 +3,16 @@
 #include "cmsis_os2.h"
 #include "ol_gpio_api.h"
 #include "vlog.h"
+/* The pinned vendor log catalog does not contain entries for this adapter source. */
+#undef LOGD
+#undef LOGI
+#undef LOGW
+#undef LOGE
+#define LOGD(...) ((void)0)
+#define LOGI(...) ((void)0)
+#define LOGW(...) ((void)0)
+#define LOGE(...) ((void)0)
+
 #include "slpman.h"
 
 typedef struct {
@@ -12,12 +22,12 @@ typedef struct {
 	bool	irq_flag;
 	bool 	init_flag;				//初始化标志
 	TUYA_GPIO_IRQ_CB cb;
-	VOID_T* arg;
+	void* arg;
 	TUYA_GPIO_BASE_CFG_T cfg;
 } gpio_map_t;
 
 #define GPIO_NUM_MAX    sizeof(pinMap)/sizeof(gpio_map_t)
-extern bool tkl_cellular_get_sim_hotplug_status(UINT8_T sim_id);
+extern bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id);
 
 static gpio_map_t pinMap[] = {
 	{5,  0, 0, false, false, 0, 0}, 			//GPIO1 		-> GPIO20			//ok,wakeup3
@@ -70,12 +80,12 @@ static gpio_map_t *get_pinmap(int pin)
 	return NULL;
 }
 
-static void gpio_irq_handle(uint8_t pin)   
+static void gpio_irq_handle(uint8_t pin)
 {
 	gpio_map_t* map = &pinMap[pin];
 	if(!map->irq_flag)
 		return ;
-	
+
 	unsigned int irqmask = 0;
 	irqmask = ol_pin_get_irqmask(map->pin_id);			//关闭中断
 
@@ -84,7 +94,7 @@ static void gpio_irq_handle(uint8_t pin)
 		ol_pin_clean_interrupt_flag(map->pin_id);			//清除中断
 		if (map->cb) {
 			map->cb(map->arg);
-		} 
+		}
 	}
 	ol_pin_restore_irqmask(map->pin_id, irqmask);			//恢复中断
 }
@@ -127,9 +137,9 @@ OPERATE_RET tkl_gpio_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_BASE_CFG_T *cf
 	memset(&wakeupPadSetting, 0, sizeof(APmuWakeupPadSettings_t));
     wakeupPadSetting.negEdgeEn = false;
     wakeupPadSetting.posEdgeEn = false;
-	if(cfg->mode == TUYA_GPIO_PULLDOWN)	
+	if(cfg->mode == TUYA_GPIO_PULLDOWN)
 		wakeupPadSetting.pullDownEn = true;
-	else 
+	else
 		wakeupPadSetting.pullUpEn = true;
 	switch(map->pin_id)
 	{
@@ -168,7 +178,7 @@ OPERATE_RET tkl_gpio_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_BASE_CFG_T *cf
 		LOGE("gpio %d init failed, set pull ret: %d", pin_id, ret);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	map->init_flag = true;
 	memcpy(&map->cfg, cfg, sizeof(TUYA_GPIO_BASE_CFG_T));
     LOGI("gpio init success, pin/%d, mode/%d, direct/%d, level/%d", pin_id, cfg->mode, cfg->direct, cfg->level);
@@ -208,7 +218,7 @@ OPERATE_RET tkl_gpio_deinit(TUYA_GPIO_NUM_E pin_id)
 		.gpio_initoutput = 0,
 	};
 	ol_gpio_pull_enum pullconfig = OL_PULL_AUTO;
-	
+
 	ret = ol_pin_config(map->pin_id, &config);
 	if (0 != ret) {
 		LOGE("gpio %d deinit failed, ret: %d", pin_id, ret);
@@ -313,21 +323,21 @@ OPERATE_RET tkl_gpio_read(TUYA_GPIO_NUM_E pin_id, TUYA_GPIO_LEVEL_E *level)
     return OPRT_OK;
 }
 
-static OPERATE_RET agpio_irq_init(gpio_map_t *map, CONST TUYA_GPIO_IRQ_T *cfg)
+static OPERATE_RET agpio_irq_init(gpio_map_t *map, const TUYA_GPIO_IRQ_T *cfg)
 {
 	APmuWakeupPadSettings_t wakeupPadSetting;
 	memset(&wakeupPadSetting, 0, sizeof(APmuWakeupPadSettings_t));
 	wakeupPadSetting.pullUpEn = true;
 	switch (cfg->mode) {
-		case TUYA_GPIO_IRQ_RISE:	
-			wakeupPadSetting.posEdgeEn = true; 	
+		case TUYA_GPIO_IRQ_RISE:
+			wakeupPadSetting.posEdgeEn = true;
 		break;
-		case TUYA_GPIO_IRQ_FALL:	
-			wakeupPadSetting.negEdgeEn = true; 
+		case TUYA_GPIO_IRQ_FALL:
+			wakeupPadSetting.negEdgeEn = true;
 		break;
 		case TUYA_GPIO_IRQ_RISE_FALL:
-			wakeupPadSetting.posEdgeEn = true; 	
-			wakeupPadSetting.negEdgeEn = true; 
+			wakeupPadSetting.posEdgeEn = true;
+			wakeupPadSetting.negEdgeEn = true;
 		break;
 		default:
 			LOGE("gpio irq init failed, unsupport irq mode: %d", cfg->mode);
@@ -388,7 +398,7 @@ int agpio_irq_callback(uint32_t pad_num)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, CONST TUYA_GPIO_IRQ_T *cfg)
+OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, const TUYA_GPIO_IRQ_T *cfg)
 {
 	gpio_map_t *map = get_pinmap(pin_id);
 	if(map == NULL || NULL == cfg) {
@@ -433,7 +443,7 @@ OPERATE_RET tkl_gpio_irq_init(TUYA_GPIO_NUM_E pin_id, CONST TUYA_GPIO_IRQ_T *cfg
 		LOGE("gpio irq init failed, pin: %d, set int ret: %d", pin_id, ret);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	map->intr = int_cfg;
 	map->cb = cfg->cb;
 	map->arg = cfg->arg;
@@ -478,7 +488,7 @@ static OPERATE_RET tkl_gpio_irq_set(TUYA_GPIO_NUM_E pin_id, bool enable)
 		LOGE("gpio irq set error, irq not init, pin: %d, enable: %d", pin_id, enable);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	int ret;
 	if (false == enable) {
 		ret = ol_pin_set_interrupt(map->pin_id, OL_GPIO_INTERRUPT_DISABLED, isr_cb);
@@ -487,7 +497,7 @@ static OPERATE_RET tkl_gpio_irq_set(TUYA_GPIO_NUM_E pin_id, bool enable)
 		ret = ol_pin_set_interrupt(map->pin_id, map->intr, isr_cb);
 		map->irq_flag = true;
 	}
-	
+
 	return (0 == ret) ? OPRT_OK : OPRT_COM_ERROR;
 }
 
@@ -564,7 +574,7 @@ static void test_input_thread(void *args)
 
     // le370     //5, 6, 16, 17, 18, 19, 20, 21, 22, 23, 25, 28, 29, 82
     // le270     //5, 6, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 28, 29, 30, 31, 32, 33, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 63, 66, 67, 78, 80, 81, 82, 103
-	
+
     uint8_t pin_list[] = {49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 63, 66, 67, 78, 80, 81, 82, 103};
     TUYA_GPIO_BASE_CFG_T gpio_output_cfg = {
         .direct = TUYA_GPIO_OUTPUT,
@@ -593,7 +603,7 @@ static void test_input_thread(void *args)
         ret = tkl_gpio_read(pin_list[i*2+1], &level);
         if(ret) {
             LOGE("gpio read failed, pin: %d, ret: %d", pin_list[i*2+1], ret);
-        } 
+        }
 
         if(level != TUYA_GPIO_LEVEL_HIGH) {
             LOGE("gpio read error pin:%d  %d != %d", pin_list[i*2+1], TUYA_GPIO_LEVEL_HIGH, level);
@@ -630,7 +640,7 @@ static void test_input_thread(void *args)
         ret = tkl_gpio_read(pin_list[i*2], &level);
         if(ret) {
             LOGE("gpio read failed, pin: %d, ret: %d", pin_list[i*2], ret);
-        } 
+        }
 
         if(level != TUYA_GPIO_LEVEL_HIGH) {
             LOGE("gpio read error pin:%d  %d != %d", pin_list[i*2], TUYA_GPIO_LEVEL_HIGH, level);
@@ -687,7 +697,7 @@ void tkl_gpio_test(void)
     // tkl_thread_create(&test_thread, "test_thread", 4096,  2, test_irq_thread, NULL);
 }
 
-#endif 
+#endif
 
 #if 0
 #include "tkl_system.h"
@@ -727,7 +737,7 @@ void tkl_gpio_test(void)
 	}
 }
 
-static void test_gpio_irq_cb(VOID_T *args)
+static void test_gpio_irq_cb(void *args)
 {
 	int pin = (int)args;
 	static int cnt  = 0;

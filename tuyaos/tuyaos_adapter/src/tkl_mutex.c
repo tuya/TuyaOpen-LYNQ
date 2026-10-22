@@ -16,7 +16,7 @@
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
 OPERATE_RET tkl_mutex_create_init(TKL_MUTEX_HANDLE* pMutexHandle)
-{	
+{
 	if (!pMutexHandle) {
 		LOGE("create mutex failed, para is null");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -28,7 +28,7 @@ OPERATE_RET tkl_mutex_create_init(TKL_MUTEX_HANDLE* pMutexHandle)
 		.cb_mem = NULL,
 		.cb_size = 0,
 	};
-	
+
 	osMutexId_t id = osMutexNew(&attr);
 	if (NULL == id) {
 		LOGE("create mutex failed");
@@ -49,8 +49,8 @@ OPERATE_RET tkl_mutex_create_init(TKL_MUTEX_HANDLE* pMutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_lock(CONST TKL_MUTEX_HANDLE mutexHandle)
-{	
+OPERATE_RET tkl_mutex_lock(const TKL_MUTEX_HANDLE mutexHandle)
+{
 	if (!mutexHandle) {
 		LOGE("mutex lock failed, invalid param");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -75,19 +75,19 @@ OPERATE_RET tkl_mutex_lock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_unlock(CONST TKL_MUTEX_HANDLE mutexHandle)
-{	
+OPERATE_RET tkl_mutex_unlock(const TKL_MUTEX_HANDLE mutexHandle)
+{
 	if (!mutexHandle) {
 		LOGE("mutex unlock failed, invalid param");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	osStatus_t status = osMutexRelease(mutexHandle);
 	if (osOK != status) {
 		LOGE("mutex unlock failed, status: %d", status);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	LOGD("mutex unlock success");
 	return OPRT_OK;
 }
@@ -101,8 +101,8 @@ OPERATE_RET tkl_mutex_unlock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_trylock(CONST TKL_MUTEX_HANDLE mutexHandle)
-{	
+OPERATE_RET tkl_mutex_trylock(const TKL_MUTEX_HANDLE mutexHandle)
+{
 	if (!mutexHandle) {
 		LOGE("mutex try lock failed, invalid param");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -127,19 +127,19 @@ OPERATE_RET tkl_mutex_trylock(CONST TKL_MUTEX_HANDLE mutexHandle)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_mutex_release(CONST TKL_MUTEX_HANDLE mutexHandle)
-{	
+OPERATE_RET tkl_mutex_release(const TKL_MUTEX_HANDLE mutexHandle)
+{
 	if (!mutexHandle) {
 		LOGE("mutex release failed, invalid param");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	osStatus_t status = osMutexDelete(mutexHandle);
 	if (osOK != status) {
 		LOGE("mutex release failed, status: %d", status);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	LOGD("mutex release success");
 	return OPRT_OK;
 }

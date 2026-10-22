@@ -4,11 +4,21 @@
 #include "osasys.h"
 #include "ol_fota_api.h"
 #include "vlog.h"
+/* The pinned vendor log catalog does not contain entries for this adapter source. */
+#undef LOGD
+#undef LOGI
+#undef LOGW
+#undef LOGE
+#define LOGD(...) ((void)0)
+#define LOGI(...) ((void)0)
+#define LOGW(...) ((void)0)
+#define LOGE(...) ((void)0)
+
 
 unsigned int offset = 0;
 
 /*************************variable define********************/
-OPERATE_RET tkl_ota_get_ability(UINT_T* image_size, TUYA_OTA_TYPE_E* type)
+OPERATE_RET tkl_ota_get_ability(uint32_t* image_size, TUYA_OTA_TYPE_E* type)
 {
     int freesize = 512 * 1024;
 
@@ -35,7 +45,7 @@ OPERATE_RET tkl_ota_get_ability(UINT_T* image_size, TUYA_OTA_TYPE_E* type)
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_ota_start_notify(UINT_T image_size, TUYA_OTA_TYPE_E type, TUYA_OTA_PATH_E path)
+OPERATE_RET tkl_ota_start_notify(uint32_t image_size, TUYA_OTA_TYPE_E type, TUYA_OTA_PATH_E path)
 {
 	int ret;
 	static bool nvm_init_flag = false;
@@ -64,7 +74,7 @@ OPERATE_RET tkl_ota_start_notify(UINT_T image_size, TUYA_OTA_TYPE_E type, TUYA_O
 *
 * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
 */
-OPERATE_RET tkl_ota_data_process(TUYA_OTA_DATA_T* pack, UINT_T* remain_len)
+OPERATE_RET tkl_ota_data_process(TUYA_OTA_DATA_T* pack, uint32_t* remain_len)
 {
 	int ret;
     if (NULL == pack) {

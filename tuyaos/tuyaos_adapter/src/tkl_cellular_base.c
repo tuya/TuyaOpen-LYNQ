@@ -24,13 +24,13 @@
 #define PDP_REACTIVE_TIME_INTERVAL   (10 * 1000 * 1000)  // 10s
 
 static uint8_t simcard_hotplug_enable = 0;          //0: 不开启热插拔  1：开启  2：开启并已识别到插入卡后的电平状态
-STATIC TKL_SIM_NOTIFY gSimNotify = NULL;
-STATIC TKL_REGISTION_NOTIFY gRegNotify = NULL;
+static TKL_SIM_NOTIFY gSimNotify = NULL;
+static TKL_REGISTION_NOTIFY gRegNotify = NULL;
 TKL_SIM_STATE_E gSimStatus = 0xff;
 TUYA_CELLULAR_MDS_STATUS_E gRegStatus = TUYA_CELLULAR_MDS_STATUS_UNKNOWN;
 
 extern void enable_simcard_hotplug(void);
-extern OPERATE_RET tkl_cellular_mds_init(UINT8_T sim_id);
+extern OPERATE_RET tkl_cellular_mds_init(uint8_t sim_id);
 extern int get_mds_changed_cid(void);
 extern void update_mds_net_status(int cid, TUYA_CELLULAR_MDS_NET_STATUS_E status);
 
@@ -208,7 +208,7 @@ OPERATE_RET tkl_cellular_base_get_ability(TKL_CELLULAR_ABILITY_E* ability)
  * @param simid SIM卡ID.(0~1)
  * @return 0 成功  其它 失败
  */
-OPERATE_RET tkl_cellular_base_switch_sim(UINT8_T sim_id)
+OPERATE_RET tkl_cellular_base_switch_sim(uint8_t sim_id)
 {
     LOGE("switch sim(%d) not support", sim_id);
     return OPRT_NOT_SUPPORTED;
@@ -219,7 +219,7 @@ OPERATE_RET tkl_cellular_base_switch_sim(UINT8_T sim_id)
  * @param fun 状态变化通知函数
  * @return 0 成功  其它 失败
  */
-OPERATE_RET tkl_cellular_base_register_sim_state_notify(UINT8_T simd_id, TKL_SIM_NOTIFY fun)
+OPERATE_RET tkl_cellular_base_register_sim_state_notify(uint8_t simd_id, TKL_SIM_NOTIFY fun)
 {
     gSimNotify = fun;
     return OPRT_OK;
@@ -233,7 +233,7 @@ OPERATE_RET tkl_cellular_base_register_sim_state_notify(UINT8_T simd_id, TKL_SIM
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_enable_sim_hotplug(UINT8_T sim_id, BOOL_T enable)
+OPERATE_RET tkl_cellular_base_enable_sim_hotplug(uint8_t sim_id, BOOL_T enable)
 {
     extern void simcard_hotplug_ctl(bool enable);
     simcard_hotplug_enable = enable;
@@ -245,7 +245,7 @@ OPERATE_RET tkl_cellular_base_enable_sim_hotplug(UINT8_T sim_id, BOOL_T enable)
     return OPRT_OK;
 }
 
-bool tkl_cellular_get_sim_hotplug_status(UINT8_T sim_id)
+bool tkl_cellular_get_sim_hotplug_status(uint8_t sim_id)
 {
     return (simcard_hotplug_enable == 0) ? false : true;
 }
@@ -256,7 +256,7 @@ bool tkl_cellular_get_sim_hotplug_status(UINT8_T sim_id)
  * @param state 1：正常，0：异常，2：初始化中
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_sim_get_status(UINT8_T sim_id, UCHAR_T* state)
+OPERATE_RET tkl_cellular_base_sim_get_status(uint8_t sim_id, uint8_t* state)
 {
     if (state == NULL) {
         LOGE("sim get status failed, invalid param");
@@ -275,7 +275,7 @@ OPERATE_RET tkl_cellular_base_sim_get_status(UINT8_T sim_id, UCHAR_T* state)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_cfun_mode(UINT8_T sim_id, PINT_T cfun)
+OPERATE_RET tkl_cellular_base_get_cfun_mode(uint8_t sim_id, int *cfun)
 {
     if (cfun == NULL) {
         LOGE("get cfun failed, invalid param");
@@ -289,7 +289,7 @@ OPERATE_RET tkl_cellular_base_get_cfun_mode(UINT8_T sim_id, PINT_T cfun)
         return OPRT_COM_ERROR;
     }
 
-    *cfun = (INT_T)val;
+    *cfun = (int)val;
     LOGI("get cfun success, cfun: %d", *cfun);
     return OPRT_OK;
 }
@@ -303,7 +303,7 @@ OPERATE_RET tkl_cellular_base_get_cfun_mode(UINT8_T sim_id, PINT_T cfun)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_set_cfun_mode(UINT8_T sim_id, INT_T cfun)
+OPERATE_RET tkl_cellular_base_set_cfun_mode(uint8_t sim_id, int cfun)
 {
     UINT8 val = (UINT8)cfun;
     CmsRetId ret = appSetCFUN(val);
@@ -324,7 +324,7 @@ OPERATE_RET tkl_cellular_base_set_cfun_mode(UINT8_T sim_id, INT_T cfun)
  *
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_imsi(UINT8_T sim_id, CHAR_T imsi[15 + 1])
+OPERATE_RET tkl_cellular_base_get_imsi(uint8_t sim_id, char imsi[15 + 1])
 {
     if (!imsi) {
         LOGE("get imsi failed, invalid param");
@@ -347,7 +347,7 @@ OPERATE_RET tkl_cellular_base_get_imsi(UINT8_T sim_id, CHAR_T imsi[15 + 1])
  * @param ICCID识别码，为20字节的字符串
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_iccid(UINT8_T sim_id, CHAR_T iccid[20 + 1])
+OPERATE_RET tkl_cellular_base_get_iccid(uint8_t sim_id, char iccid[20 + 1])
 {
     if (!iccid) {
         LOGE("get iccid failed, invalid param");
@@ -370,7 +370,7 @@ OPERATE_RET tkl_cellular_base_get_iccid(UINT8_T sim_id, CHAR_T iccid[20 + 1])
  * @param IMEI识别码，为15字节的字符串
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_imei(UINT8_T sim_id, CHAR_T imei[15 + 1])
+OPERATE_RET tkl_cellular_base_get_imei(uint8_t sim_id, char imei[15 + 1])
 {
     if(sim_id != 0) {
         return OPRT_INVALID_PARM;
@@ -399,13 +399,13 @@ OPERATE_RET tkl_cellular_base_get_imei(UINT8_T sim_id, CHAR_T imei[15 + 1])
  * @param IMEI识别码，为15字节的字符串
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_set_imei(UINT8_T sim_id, CHAR_T imei[15 + 1])
+OPERATE_RET tkl_cellular_base_set_imei(uint8_t sim_id, char imei[15 + 1])
 {
     LOGE("set imei not supported, sim_id: %d, imei: %s", sim_id, imei);
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_cellular_base_get_singal_quality(UINT8_T sim_id, cellular_signal_quality_t *quality)
+OPERATE_RET tkl_cellular_base_get_singal_quality(uint8_t sim_id, cellular_signal_quality_t *quality)
 {
     if(quality == NULL) {
         return OPRT_INVALID_PARM;
@@ -422,9 +422,9 @@ OPERATE_RET tkl_cellular_base_get_singal_quality(UINT8_T sim_id, cellular_signal
     quality->csq = csq;
     quality->snr = snr;
     if(rsrp <= 0) {
-        quality->rsrp = (INT_T)rsrp - 140;
+        quality->rsrp = (int)rsrp - 140;
     } else {
-        quality->rsrp = (INT_T)rsrp - 141;
+        quality->rsrp = (int)rsrp - 141;
     }
 
     LOGI("rsrq: %f", rsrq);
@@ -443,7 +443,7 @@ OPERATE_RET tkl_cellular_base_get_singal_quality(UINT8_T sim_id, cellular_signal
  * @return 0 成功 其它 失败
  */
 
-OPERATE_RET tkl_cellular_base_get_rsrp(UINT8_T sim_id, INT_T* rsrp)
+OPERATE_RET tkl_cellular_base_get_rsrp(uint8_t sim_id, int* rsrp)
 {
     if (rsrp == NULL) {
         LOGE("get rsrp failed, invalid param");
@@ -459,9 +459,9 @@ OPERATE_RET tkl_cellular_base_get_rsrp(UINT8_T sim_id, INT_T* rsrp)
     }
 
     if(trsrp <= 0) {
-        *rsrp = (INT_T)trsrp - 140;
+        *rsrp = (int)trsrp - 140;
     } else {
-        *rsrp = (INT_T)trsrp - 141;
+        *rsrp = (int)trsrp - 141;
     }
 
     LOGI("csq:%d snr:%d rsrp:%d rsrq:%d", csq, snr, trsrp, rsrq);
@@ -475,7 +475,7 @@ OPERATE_RET tkl_cellular_base_get_rsrp(UINT8_T sim_id, INT_T* rsrp)
  * @param bit_error (0~7,99) 99无网络
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_sinr(UINT8_T sim_id, INT_T* sinr, INT_T* bit_error)
+OPERATE_RET tkl_cellular_base_get_sinr(uint8_t sim_id, int* sinr, int* bit_error)
 {
     if (!sinr || !bit_error) {
         LOGE("get sinr failed, invalid param");
@@ -490,7 +490,7 @@ OPERATE_RET tkl_cellular_base_get_sinr(UINT8_T sim_id, INT_T* sinr, INT_T* bit_e
         return OPRT_COM_ERROR;
     }
 
-    *sinr = (INT_T)snr;
+    *sinr = (int)snr;
     *bit_error = 0;
     return OPRT_OK;
 }
@@ -503,7 +503,7 @@ OPERATE_RET tkl_cellular_base_get_sinr(UINT8_T sim_id, INT_T* sinr, INT_T* bit_e
  * @param timeout 搜索临近基站信息超时时间(一般需要4秒左右)
  * @return 0 成功 其它 失败
  */
-OPERATE_RET tkl_cellular_base_get_lbs(UINT8_T sim_id, TKL_LBS_INFO_T* lbs, BOOL_T neighbour, INT_T timeout)
+OPERATE_RET tkl_cellular_base_get_lbs(uint8_t sim_id, TKL_LBS_INFO_T* lbs, BOOL_T neighbour, int timeout)
 {
     if (lbs == NULL) {
         LOGE("get lbs failed, param lbs NULL");
@@ -596,18 +596,18 @@ EXIT:
  * @return TRUE正常，FALSE异常
  */
 
-BOOL_T tkl_cellular_base_rf_calibrated(VOID_T)
+BOOL_T tkl_cellular_base_rf_calibrated(void)
 {
     return TRUE;
 }
 
-BOOL_T tkl_cellular_base_enable_sim_detect(UINT8_T simid, BOOL_T enable)
+BOOL_T tkl_cellular_base_enable_sim_detect(uint8_t simid, BOOL_T enable)
 {
     appSetSIMHotSwapNotify(enable);
     return TRUE;
 }
 
-INT8_T tkl_cellular_base_get_default_simid(VOID)
+int8_t tkl_cellular_base_get_default_simid(void)
 {
     return 0;
 }
@@ -630,7 +630,7 @@ static void save_plat_config_item(plat_config_id_t item, uint32_t value)
     LOGI("plat config item %d saved, reboot module to take effect", item);
 }
 
-OPERATE_RET tkl_cellular_base_ioctl(INT_T cmd, VOID* argv)
+OPERATE_RET tkl_cellular_base_ioctl(int cmd, void* argv)
 {
     LOGI("base ioctl, cmd: %d", cmd);
     OPERATE_RET ret = OPRT_OK;
@@ -641,7 +641,7 @@ OPERATE_RET tkl_cellular_base_ioctl(INT_T cmd, VOID* argv)
         uint32_t timeout = *(uint32_t *)argv;
         if(timeout == 0) {
             pwrKeyDeinit(true);
-        } 
+        }
     }
     break;
     case CELL_IOCTL_CLOSE_WAKEUP_MODULE:
@@ -678,7 +678,7 @@ OPERATE_RET tkl_cellular_base_ioctl(INT_T cmd, VOID* argv)
             ret = OPRT_COM_ERROR;
             break;
         }
-        strncpy(operator_info, (CHAR_T *)oper_info.longPlmn, 32);
+        strncpy(operator_info, (char *)oper_info.longPlmn, 32);
     }
     break;
     case CELL_IOCTL_SET_LOGSEL:
@@ -802,7 +802,7 @@ void tuya_cniot_get_sysfw_info(char fw_name[64], char fw_ver[11])
     sprintf(fw_ver, "%d.%d.%d", ver[0], ver[1], ver[2]);
 }
 
-VOID tuya_cniot_init(VOID)
+void tuya_cniot_init(void)
 {
     char fw_name[64];
     char fw_ver[11];
@@ -816,7 +816,7 @@ VOID tuya_cniot_init(VOID)
     tkl_cellular_base_init(NULL);
 }
 
-OPERATE_RET tkl_cellular_base_register_dev_register_notify(UINT8_T simd_id, TKL_REGISTION_NOTIFY fun)
+OPERATE_RET tkl_cellular_base_register_dev_register_notify(uint8_t simd_id, TKL_REGISTION_NOTIFY fun)
 {
     gRegNotify = fun;
     return OPRT_OK;

@@ -4,23 +4,23 @@
 #include "vlog.h"
 
 #undef LOGD
-#define LOGD(fmt, ...) 
+#define LOGD(fmt, ...)
 
 typedef struct {
 	osTimerId_t id;
-	UINT_T us;
+	uint32_t us;
 } timer_dev_t;
 
 static timer_dev_t s_timer_dev[TUYA_TIMER_NUM_MAX] = {0};
 
 OPERATE_RET tkl_timer_init(TUYA_TIMER_NUM_E timer_id,
                            TUYA_TIMER_BASE_CFG_T* cfg)
-{	
+{
 	if (timer_id >= TUYA_TIMER_NUM_MAX || !cfg) {
 		LOGE("timer init failed, invalid param, timer_id: %d, cfg: %p", timer_id, cfg);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	if (NULL == cfg->cb) {
 		LOGE("timer init failed, cb is null");
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -43,7 +43,7 @@ OPERATE_RET tkl_timer_init(TUYA_TIMER_NUM_E timer_id,
 	return OPRT_OK;
 }
 
-OPERATE_RET tkl_timer_start(TUYA_TIMER_NUM_E timer_id, UINT_T us)
+OPERATE_RET tkl_timer_start(TUYA_TIMER_NUM_E timer_id, uint32_t us)
 {
 	if (timer_id >= TUYA_TIMER_NUM_MAX || 0 == us) {
 		LOGE("timer start failed, invalid param, timer_id: %d, us: %u", timer_id, us);
@@ -95,7 +95,7 @@ OPERATE_RET tkl_timer_deinit(TUYA_TIMER_NUM_E timer_id)
 		LOGE("timer deinit failed, invalid param, timer_id: %d", timer_id);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	if (NULL == s_timer_dev[timer_id].id) {
 		LOGE("timer deinit failed, not inited, timer_id: %d", timer_id);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
@@ -106,7 +106,7 @@ OPERATE_RET tkl_timer_deinit(TUYA_TIMER_NUM_E timer_id)
 		LOGE("deinit timer %d failed, status: %d", timer_id, status);
 		return OPRT_COM_ERROR;
 	}
-	
+
 	s_timer_dev[timer_id].id = NULL;
 	s_timer_dev[timer_id].us = 0;
 	return OPRT_OK;
@@ -121,13 +121,13 @@ OPERATE_RET tkl_timer_deinit(TUYA_TIMER_NUM_E timer_id)
  *
  * @return OPRT_OK on success. Others on error, please refer to tuya_error_code.h
  */
-OPERATE_RET tkl_timer_get(TUYA_TIMER_NUM_E timer_id, UINT_T* us)
-{	
+OPERATE_RET tkl_timer_get(TUYA_TIMER_NUM_E timer_id, uint32_t* us)
+{
 	if (timer_id >= TUYA_TIMER_NUM_MAX || !us) {
 		LOGE("timer get failed, invalid param, timer_id: %d, us: %p", timer_id, us);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
 	}
-	
+
 	if (NULL == s_timer_dev[timer_id].id) {
 		LOGE("timer get failed, not inited, timer_id: %d", timer_id);
 		return OPRT_OS_ADAPTER_INVALID_PARM;
