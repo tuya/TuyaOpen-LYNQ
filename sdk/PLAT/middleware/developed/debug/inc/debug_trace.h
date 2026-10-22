@@ -219,6 +219,7 @@ typedef enum
     /*
      * !!! for customer SDK development, please add here !!!!
     */
+    UNILOG_TuyaOpen = 0,
     UNILOG_CUST_MOD_MAX = 127
 }UniLogCustModIdType_e;
 

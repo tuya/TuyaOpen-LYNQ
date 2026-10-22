@@ -29,7 +29,7 @@ void tkl_log_output(const char *format, ...)
 		return;
 	}
 	buf[sizeof(buf) - 1] = '\0';
-	MLOG(UNILOG_API, P_VALUE, "%s", buf);
+	MLOG(UNILOG_TuyaOpen, P_VALUE, "%s", buf);
 }
 
 /**
