@@ -5,6 +5,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -69,6 +70,23 @@ def run_vendor_build(args, env):
     return subprocess.run(command, cwd=PLAT_ROOT, env=env, check=False).returncode
 
 
+def bind_package_configs(package_dir, package_name):
+    """Point this platform's USB/UART configs at the application package."""
+    for name in ("config_custom_usb.ini", "config_custom_uart.ini"):
+        path = Path(package_dir) / name
+        if not path.is_file():
+            continue
+        original = path.read_bytes()
+        content, count = re.subn(
+            rb"(?m)^(arg_pkg_path_val[ \t]*=[ \t]*)[^\r\n]*",
+            lambda match: match[1] + ("..\\" + package_name).encode("utf-8"),
+            original,
+        )
+        if count != 1:
+            raise ValueError(f"expected one arg_pkg_path_val in {path}")
+        path.write_bytes(content)
+
+
 def collect_output(params):
     binpkg = DOWNLOAD_DIR / BINPKG_NAME
     elf = DOWNLOAD_DIR / ELF_NAME
@@ -90,6 +108,7 @@ def collect_output(params):
     app_version = params["CONFIG_PROJECT_VERSION"]
     shutil.copy2(binpkg, output_dir / f"{app_name}_QIO_{app_version}.bin")
     shutil.copy2(binpkg, output_dir / f"{app_name}_QIO_{app_version}.binpkg")
+    bind_package_configs(package_dir, f"{app_name}_QIO_{app_version}.binpkg")
     shutil.copy2(elf, output_dir / f"{app_name}_{app_version}.elf")
     (output_dir / f"{app_name}_{app_version}.zip").unlink(missing_ok=True)
 
