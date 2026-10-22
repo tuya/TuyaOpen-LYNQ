@@ -3,8 +3,10 @@ AVAILABLE_TARGETS = ec7xx_ref_1h00
 TOOLCHAIN         = GCC
 BINNAME           = ap_$(PROJECT)
 TOP               := ../../../../../../..
-TUYA_BASE_PATH   := $(TOP)/../../../include/base/include
-TKL_INC_PATH     := $(TOP)/../../../adapter
+TUYA_OPEN_PATH   := $(TOP)/../../..
+TUYA_BASE_PATH   := $(TUYA_OPEN_PATH)/src/common/include
+TKL_INC_PATH     := $(TOP)/../tuyaos/tuyaos_adapter/include
+TUYAOPEN_ADAPTER_PATH := $(TUYA_OPEN_PATH)/tools/porting/adapter
 
 #platform configuration, customers should not modify this file
 include $(TOP)/PLAT/mbtk/target/$(BUILD_PRO_TARGET)/Makefile.inc
@@ -80,14 +82,8 @@ CFLAGS_INC        += -I ../inc \
                      -I $(TOP)/FIRMWARE/SRC/CAT1/Common/Inc \
                      -I $(TOP)/PLAT/driver/chip/$(CHIP)/ap/src/usb
 
-TUYA_INC := -I$(TUYA_BASE_PATH)
-ifeq ($(wildcard $(TKL_INC_PATH)),)
-$(info Directory $(TKL_INC_PATH) does not exist)
-else
-$(info Directory $(TKL_INC_PATH) exists)
-TUYA_INC += $(addprefix -I , $(shell find $(TKL_INC_PATH) -maxdepth 3 -name "include" -type d))
-endif
-CFLAGS_INC += ${TUYA_INC}
+CFLAGS_INC += -I$(TUYA_BASE_PATH) -I$(TUYA_APP_KCONFIG_DIR)
+CFLAGS_INC += $(addprefix -I, $(shell find $(TKL_INC_PATH) $(TUYAOPEN_ADAPTER_PATH) -type d))
 
 # Use TuyaOS .config (EXF_FLASH_SIZE, etc.) when generating mem_map.txt and building adapter
 ifneq ($(wildcard $(TUYA_BASE_PATH)/tuya_iot_config.h),)
@@ -113,7 +109,8 @@ ADAPTER_OBJS     := $(addprefix $(BUILDDIR)/, $(obj-y))
 ADAPTER_PPFILES  := $(patsubst %.o, %.pp, $(ADAPTER_OBJS))
 PPFILES += $(ADAPTER_PPFILES)
 
-LIBS += $(TOP)/../../../output/TuyaOS/libs/libtuyaos.a
+LIBS += ${TUYA_LIB_DIR}/libtuyaos.a
+LIBS += ${TUYA_LIB_DIR}/libtuyaapp.a
 $(BUILDDIR)/lib/libtuyaos_adapter.a: $(ADAPTER_OBJS)
 #	@echo $(ADAPTER_OBJS)
 	@mkdir -p $(dir $@)

@@ -3,7 +3,7 @@ echo $PATH
 clear
 
 export BUILD_ENV=linux
-export PROJECT_NAME=app_demo
+export PROJECT_NAME=${PROJECT_NAME:-app_demo}
 export BOARD_NAME=ec7xx_ref_1h00
 export CHIP_NAME=ec7xx
 export CHIP_TYPE=ec718pm
@@ -21,7 +21,7 @@ export LESS_LOG=false
 export LTO_ENABLE=false
 export PWR_TEST=false
 export BUILD_HEADBIN=false
-export GCCLIB_PATH=`realpath "../../toolchain/gcc-arm-none-eabi-10-2020-q4-major"`
+export GCCLIB_PATH=${GCCLIB_PATH:-$(realpath "../../toolchain/gcc-arm-none-eabi-10-2020-q4-major")}
 export COMDBLIB_PATH="./prebuild/PLAT/lib/gcc/$CHIP_TYPE/ims"
 export CPBIN_SUBPATH=audio
 export AUDIO_ENABLE=true
