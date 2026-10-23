@@ -7,7 +7,6 @@
 
 #include "tuya_cloud_types.h"
 
-#define ENABLE_SPI 1
 #define ENABLE_SPI_TEST 0
 #define USE_BSP_SPI_DIRECT 0
 
@@ -39,6 +38,7 @@ static ARM_DRIVER_SPI *spi_drv[] = {&Driver_SPI0, &Driver_SPI1};
 
 typedef struct {
     bool init_flag;
+    bool manual_cs;
     bool is_irq_enable;
     bool dma_mode;
     ol_spi_index_num port_id;
@@ -66,7 +66,7 @@ static void spi1_event_cb(uint32_t event)
     }
 }
 
-OPERATE_RET tkl_spi_init(TUYA_SPI_NUM_E port, CONST TUYA_SPI_BASE_CFG_T *cfg)
+OPERATE_RET tkl_spi_init(TUYA_SPI_NUM_E port, const TUYA_SPI_BASE_CFG_T *cfg)
 {
     if (port >= SPI_DEV_NUM || cfg == NULL) {
         return OPRT_INVALID_PARM;
@@ -115,6 +115,8 @@ OPERATE_RET tkl_spi_init(TUYA_SPI_NUM_E port, CONST TUYA_SPI_BASE_CFG_T *cfg)
 
     tkl_mutex_create_init(&spi_dev[port].mutex);
     spi_dev[port].dma_mode = true;  // SPI0 and SPI1 both use DMA mode
+    /* SOFT_TYPE leaves CS to the caller while data uses the SPI controller. */
+    spi_dev[port].manual_cs = (cfg->type == TUYA_SPI_SOFT_TYPE);
     spi_dev[port].init_flag = true;
     spi_dev[port].port_id = id;
     spi_dev[port].temp_buffer = (uint8_t *)tkl_system_malloc(SPI_ONCE_SEND_LEN);
@@ -146,9 +148,9 @@ OPERATE_RET tkl_spi_deinit(TUYA_SPI_NUM_E port)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* receive_buf, UINT32_T length)
+OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, void* send_buf, void* receive_buf, uint32_t length)
 {
-    if (port > SPI_DEV_NUM || length == 0 || (send_buf == NULL && receive_buf == NULL)) { 
+    if ((unsigned)port >= SPI_DEV_NUM || length == 0 || (send_buf == NULL && receive_buf == NULL)) {
         return OPRT_INVALID_PARM;
     }
     
@@ -166,7 +168,9 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* rece
     }
 
     tkl_mutex_lock(spi_dev[port].mutex);
-    spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_INACTIVE);
+    if (!spi_dev[port].manual_cs) {
+        spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_INACTIVE);
+    }
     int total_send_len = 0;
     int total_rcv_len = 0;
     int total_xfer_len = 0;
@@ -198,7 +202,9 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* rece
         if(receive_buf)
             total_rcv_len += xfer_len;
     }
-    spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_ACTIVE);
+    if (!spi_dev[port].manual_cs) {
+        spi_drv[port]->Control(ARM_SPI_CONTROL_SS, ARM_SPI_SS_ACTIVE);
+    }
     tkl_mutex_unlock(spi_dev[port].mutex);
 
     if(ret == OPRT_OK && spi_dev[port].is_irq_enable && (spi_dev[port].cb != NULL) && send_buf) {
@@ -209,12 +215,12 @@ OPERATE_RET tkl_spi_transfer(TUYA_SPI_NUM_E port, VOID_T* send_buf, VOID_T* rece
     return ret;
 }
 
-OPERATE_RET tkl_spi_send(TUYA_SPI_NUM_E port, VOID_T *data, UINT32_T size)
+OPERATE_RET tkl_spi_send(TUYA_SPI_NUM_E port, void *data, uint32_t size)
 {
     return tkl_spi_transfer(port, data, NULL, size);
 }
 
-OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, VOID_T *data, UINT32_T size)
+OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, void *data, uint32_t size)
 {
     if (port >= SPI_DEV_NUM || data == NULL || size == 0) {
         return OPRT_INVALID_PARM;
@@ -236,7 +242,7 @@ OPERATE_RET tkl_spi_recv(TUYA_SPI_NUM_E port, VOID_T *data, UINT32_T size)
     return OPRT_OK;
 }
 
-OPERATE_RET tkl_spi_transfer_with_length(TUYA_SPI_NUM_E port, VOID_T* send_buf, UINT32_T send_len, VOID_T* receive_buf, UINT32_T receive_len)
+OPERATE_RET tkl_spi_transfer_with_length(TUYA_SPI_NUM_E port, void* send_buf, uint32_t send_len, void* receive_buf, uint32_t receive_len)
 {
     if (send_len != receive_len) {
         return OPRT_INVALID_PARM;
@@ -278,17 +284,17 @@ OPERATE_RET tkl_spi_irq_disable(TUYA_SPI_NUM_E port)
     return OPRT_OK;
 }
 
-INT32_T tkl_spi_get_data_count(TUYA_SPI_NUM_E port)
+int32_t tkl_spi_get_data_count(TUYA_SPI_NUM_E port)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, UINT32_T cmd, VOID *args)
+OPERATE_RET tkl_spi_ioctl(TUYA_SPI_NUM_E port, uint32_t cmd, void *args)
 {
     return OPRT_NOT_SUPPORTED;
 }
 
-UINT32_T tkl_spi_get_max_dma_data_length(VOID_T)
+uint32_t tkl_spi_get_max_dma_data_length(void)
 {
     return (200 * 1024);
 }
