@@ -59,8 +59,8 @@ static gpio_map_t pinMap[] = {
 	// {62, 0, 0, false, false, 0, 0}, 			//USIM2_CLK 	-> GPIO14			//无法测试
 	// {63, 0, 0, false, false, 0, 0}, 			//USIM2_RST 	-> GPIO13			//无法测试
 	// {64, 0, 0, false, false, 0, 0}, 			//USIM2_DATA 	-> GPIO12			//无法测试
-	// {66, 0, 0, false, false, 0, 0}, 			//I2C_SDA 		-> GPIO8			//无法测试
-	// {67, 0, 0, false, false, 0, 0}, 			//I2C_SCL 		-> GPIO9			//无法测试
+	{66, 0, 0, false, false, 0, 0}, 			//I2C1_SDA -> GPIO8; output validated, IRQ abnormal
+	{67, 0, 0, false, false, 0, 0}, 			//I2C1_SCL -> GPIO9; output validated, IRQ abnormal
 	{78, 0, 0, false, false, 0, 0}, 			//LCD_TE 		-> GPIO36			//ok
 	{79, 0, 0, false, false, 0, 0}, 			//USIM1_DET 						//wake_pad2, sim卡检测脚，关闭sim卡热插拔功能后可设置成中断
 	{80, 0, 0, false, false, 0, 0}, 			//CAM_SPI_CLK 	-> GPIO4			//ok

@@ -4,6 +4,7 @@
 import errno
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,25 @@ def build_env(param, build_param_dir):
     return env
 
 
+def bind_package_configs(package_dir, package_name):
+    """Point this platform's USB/UART configs at the application package."""
+    for name in ("config_custom_usb.ini", "config_custom_uart.ini"):
+        path = os.path.join(package_dir, name)
+        if not os.path.isfile(path):
+            continue
+        with open(path, "rb") as stream:
+            original = stream.read()
+        content, count = re.subn(
+            rb"(?m)^(arg_pkg_path_val[ \t]*=[ \t]*)[^\r\n]*",
+            lambda match: match[1] + ("..\\" + package_name).encode("utf-8"),
+            original,
+        )
+        if count != 1:
+            raise ValueError(f"expected one arg_pkg_path_val in {path}")
+        with open(path, "wb") as stream:
+            stream.write(content)
+
+
 def run(build_param_dir, action):
     if action not in ("build", "clean"):
         raise SystemExit(f"unsupported action: {action}")
@@ -61,9 +81,11 @@ def run(build_param_dir, action):
     if not app_name or not app_ver or not out_dir:
         raise SystemExit("build parameters lack project name, version, or output directory")
     os.makedirs(out_dir, exist_ok=True)
-    shutil.copytree(DOWNLOAD_DIR, os.path.join(out_dir, os.path.basename(DOWNLOAD_DIR)), dirs_exist_ok=True)
+    package_dir = os.path.join(out_dir, os.path.basename(DOWNLOAD_DIR))
+    shutil.copytree(DOWNLOAD_DIR, package_dir, dirs_exist_ok=True)
     for suffix in ("bin", "binpkg"):
         shutil.copy2(PACKAGE, os.path.join(out_dir, f"{app_name}_QIO_{app_ver}.{suffix}"))
+    bind_package_configs(package_dir, f"{app_name}_QIO_{app_ver}.binpkg")
     elf = os.path.join(DOWNLOAD_DIR, "ap_tuyaos_adapter.elf")
     if os.path.isfile(elf):
         shutil.copy2(elf, os.path.join(out_dir, f"{app_name}_{app_ver}.elf"))

@@ -1,4 +1,8 @@
-toolchain/software/__pycache__
+# Python caches and local test environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
 
 sdk/PLAT/gccout
 sdk/PLAT/tools/UpdateDBPattern.txt

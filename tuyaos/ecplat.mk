@@ -6,6 +6,11 @@ TUYA_ADAPTER_SRCS := $(addprefix $(TUYA_ADAPTER_DIR)/, \
     tkl_cellular.c tkl_cellular_base.c tkl_cellular_comm.c tkl_cellular_mds.c tkl_cellular_vbat.c cellular_rrc_ctrl.c \
     tkl_fs.c tkl_gpio.c tkl_memory.c tkl_mutex.c tkl_network.c tkl_ota.c tkl_output.c \
     tkl_queue.c tkl_semaphore.c tkl_sleep.c tkl_system.c tkl_thread.c tkl_timer.c tkl_uart.c)
+# Include optional adapters only when their capabilities are enabled.
+SPI_ENABLED := $(shell awk '$$2 == "ENABLE_SPI" && $$3 == "1" { print "y" }' "$(TUYA_APP_KCONFIG_DIR)/tuya_kconfig.h" 2>/dev/null)
+ifeq ($(SPI_ENABLED),y)
+TUYA_ADAPTER_SRCS += $(TUYA_ADAPTER_DIR)/tkl_spi.c
+endif
 TUYAOPEN_UTIL_DIR := $(TOP)/../../../tools/porting/adapter/utilities/src
 TUYAOPEN_UTIL_REL_DIR := $(shell realpath --relative-to=$(CURDIR) $(TUYAOPEN_UTIL_DIR))
 TUYAOPEN_INIT_DIR := $(TOP)/../../../tools/porting/adapter/init/src
