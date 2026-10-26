@@ -18,8 +18,6 @@ jobs:
         env:
           GITEE_USERNAME: flyingcys
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-          EVENT_REF: ${{ github.event.ref }}
-          EVENT_REF_TYPE: ${{ github.event.ref_type }}
         run: |
           set -euo pipefail
           : "${GITEE_TOKEN:?GITEE_TOKEN is required}"
@@ -38,18 +36,8 @@ jobs:
           chmod 700 "$GIT_ASKPASS"
           git remote add gitee https://gitee.com/tuya-open/TuyaOpen-LYNQ.git
 
-          case "$GITHUB_EVENT_NAME" in
-            push)
-              git fetch --prune origin '+refs/heads/*:refs/sync/heads/*' '+refs/tags/*:refs/tags/*'
-              git -c credential.helper= push gitee 'refs/sync/heads/*:refs/heads/*'
-              git -c credential.helper= push --tags gitee
-              ;;
-            delete)
-              case "$EVENT_REF_TYPE" in
-                branch) target_ref="refs/heads/$EVENT_REF" ;;
-                tag) target_ref="refs/tags/$EVENT_REF" ;;
-                *) echo "Unsupported ref type: $EVENT_REF_TYPE" >&2; exit 1 ;;
-              esac
-              git -c credential.helper= push gitee ":$target_ref"
-              ;;
-          esac
+          git fetch --prune origin '+refs/heads/*:refs/sync/heads/*' '+refs/tags/*:refs/tags/*'
+          # Gitee is a mirror: overwrite diverged refs and remove refs absent on GitHub.
+          git -c credential.helper= push --force --prune gitee \
+            'refs/sync/heads/*:refs/heads/*' \
+            'refs/tags/*:refs/tags/*'
