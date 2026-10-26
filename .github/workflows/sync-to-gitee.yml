@@ -14,8 +14,42 @@ jobs:
         with:
           fetch-depth: 0
       - name: Sync TuyaOpen-LYNQ to Gitee
-        uses: tuya/TuyaOpen-T5AI@master
-        with:
-          target-url: 'https://gitee.com/tuya-open/TuyaOpen-LYNQ.git'
-          target-username: 'flyingcys'
-          target-token: ${{ secrets.GITEE_TOKEN }}
+        shell: bash
+        env:
+          GITEE_USERNAME: flyingcys
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          EVENT_REF: ${{ github.event.ref }}
+          EVENT_REF_TYPE: ${{ github.event.ref_type }}
+        run: |
+          set -euo pipefail
+          : "${GITEE_TOKEN:?GITEE_TOKEN is required}"
+
+          export GIT_ASKPASS="$RUNNER_TEMP/gitee-askpass.sh"
+          export GIT_TERMINAL_PROMPT=0
+          trap 'rm -f "$GIT_ASKPASS"' EXIT
+          cat > "$GIT_ASKPASS" <<'EOF'
+          #!/usr/bin/env bash
+          case "$1" in
+            *Username*) printf '%s\n' "$GITEE_USERNAME" ;;
+            *Password*) printf '%s\n' "$GITEE_TOKEN" ;;
+            *) exit 1 ;;
+          esac
+          EOF
+          chmod 700 "$GIT_ASKPASS"
+          git remote add gitee https://gitee.com/tuya-open/TuyaOpen-LYNQ.git
+
+          case "$GITHUB_EVENT_NAME" in
+            push)
+              git fetch --prune origin '+refs/heads/*:refs/sync/heads/*' '+refs/tags/*:refs/tags/*'
+              git -c credential.helper= push --force gitee 'refs/sync/heads/*:refs/heads/*'
+              git -c credential.helper= push --force --tags gitee
+              ;;
+            delete)
+              case "$EVENT_REF_TYPE" in
+                branch) target_ref="refs/heads/$EVENT_REF" ;;
+                tag) target_ref="refs/tags/$EVENT_REF" ;;
+                *) echo "Unsupported ref type: $EVENT_REF_TYPE" >&2; exit 1 ;;
+              esac
+              git -c credential.helper= push gitee ":$target_ref"
+              ;;
+          esac
