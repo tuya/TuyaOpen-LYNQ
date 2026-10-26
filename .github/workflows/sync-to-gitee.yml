@@ -41,8 +41,8 @@ jobs:
           case "$GITHUB_EVENT_NAME" in
             push)
               git fetch --prune origin '+refs/heads/*:refs/sync/heads/*' '+refs/tags/*:refs/tags/*'
-              git -c credential.helper= push --force gitee 'refs/sync/heads/*:refs/heads/*'
-              git -c credential.helper= push --force --tags gitee
+              git -c credential.helper= push gitee 'refs/sync/heads/*:refs/heads/*'
+              git -c credential.helper= push --tags gitee
               ;;
             delete)
               case "$EVENT_REF_TYPE" in
