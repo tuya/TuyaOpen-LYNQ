@@ -13,6 +13,9 @@ include $(TOP)/PLAT/mbtk/target/$(BUILD_PRO_TARGET)/Makefile.inc
 TKL_SRC_PATH := $(TOP)/tuyaos/tuyaos_adapter/src \
 			 $(TOP)/tuyaos/tuyaos_adapter/include/utilities/src
 TKL_SRCS := $(foreach dir,$(TKL_SRC_PATH),$(wildcard $(dir)/*.c))
+# tuyaopen-core (libtuyaos.a) provides these utility modules.
+CORE_UTIL_EXCLUDES := tuya_list.c tuya_mem_heap.c tuya_queue.c tuya_ringbuf.c tuya_tools.c
+TKL_SRCS := $(filter-out $(addprefix %/,$(CORE_UTIL_EXCLUDES)),$(TKL_SRCS))
 TKL_OBJ := $(patsubst %.c, %.o, $(TKL_SRCS))
 TKL_OBJ := $(subst $(TOP)/,,$(TKL_OBJ))
 
